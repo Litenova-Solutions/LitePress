@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import { auth } from "../auth";
 
-export default function AdminRootPage() {
-  redirect("/login");
+export default async function AdminRootPage() {
+  const session = await auth();
+  redirect(session ? "/posts" : "/login");
 }
