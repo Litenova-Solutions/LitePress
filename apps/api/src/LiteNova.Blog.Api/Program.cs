@@ -1,8 +1,10 @@
 using Amazon.S3;
+using System.Reflection;
 using LiteBus.CQRS;
 using LiteNova.Blog.Api.Mappers;
 using LiteNova.Blog.Api.Middleware;
 using LiteNova.Blog.Application.Common.Interfaces;
+using LiteNova.Blog.Application.Posts.Commands.CreatePost;
 using LiteNova.Blog.Infrastructure.Persistence;
 using LiteNova.Blog.Infrastructure.Storage;
 using Mapster;
@@ -36,7 +38,8 @@ builder.Services.AddSingleton<IAmazonS3>(_ =>
 });
 builder.Services.AddScoped<CloudflareR2StorageService>();
 
-builder.Services.AddSingleton<IMessageBus, NoOpMessageBus>();
+ServiceRegistration.RegisterHandlers(builder.Services, typeof(CreatePostCommand).Assembly);
+builder.Services.AddScoped<IMessageBus, InProcessMessageBus>();
 
 var app = builder.Build();
 
@@ -48,12 +51,30 @@ app.MapAllEndpoints();
 
 app.Run();
 
-public sealed class NoOpMessageBus : IMessageBus
+public sealed class InProcessMessageBus(IServiceProvider serviceProvider) : IMessageBus
 {
     public Task PublishAsync(object domainEvent, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public Task SendAsync(ICommand command, CancellationToken cancellationToken = default) => Task.CompletedTask;
-    public Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default) => Task.FromResult(default(TResult)!);
-    public Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default) => Task.FromResult(default(TResult)!);
+
+    public Task SendAsync(ICommand command, CancellationToken cancellationToken = default)
+    {
+        var handlerType = typeof(ICommandHandler<>).MakeGenericType(command.GetType());
+        dynamic handler = serviceProvider.GetRequiredService(handlerType);
+        return handler.HandleAsync((dynamic)command, cancellationToken);
+    }
+
+    public Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
+    {
+        var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
+        dynamic handler = serviceProvider.GetRequiredService(handlerType);
+        return handler.HandleAsync((dynamic)command, cancellationToken);
+    }
+
+    public Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
+    {
+        var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
+        dynamic handler = serviceProvider.GetRequiredService(handlerType);
+        return handler.HandleAsync((dynamic)query, cancellationToken);
+    }
 }
 
 public static class EndpointRegistration
@@ -72,5 +93,29 @@ public static class EndpointRegistration
         LiteNova.Blog.Api.Endpoints.Tags.CreateTagEndpoint.MapEndpoints(app);
         LiteNova.Blog.Api.Endpoints.Tags.DeleteTagEndpoint.MapEndpoints(app);
         return app;
+    }
+}
+
+public static class ServiceRegistration
+{
+    public static void RegisterHandlers(IServiceCollection services, Assembly assembly)
+    {
+        var handlerInterfaces =
+            new[]
+        {
+            typeof(ICommandHandler<>),
+            typeof(ICommandHandler<,>),
+            typeof(IQueryHandler<,>),
+            typeof(ICommandValidator<>),
+            typeof(IQueryValidator<>)
+        };
+
+        foreach (var type in assembly.GetTypes().Where(t => t is { IsAbstract: false, IsInterface: false }))
+        {
+            foreach (var serviceType in type.GetInterfaces().Where(i => i.IsGenericType && handlerInterfaces.Contains(i.GetGenericTypeDefinition())))
+            {
+                services.AddScoped(serviceType, type);
+            }
+        }
     }
 }

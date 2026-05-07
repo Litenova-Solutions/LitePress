@@ -12,7 +12,7 @@ public static class CreatePostEndpoint
         app.MapPost("/api/admin/posts", async (CreatePostRequest request, IMessageBus bus, CancellationToken ct) =>
         {
             var result = await bus.SendAsync(request.Adapt<CreatePostCommand>(), ct);
-            return Results.Created($"/api/posts/{result.Id}", result);
+            return Results.Created($"/api/admin/posts/{result.Id}", result);
         }).RequireAuthorization();
         return app;
     }
