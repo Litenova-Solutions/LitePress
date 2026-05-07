@@ -1,0 +1,19 @@
+name: API CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - run: dotnet restore apps/api/LiteNova.Blog.sln
+      - run: dotnet build apps/api/LiteNova.Blog.sln --no-restore
+      - run: dotnet test apps/api/LiteNova.Blog.sln --no-build
