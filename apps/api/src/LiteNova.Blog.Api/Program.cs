@@ -53,7 +53,13 @@ app.Run();
 
 public sealed class InProcessMessageBus(IServiceProvider serviceProvider) : IMessageBus
 {
-    public Task PublishAsync(object domainEvent, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task PublishAsync(object domainEvent, CancellationToken cancellationToken = default)
+    {
+        var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+        var handlers = serviceProvider.GetServices(handlerType);
+        var tasks = handlers.Select(handler => (Task)((dynamic)handler).HandleAsync((dynamic)domainEvent, cancellationToken));
+        return Task.WhenAll(tasks);
+    }
 
     public Task SendAsync(ICommand command, CancellationToken cancellationToken = default)
     {
@@ -107,7 +113,8 @@ public static class ServiceRegistration
             typeof(ICommandHandler<,>),
             typeof(IQueryHandler<,>),
             typeof(ICommandValidator<>),
-            typeof(IQueryValidator<>)
+            typeof(IQueryValidator<>),
+            typeof(IDomainEventHandler<>)
         };
 
         foreach (var type in assembly.GetTypes().Where(t => t is { IsAbstract: false, IsInterface: false }))

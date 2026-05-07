@@ -36,3 +36,8 @@ public interface IMessageBus
     Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default);
     Task PublishAsync(object domainEvent, CancellationToken cancellationToken = default);
 }
+
+public interface IDomainEventHandler<in TEvent>
+{
+    Task HandleAsync(TEvent domainEvent, CancellationToken cancellationToken);
+}
