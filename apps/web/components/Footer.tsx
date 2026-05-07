@@ -1,0 +1,1 @@
+export function Footer() { return <footer className="border-t p-4 text-sm">© LiteNova · <a href="https://github.com/litenova">GitHub</a> · <a href="https://litenova.dev">LiteNova Solutions</a></footer>; }
