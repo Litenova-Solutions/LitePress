@@ -1,9 +1,9 @@
 using LiteNova.Blog.Api.Models.Requests;
 using LiteNova.Blog.Api.Models.Responses;
-using LiteNova.Blog.Application.Posts.Commands.CreatePost;
-using LiteNova.Blog.Application.Posts.Commands.UpdatePost;
-using LiteNova.Blog.Application.Posts.Queries.GetPostBySlug;
-using LiteNova.Blog.Application.Posts.Queries.GetPublishedPosts;
+using LiteNova.Blog.Application.Posts.CreatePost;
+using LiteNova.Blog.Application.Posts.UpdatePost;
+using LiteNova.Blog.Application.Posts.GetPostBySlug;
+using LiteNova.Blog.Application.Posts.GetPublishedPosts;
 using Mapster;
 
 namespace LiteNova.Blog.Api.Mappers;

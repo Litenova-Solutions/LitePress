@@ -1,9 +1,12 @@
-using LiteBus.CQRS;
+using LiteBus.Events.Abstractions;
 using LiteNova.Blog.Domain.Posts.Events;
 
 namespace LiteNova.Blog.Application.Posts.Events.OnPostDeleted;
 
-public sealed class InvalidateCacheOnPostDeletedEventHandler : IDomainEventHandler<PostDeletedEvent>
+/// <summary>
+/// Handles <see cref="PostDeletedEvent" />.
+/// </summary>
+public sealed class InvalidateCacheOnPostDeletedEventHandler : IEventHandler<PostDeletedEvent>
 {
     public Task HandleAsync(PostDeletedEvent domainEvent, CancellationToken cancellationToken)
     {

@@ -1,2 +1,22 @@
 namespace LiteNova.Blog.Api.Models.Responses;
-public sealed class TagResponse { public required Guid Id { get; init; } public required string Name { get; init; } public required string Slug { get; init; } }
+
+/// <summary>
+/// Response payload representing a tag.
+/// </summary>
+public sealed record TagResponse
+{
+    /// <summary>
+    /// Tag identifier.
+    /// </summary>
+    public required Guid Id { get; init; }
+
+    /// <summary>
+    /// Tag display name.
+    /// </summary>
+    public required string Name { get; init; }
+
+    /// <summary>
+    /// URL slug.
+    /// </summary>
+    public required string Slug { get; init; }
+}

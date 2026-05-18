@@ -1,2 +1,12 @@
 namespace LiteNova.Blog.Api.Models.Responses;
-public sealed class PostDetailResponse : PostSummaryResponse { public required string Body { get; init; } }
+
+/// <summary>
+/// Response payload representing full post details.
+/// </summary>
+public sealed record PostDetailResponse : PostSummaryResponse
+{
+    /// <summary>
+    /// TipTap JSON body content.
+    /// </summary>
+    public required string Body { get; init; }
+}

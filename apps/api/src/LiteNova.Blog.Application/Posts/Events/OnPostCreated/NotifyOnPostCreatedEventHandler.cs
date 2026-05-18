@@ -1,9 +1,12 @@
-using LiteBus.CQRS;
+using LiteBus.Events.Abstractions;
 using LiteNova.Blog.Domain.Posts.Events;
 
 namespace LiteNova.Blog.Application.Posts.Events.OnPostCreated;
 
-public sealed class NotifyOnPostCreatedEventHandler : IDomainEventHandler<PostCreatedEvent>
+/// <summary>
+/// Handles <see cref="PostCreatedEvent" />.
+/// </summary>
+public sealed class NotifyOnPostCreatedEventHandler : IEventHandler<PostCreatedEvent>
 {
     public Task HandleAsync(PostCreatedEvent domainEvent, CancellationToken cancellationToken)
     {

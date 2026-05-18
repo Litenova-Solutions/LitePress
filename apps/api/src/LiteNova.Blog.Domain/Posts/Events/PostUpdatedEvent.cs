@@ -1,2 +1,5 @@
+using LiteBus.Events.Abstractions;
+
 namespace LiteNova.Blog.Domain.Posts.Events;
-public sealed class PostUpdatedEvent(Guid PostId);
+
+public sealed record PostUpdatedEvent(Guid PostId) : IEvent;

@@ -6,6 +6,9 @@ using LiteNova.Blog.Domain.Tags;
 
 namespace LiteNova.Blog.Domain.Posts;
 
+/// <summary>
+/// Post aggregate root responsible for post lifecycle and invariants.
+/// </summary>
 public class Post : AggregateRoot
 {
     private readonly List<PostTag> _tags = [];
@@ -23,7 +26,9 @@ public class Post : AggregateRoot
     public DateTimeOffset UpdatedAt { get; private set; } = DateTimeOffset.UtcNow;
     public IReadOnlyCollection<PostTag> Tags => _tags.AsReadOnly();
 
-    private Post() { }
+    private Post()
+    {
+    }
 
     public static Post Create(string title, string excerpt, string body, string? coverImageUrl, IEnumerable<Tag> tags)
     {
@@ -57,7 +62,11 @@ public class Post : AggregateRoot
 
     public void Publish()
     {
-        if (Status is PostStatus.Published) throw new PostAlreadyPublishedException(Id);
+        if (Status is PostStatus.Published)
+        {
+            throw new PostAlreadyPublishedException(Id);
+        }
+
         Status = PostStatus.Published;
         PublishedAt = DateTimeOffset.UtcNow;
         ScheduledFor = null;
@@ -67,7 +76,11 @@ public class Post : AggregateRoot
 
     public void Schedule(DateTimeOffset scheduledFor)
     {
-        if (Status is PostStatus.Scheduled) throw new PostAlreadyScheduledException(Id);
+        if (Status is PostStatus.Scheduled)
+        {
+            throw new PostAlreadyScheduledException(Id);
+        }
+
         Status = PostStatus.Scheduled;
         ScheduledFor = scheduledFor;
         UpdatedAt = DateTimeOffset.UtcNow;
@@ -79,14 +92,18 @@ public class Post : AggregateRoot
     private void SetTags(IEnumerable<Tag> tags)
     {
         _tags.Clear();
-        _tags.AddRange(tags.Select(t => new PostTag { PostId = Id, TagId = t.Id }));
+        _tags.AddRange(tags.Select(tag => new PostTag { PostId = Id, TagId = tag.Id }));
     }
 
     private static string CreateSlug(string title)
     {
         var normalized = Regex.Replace(title.ToLowerInvariant().Trim(), @"[^a-z0-9\s-]", string.Empty);
         var slug = Regex.Replace(normalized, @"\s+", "-");
-        if (string.IsNullOrWhiteSpace(slug)) throw new InvalidPostSlugException(title);
+        if (string.IsNullOrWhiteSpace(slug))
+        {
+            throw new InvalidPostSlugException(title);
+        }
+
         return slug;
     }
 

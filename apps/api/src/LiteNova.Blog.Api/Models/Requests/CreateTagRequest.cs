@@ -1,2 +1,12 @@
 namespace LiteNova.Blog.Api.Models.Requests;
-public sealed class CreateTagRequest { public required string Name { get; init; } }
+
+/// <summary>
+/// Request payload used to create a tag.
+/// </summary>
+public sealed record CreateTagRequest
+{
+    /// <summary>
+    /// Tag display name.
+    /// </summary>
+    public required string Name { get; init; }
+}

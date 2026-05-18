@@ -1,2 +1,12 @@
 namespace LiteNova.Blog.Api.Models.Requests;
-public sealed class SchedulePostRequest { public required DateTimeOffset ScheduledFor { get; init; } }
+
+/// <summary>
+/// Request payload used to schedule a post publication.
+/// </summary>
+public sealed record SchedulePostRequest
+{
+    /// <summary>
+    /// Date and time when the post should be published.
+    /// </summary>
+    public required DateTimeOffset ScheduledFor { get; init; }
+}

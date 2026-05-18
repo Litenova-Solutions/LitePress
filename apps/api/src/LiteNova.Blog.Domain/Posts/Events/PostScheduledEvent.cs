@@ -1,2 +1,5 @@
+using LiteBus.Events.Abstractions;
+
 namespace LiteNova.Blog.Domain.Posts.Events;
-public sealed class PostScheduledEvent(Guid PostId, DateTimeOffset ScheduledFor);
+
+public sealed record PostScheduledEvent(Guid PostId, DateTimeOffset ScheduledFor) : IEvent;
