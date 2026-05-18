@@ -1,2 +1,9 @@
 namespace LiteNova.Blog.Api.Models.Requests;
-public sealed class CreatePostRequest { public required string Title { get; init; } public required string Excerpt { get; init; } public required string Body { get; init; } public string? CoverImageUrl { get; init; } public required IReadOnlyCollection<Guid> TagIds { get; init; } }
+
+/// <summary>Request body for creating a new blog post.</summary>
+public sealed record CreatePostRequest(
+    string Title,
+    string Excerpt,
+    string Body,
+    string? CoverImageUrl,
+    IReadOnlyCollection<Guid> TagIds);
