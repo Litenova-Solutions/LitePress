@@ -1,9 +1,53 @@
-node_modules
-.pnpm-store
-.turbo
-.next
-out
-dist
-bin
-obj
+# Node
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+
+# Build artifacts (all OSes)
+bin/
+obj/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Turborepo
+.turbo/
+
+# dotnet
+*.user
+*.suo
+*.swp
+*.bak
+*.log
+*.DS_Store
+Thumbs.db
+.vs/
+launchSettings.json
+appsettings.Development.json
+
+# EF Core migrations output (keep migration files but ignore generated sql)
+*.mssql.sql
+
+# Test results
+TestResults/
+coverage/
+*.coveragexml
+*.trx
+
+# Publish output
+publish/
+
+# JetBrains IDEs
+.idea/
+*.DotSettings.user
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
