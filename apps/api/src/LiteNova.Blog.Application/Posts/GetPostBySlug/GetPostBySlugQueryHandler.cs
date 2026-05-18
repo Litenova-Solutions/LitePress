@@ -10,7 +10,7 @@ public sealed class GetPostBySlugQueryHandler(IBlogDbContext dbContext) : IQuery
 {
     public async Task<GetPostBySlugQueryResult> HandleAsync(GetPostBySlugQuery query, CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.AsNoTracking().FirstOrDefaultAsync(p => p.Slug == query.Slug, cancellationToken) ?? throw new PostNotFoundException(Guid.Empty);
+        var post = await dbContext.Posts.AsNoTracking().FirstOrDefaultAsync(p => p.Slug == query.Slug, cancellationToken) ?? throw new PostNotFoundBySlugException(query.Slug);
         var tagIds = post.Tags.Select(t => t.TagId).Distinct().ToArray();
         var tagLookup = await dbContext.Tags.AsNoTracking()
             .Where(t => tagIds.Contains(t.Id))
