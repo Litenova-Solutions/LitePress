@@ -1,2 +1,4 @@
 namespace LiteNova.Blog.Api.Models.Requests;
-public sealed class SchedulePostRequest { public required DateTimeOffset ScheduledFor { get; init; } }
+
+/// <summary>Request body for scheduling a blog post for future publication.</summary>
+public sealed record SchedulePostRequest(DateTimeOffset ScheduledFor);

@@ -1,7 +1,7 @@
 using LiteNova.Blog.Api.Models.Requests;
 using LiteNova.Blog.Api.Models.Responses;
-using LiteNova.Blog.Application.Tags.Commands.CreateTag;
-using LiteNova.Blog.Application.Tags.Queries.GetAllTags;
+using LiteNova.Blog.Application.Tags.CreateTag;
+using LiteNova.Blog.Application.Tags.GetAllTags;
 using Mapster;
 
 namespace LiteNova.Blog.Api.Mappers;

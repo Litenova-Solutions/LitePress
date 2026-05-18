@@ -1,2 +1,4 @@
 namespace LiteNova.Blog.Api.Models.Requests;
-public sealed class CreateTagRequest { public required string Name { get; init; } }
+
+/// <summary>Request body for creating a new tag.</summary>
+public sealed record CreateTagRequest(string Name);
