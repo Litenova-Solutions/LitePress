@@ -1,0 +1,2 @@
+namespace LiteNova.Blog.Api.Models.Responses;
+public class PostSummaryResponse { public required Guid Id { get; init; } public required string Title { get; init; } public required string Slug { get; init; } public required string Excerpt { get; init; } public string? CoverImageUrl { get; init; } public required string Status { get; init; } public DateTimeOffset? PublishedAt { get; init; } public required int ReadingTimeMinutes { get; init; } public required IReadOnlyCollection<string> Tags { get; init; } }
