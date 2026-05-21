@@ -1,22 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
-    <ProjectReference Include="..\LiteNova.Blog.Application\LiteNova.Blog.Application.csproj" />
     <ProjectReference Include="..\LiteNova.Blog.Domain\LiteNova.Blog.Domain.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Write.Contracts\LiteNova.Blog.Application.Write.Contracts.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Read.Contracts\LiteNova.Blog.Application.Read.Contracts.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Write\LiteNova.Blog.Application.Write.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Read\LiteNova.Blog.Application.Read.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Reactions\LiteNova.Blog.Application.Reactions.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.403" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+    <PackageReference Include="LiteBus.Commands.Abstractions" />
+    <PackageReference Include="LiteBus.Messaging.Abstractions" />
+    <PackageReference Include="LiteBus.Events.Abstractions" />
+    <PackageReference Include="LiteBus.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
-  </PropertyGroup>
-
 </Project>

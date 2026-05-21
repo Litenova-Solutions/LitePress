@@ -1,7 +1,17 @@
+using LiteNova.Blog.Domain.Tags;
+
 namespace LiteNova.Blog.Domain.Posts;
 
-public class PostTag
+public sealed class PostTag
 {
-    public Guid PostId { get; set; }
-    public Guid TagId { get; set; }
+    private PostTag() { }
+
+    public PostTag(PostId postId, TagId tagId)
+    {
+        PostId = postId;
+        TagId = tagId;
+    }
+
+    public PostId PostId { get; private set; }
+    public TagId TagId { get; private set; }
 }

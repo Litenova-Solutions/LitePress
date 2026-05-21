@@ -1,0 +1,13 @@
+<Solution>
+  <Projects>
+    <Project Path="src\LiteNova.Blog.AppHost\LiteNova.Blog.AppHost.csproj" />
+    <Project Path="src\LiteNova.Blog.Domain\LiteNova.Blog.Domain.csproj" />
+    <Project Path="src\LiteNova.Blog.Application.Write.Contracts\LiteNova.Blog.Application.Write.Contracts.csproj" />
+    <Project Path="src\LiteNova.Blog.Application.Write\LiteNova.Blog.Application.Write.csproj" />
+    <Project Path="src\LiteNova.Blog.Application.Read.Contracts\LiteNova.Blog.Application.Read.Contracts.csproj" />
+    <Project Path="src\LiteNova.Blog.Application.Read\LiteNova.Blog.Application.Read.csproj" />
+    <Project Path="src\LiteNova.Blog.Application.Reactions\LiteNova.Blog.Application.Reactions.csproj" />
+    <Project Path="src\LiteNova.Blog.Infrastructure\LiteNova.Blog.Infrastructure.csproj" />
+    <Project Path="src\LiteNova.Blog.WebApi\LiteNova.Blog.WebApi.csproj" />
+  </Projects>
+</Solution>

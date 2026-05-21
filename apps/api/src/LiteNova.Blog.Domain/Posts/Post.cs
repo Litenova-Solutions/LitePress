@@ -1,101 +1,164 @@
-using System.Text.RegularExpressions;
-using LiteNova.Blog.Domain.Common;
+using LiteNova.Blog.Domain.Authors;
 using LiteNova.Blog.Domain.Posts.Events;
 using LiteNova.Blog.Domain.Posts.Exceptions;
+using LiteNova.Blog.Domain.Shared;
 using LiteNova.Blog.Domain.Tags;
 
 namespace LiteNova.Blog.Domain.Posts;
 
-/// <summary>
-/// The Post aggregate root representing a blog post with its full lifecycle (Draft → Published/Scheduled).
-/// </summary>
-public class Post : AggregateRoot
+public sealed class Post : AggregateRoot<PostId>
 {
     private readonly List<PostTag> _tags = [];
-
-    public string Title { get; private set; } = string.Empty;
-    public string Slug { get; private set; } = string.Empty;
-    public string Excerpt { get; private set; } = string.Empty;
-    public string Body { get; private set; } = string.Empty;
-    public string? CoverImageUrl { get; private set; }
-    public PostStatus Status { get; private set; } = PostStatus.Draft;
-    public DateTimeOffset? PublishedAt { get; private set; }
-    public DateTimeOffset? ScheduledFor { get; private set; }
-    public int ReadingTimeMinutes { get; private set; }
-    public DateTimeOffset CreatedAt { get; private set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset UpdatedAt { get; private set; } = DateTimeOffset.UtcNow;
-    public IReadOnlyCollection<PostTag> Tags => _tags.AsReadOnly();
+    private string _stateType = "Draft";
+    private DateTimeOffset? _publishedAt;
+    private DateTimeOffset? _archivedAt;
 
     private Post() { }
 
-    public static Post Create(string title, string excerpt, string body, string? coverImageUrl, IEnumerable<Tag> tags)
+    public PostTitle Title { get; private set; } = null!;
+    public PostSlug Slug { get; private set; } = null!;
+    public PostContent Content { get; private set; } = null!;
+    public PostExcerpt? Excerpt { get; private set; }
+    public PostCoverImageUrl? CoverImageUrl { get; private set; }
+    public AuthorId AuthorId { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset UpdatedAt { get; private set; }
+    public IReadOnlyList<PostTag> Tags => _tags.AsReadOnly();
+
+    public PostState State => _stateType switch
     {
+        "Draft" => new DraftPostState(),
+        "Published" => new PublishedPostState(_publishedAt!.Value),
+        "Archived" => new ArchivedPostState(_archivedAt!.Value),
+        _ => throw new InvalidOperationException($"Unknown state type: {_stateType}")
+    };
+
+    public DateTimeOffset? PublishedAt => _publishedAt;
+    public DateTimeOffset? ArchivedAt => _archivedAt;
+
+    public static Post Create(
+        PostId id,
+        PostTitle title,
+        PostContent content,
+        AuthorId authorId,
+        PostExcerpt? excerpt = null,
+        PostCoverImageUrl? coverImageUrl = null,
+        IReadOnlyList<TagId>? tagIds = null)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var slug = PostSlug.FromTitle(title.Value);
+
         var post = new Post
         {
-            Title = title.Trim(),
-            Excerpt = excerpt.Trim(),
-            Body = body,
+            Id = id,
+            Title = title,
+            Content = content,
+            AuthorId = authorId,
+            Excerpt = excerpt,
             CoverImageUrl = coverImageUrl,
-            Slug = CreateSlug(title),
-            ReadingTimeMinutes = CalculateReadingTime(body)
+            Slug = slug,
+            _stateType = "Draft",
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
-        post.SetTags(tags);
-        post.RaiseDomainEvent(new PostCreatedEvent(post.Id));
+        foreach (var tagId in tagIds ?? [])
+        {
+            post._tags.Add(new PostTag(id, tagId));
+        }
+
+        post.RaiseDomainEvent(new PostCreated(id, authorId, title, slug, content, excerpt, coverImageUrl, tagIds ?? []));
         return post;
     }
 
-    public void Update(string title, string excerpt, string body, string? coverImageUrl, IEnumerable<Tag> tags)
+    public void Update(
+        PostTitle title,
+        PostContent content,
+        PostExcerpt? excerpt,
+        PostCoverImageUrl? coverImageUrl)
     {
-        Title = title.Trim();
-        Excerpt = excerpt.Trim();
-        Body = body;
+        if (_stateType != "Draft")
+        {
+            throw new PostNotEditableException(Id);
+        }
+
+        Title = title;
+        Content = content;
+        Excerpt = excerpt;
         CoverImageUrl = coverImageUrl;
-        Slug = CreateSlug(title);
-        ReadingTimeMinutes = CalculateReadingTime(body);
+        Slug = PostSlug.FromTitle(title.Value);
         UpdatedAt = DateTimeOffset.UtcNow;
-        SetTags(tags);
-        RaiseDomainEvent(new PostUpdatedEvent(Id));
+
+        RaiseDomainEvent(new PostUpdated(Id, title, Slug, content, excerpt, coverImageUrl));
     }
 
     public void Publish()
     {
-        if (Status is PostStatus.Published) { throw new PostAlreadyPublishedException(Id); }
-        Status = PostStatus.Published;
-        PublishedAt = DateTimeOffset.UtcNow;
-        ScheduledFor = null;
-        UpdatedAt = DateTimeOffset.UtcNow;
-        RaiseDomainEvent(new PostPublishedEvent(Id));
+        if (_stateType == "Published")
+        {
+            throw new PostAlreadyPublishedException(Id);
+        }
+
+        if (_stateType != "Draft")
+        {
+            throw new PostNotEditableException(Id);
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        _stateType = "Published";
+        _publishedAt = now;
+        UpdatedAt = now;
+
+        RaiseDomainEvent(new PostPublished(Id, AuthorId, now));
     }
 
-    public void Schedule(DateTimeOffset scheduledFor)
+    public void Archive()
     {
-        if (Status is PostStatus.Scheduled) { throw new PostAlreadyScheduledException(Id); }
-        Status = PostStatus.Scheduled;
-        ScheduledFor = scheduledFor;
-        UpdatedAt = DateTimeOffset.UtcNow;
-        RaiseDomainEvent(new PostScheduledEvent(Id, scheduledFor));
+        if (_stateType == "Archived")
+        {
+            throw new PostAlreadyArchivedException(Id);
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        _stateType = "Archived";
+        _archivedAt = now;
+        UpdatedAt = now;
+
+        RaiseDomainEvent(new PostArchived(Id, now));
     }
 
-    public void Delete() => RaiseDomainEvent(new PostDeletedEvent(Id));
-
-    private void SetTags(IEnumerable<Tag> tags)
+    public void Delete()
     {
-        _tags.Clear();
-        _tags.AddRange(tags.Select(t => new PostTag { PostId = Id, TagId = t.Id }));
+        if (_stateType == "Published")
+        {
+            throw new PostCannotBeDeletedException(Id);
+        }
+
+        RaiseDomainEvent(new PostDeleted(Id));
     }
 
-    private static string CreateSlug(string title)
+    public void AddTag(TagId tagId)
     {
-        var normalized = Regex.Replace(title.ToLowerInvariant().Trim(), @"[^a-z0-9\s-]", string.Empty);
-        var slug = Regex.Replace(normalized, @"\s+", "-");
-        if (string.IsNullOrWhiteSpace(slug)) { throw new InvalidPostSlugException(title); }
-        return slug;
+        if (_tags.Count >= 10)
+        {
+            throw new PostTagLimitExceededException(Id);
+        }
+
+        if (_tags.Any(t => t.TagId == tagId))
+        {
+            throw new PostTagAlreadyAssignedException(Id, tagId);
+        }
+
+        _tags.Add(new PostTag(Id, tagId));
+        RaiseDomainEvent(new PostTagAdded(Id, tagId));
     }
 
-    private static int CalculateReadingTime(string body)
+    public void RemoveTag(TagId tagId)
     {
-        var words = Math.Max(1, Regex.Matches(body, @"\w+").Count);
-        return Math.Max(1, (int)Math.Ceiling(words / 200d));
+        var tag = _tags.FirstOrDefault(t => t.TagId == tagId)
+            ?? throw new PostTagNotAssignedException(Id, tagId);
+
+        _tags.Remove(tag);
+        RaiseDomainEvent(new PostTagRemoved(Id, tagId));
     }
 }

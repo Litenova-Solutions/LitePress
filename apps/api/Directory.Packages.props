@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="LiteBus.Commands.Abstractions" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Queries.Abstractions" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Events.Abstractions" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Events.Extensions.Microsoft.DependencyInjection" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Messaging.Abstractions" Version="4.3.0" />
+    <PackageVersion Include="LiteBus.Extensions.Microsoft.DependencyInjection" Version="4.3.0" />
+    <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.4" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.4" />
+    <!-- Aspire 13 hosting packages — AppHost only -->
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.5" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.3.5" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.5" />
+  </ItemGroup>
+</Project>

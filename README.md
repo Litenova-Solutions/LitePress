@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-LiteNova Blog is an open-source personal developer blog built with Next.js 15, ASP.NET Core 9, PostgreSQL, and LiteBus.
+LiteNova Blog is an open-source personal developer blog built with Next.js 15, ASP.NET Core 10, PostgreSQL, and LiteBus — orchestrated locally with .NET Aspire.
 
 ## Tech Stack
 
@@ -10,136 +10,190 @@ LiteNova Blog is an open-source personal developer blog built with Next.js 15, A
 |-------|-----------|
 | Monorepo | Turborepo + pnpm workspaces |
 | Public website | Next.js 15 (App Router) |
-| Admin panel | Next.js 15 (App Router) |
-| API | ASP.NET Core 9 Minimal API |
-| Database | PostgreSQL 17 + EF Core 9 |
-| Messaging | [LiteBus](https://github.com/litenova/LiteBus) (CQRS/event mediator) |
-| Mapping | Mapster |
+| Admin panel | Next.js 15 (App Router, Auth.js v5) |
+| API | ASP.NET Core 10 Minimal API |
+| Database | PostgreSQL 17 + EF Core 10 |
+| Messaging | [LiteBus](https://github.com/litenova/LiteBus) v4 (CQRS / event mediator) |
 | Validation | Ardalis.GuardClauses |
-| Storage | Cloudflare R2 |
 | Styling | Tailwind CSS v4 + shadcn/ui |
-| Analytics | Umami |
+| Dev orchestration | .NET Aspire 13 |
+
+## Repository Structure
+
+```
+Blog/
+├── apps/
+│   ├── api/          # .NET 10 back-end (Aspire AppHost lives here too)
+│   ├── web/          # Next.js public blog (port 3000)
+│   └── admin/        # Next.js admin dashboard (port 3002)
+├── packages/         # Shared TypeScript packages (UI, configs)
+├── standards/        # Engineering standards (git submodule)
+└── docs/             # Project-level documentation
+```
 
 ## Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9)
-- [Node.js 20+](https://nodejs.org/) and [pnpm](https://pnpm.io/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for PostgreSQL)
+| Tool | Version | Notes |
+|------|---------|-------|
+| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | Required for API and Aspire |
+| [Node.js](https://nodejs.org/) | 22+ | For Next.js frontends |
+| [pnpm](https://pnpm.io/installation) | 9+ | Workspace package manager |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | any | PostgreSQL container via Aspire |
 
-## Local Development
+> **Aspire workload** — Install once with: `dotnet workload install aspire`
 
-### 1. Clone and configure
+## Quick Start — Aspire (recommended)
+
+Aspire starts all services (PostgreSQL, API, web, admin) with a single command and provides a live dashboard.
+
+### 1. Clone
 
 ```bash
 git clone https://github.com/litenova/Blog.git
 cd Blog
-cp .env.example .env
+git submodule update --init
 ```
 
-Edit `.env` and fill in any required values (at minimum the database URL is pre-configured for local Docker).
-
-### 2. Start infrastructure
+### 2. Install Node.js dependencies
 
 ```bash
-docker compose up -d
-```
-
-This starts PostgreSQL on port `5432` and Umami analytics on port `3001`.
-
-### 3. Apply database migrations
-
-```bash
-cd apps/api
-dotnet ef database update --project src/LiteNova.Blog.Infrastructure --startup-project src/LiteNova.Blog.Api
-```
-
-### 4. Install front-end dependencies
-
-```bash
-cd ../../   # back to repo root
 pnpm install
 ```
 
-### 5. Run the full stack
+### 3. Apply database migrations
 
-Run all apps simultaneously with Turborepo:
+Aspire starts PostgreSQL automatically, but you must run migrations once (or after schema changes):
 
 ```bash
-pnpm dev
+cd apps/api
+dotnet ef database update \
+  --project src/LiteNova.Blog.Infrastructure \
+  --startup-project src/LiteNova.Blog.WebApi \
+  -- --environment Development
 ```
 
-Or run individual apps:
+> **Connection string** — By default migrations connect to `localhost:5433`. Start the Aspire stack first (step 4), wait for PostgreSQL to be ready, then run migrations in a second terminal.
+
+### 4. Run with Aspire
 
 ```bash
-# API only
 cd apps/api
-dotnet run --project src/LiteNova.Blog.Api
+dotnet run --project src/LiteNova.Blog.AppHost
+```
 
-# Web (public blog) only
+The Aspire dashboard opens automatically at `https://localhost:15888`. From there you can navigate to:
+
+| Service | URL |
+|---------|-----|
+| Aspire dashboard | https://localhost:15888 |
+| Public web | http://localhost:3000 (dynamic — check dashboard) |
+| Admin panel | http://localhost:3002 (dynamic — check dashboard) |
+| API | http://localhost:5000 (dynamic — check dashboard) |
+
+> Ports are dynamically allocated by Aspire. Check the dashboard **Resources** tab for the actual URLs.
+
+## Running Services Individually (without Aspire)
+
+Useful for debugging a single layer. Requires PostgreSQL running separately (Docker or local).
+
+### Start PostgreSQL (Docker)
+
+```bash
+docker run -d \
+  --name blog-postgres \
+  -e POSTGRES_DB=blog \
+  -e POSTGRES_USER=blog \
+  -e POSTGRES_PASSWORD=blog \
+  -p 5433:5432 \
+  postgres:17
+```
+
+### API
+
+```bash
+cd apps/api
+dotnet run --project src/LiteNova.Blog.WebApi
+# → http://localhost:5000
+```
+
+### Public web
+
+```bash
 cd apps/web
 pnpm dev
-
-# Admin panel only
-cd apps/admin
-pnpm dev
+# → http://localhost:3000
 ```
 
-| App | Default URL |
-|-----|-------------|
-| Public web | http://localhost:3000 |
-| Admin panel | http://localhost:3002 |
-| API | http://localhost:5000 |
-| Umami | http://localhost:3001 |
-
-### 6. Run tests
+### Admin panel
 
 ```bash
-# .NET API tests
-dotnet test apps/api/LiteNova.Blog.sln
+cd apps/admin
+pnpm dev
+# → http://localhost:3002
+```
 
-# Front-end
-pnpm turbo build --filter=web --filter=admin
+### All services via Turborepo
+
+```bash
+# From repo root — requires PostgreSQL already running
+pnpm dev
 ```
 
 ## Debugging
 
-### API (VS Code)
+See individual README files for per-project debug instructions:
 
-1. Open the repo in VS Code.
-2. Press **F5** or use the **Run and Debug** panel (`Ctrl+Shift+D`).
-3. Select **"Launch API"** from the dropdown (uses `.vscode/launch.json`).
-4. Set breakpoints in any `.cs` file — the debugger attaches automatically.
+- [apps/api/README.md](apps/api/README.md) — .NET debugger, EF migrations
+- [apps/web/README.md](apps/web/README.md) — Next.js dev tools
+- [apps/admin/README.md](apps/admin/README.md) — Admin panel, Auth.js, GitHub OAuth
 
-### API (Visual Studio / Rider)
+### Debugging with Aspire + VS Code
 
-1. Open `apps/api/LiteNova.Blog.sln`.
-2. Set `LiteNova.Blog.Api` as the startup project.
-3. Press **F5** to launch with the debugger.
+1. Install the [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit) and [Aspire](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-aspire) extensions.
+2. Open the repo root in VS Code.
+3. Use **Run and Debug → Start Debugging** on the `LiteNova.Blog.AppHost` project.
+4. Aspire starts all resources. The dashboard opens at `https://localhost:15888`.
+5. Set breakpoints in the API — the debugger attaches automatically.
 
-### API (CLI hot-reload)
+## Environment Variables
+
+### API (`apps/api/src/LiteNova.Blog.WebApi/`)
+
+| Variable | Default (dev) | Description |
+|----------|---------------|-------------|
+| `ConnectionStrings__Database` | `Host=localhost;Port=5433;...` | PostgreSQL connection string (injected by Aspire) |
+| `JwtSettings__Secret` | `dev-secret-key-must-be-at-least-32-characters-long!` | JWT signing key — **change in production** |
+| `Cors__WebOrigin` | `http://localhost:3000` | Allowed CORS origin for public web (injected by Aspire) |
+| `Cors__AdminOrigin` | `http://localhost:3002` | Allowed CORS origin for admin (injected by Aspire) |
+
+### Admin (`apps/admin/`)
+
+| Variable | Default (dev) | Description |
+|----------|---------------|-------------|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5000` | API base URL (injected by Aspire) |
+| `API_JWT_SECRET` | `dev-secret-key-must-be-at-least-32-characters-long!` | Must match API `JwtSettings__Secret` |
+| `AUTH_SECRET` | — | Auth.js secret — generate with `openssl rand -base64 32` |
+| `AUTH_GITHUB_ID` | — | GitHub OAuth App Client ID |
+| `AUTH_GITHUB_SECRET` | — | GitHub OAuth App Client Secret |
+| `GITHUB_OWNER_ID` | — | Your GitHub numeric user ID (only this user can sign in) |
+
+### Public web (`apps/web/`)
+
+| Variable | Default (dev) | Description |
+|----------|---------------|-------------|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5000` | API base URL (injected by Aspire) |
+
+## Running Tests
 
 ```bash
+# .NET unit/architecture tests
 cd apps/api
-dotnet watch run --project src/LiteNova.Blog.Api
+dotnet test LiteNova.Blog.slnx
+
+# Front-end lint
+pnpm lint
 ```
 
-### Front-end (Next.js)
+## Contributing
 
-The Next.js dev server includes fast-refresh and source maps by default. Open Chrome DevTools or VS Code's **JavaScript Debugger** and attach to `http://localhost:3000` (or `3002` for admin).
-
-## Architecture
-
-```
-apps/
-  api/          ASP.NET Core 9 — Domain, Application (CQRS via LiteBus), Infrastructure, API
-  web/          Next.js 15 — public-facing blog
-  admin/        Next.js 15 — admin panel for managing posts and tags
-packages/       Shared packages (UI components, TypeScript configs, etc.)
-```
-
-The API follows Clean Architecture with a CQRS pattern:
-
-- **Domain** — Aggregate roots (`Post`, `Tag`), domain events (plain records), value objects
-- **Application** — Use cases grouped by feature (e.g. `Posts/CreatePost/`), LiteBus handlers, validators, post-handlers for UoW and domain event dispatch
-- **Infrastructure** — EF Core `BlogDbContext`, Cloudflare R2 storage service
-- **API** — Minimal API endpoints grouped by feature (e.g. `Endpoints/Posts/CreatePost/`), Mapster mappings, middleware
+See [AGENTS.md](AGENTS.md) for coding conventions and the agentic development guide.

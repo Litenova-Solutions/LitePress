@@ -1,21 +1,36 @@
-using LiteNova.Blog.Domain.Common;
+using LiteNova.Blog.Domain.Shared;
+using LiteNova.Blog.Domain.Tags.Events;
 
 namespace LiteNova.Blog.Domain.Tags;
 
-/// <summary>The Tag aggregate root representing a categorization label for blog posts.</summary>
-public class Tag : AggregateRoot
+public sealed class Tag : AggregateRoot<TagId>
 {
-    public string Name { get; private set; } = string.Empty;
-    public string Slug { get; private set; } = string.Empty;
-
     private Tag() { }
 
-    public static Tag Create(string name)
+    public TagName Name { get; private set; } = null!;
+    public TagSlug Slug { get; private set; } = null!;
+    public DateTimeOffset CreatedAt { get; private set; }
+
+    public static Tag Create(TagId id, TagName name)
     {
-        return new Tag
+        var slug = TagSlug.FromName(name.Value);
+        var tag = new Tag
         {
-            Name = name.Trim(),
-            Slug = string.Join('-', name.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            Id = id,
+            Name = name,
+            Slug = slug,
+            CreatedAt = DateTimeOffset.UtcNow
         };
+        tag.RaiseDomainEvent(new TagCreated(id, name, slug));
+        return tag;
     }
+
+    public void Rename(TagName newName)
+    {
+        Name = newName;
+        Slug = TagSlug.FromName(newName.Value);
+        RaiseDomainEvent(new TagRenamed(Id, newName, Slug));
+    }
+
+    public void Delete() => RaiseDomainEvent(new TagDeleted(Id));
 }

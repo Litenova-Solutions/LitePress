@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\LiteNova.Blog.Domain\LiteNova.Blog.Domain.csproj" />
+    <ProjectReference Include="..\LiteNova.Blog.Application.Write.Contracts\LiteNova.Blog.Application.Write.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteBus.Events.Abstractions" />
+    <PackageReference Include="LiteBus.Commands.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>
