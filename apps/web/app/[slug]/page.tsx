@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const API_URL = process.env.API_URL ?? "http://localhost:5000";
 
 interface PostDetail {
   postId: string;

@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../auth";
-import { SignJWT } from "jose";
+import { mintApiToken } from "../../../lib/auth/mintApiToken";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
-const apiSecret = new TextEncoder().encode(
-  process.env.API_JWT_SECRET ?? "dev-secret-key-must-be-at-least-32-characters-long!"
-);
-
-async function createApiToken(sub: string, name: string): Promise<string> {
-  return new SignJWT({ sub, name })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1h")
-    .sign(apiSecret);
-}
+const API_URL = process.env.API_URL ?? "http://localhost:5000";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   return proxyRequest(req, await params, "GET");
@@ -33,7 +22,7 @@ async function proxyRequest(req: NextRequest, params: { path: string[] }, method
   const headers: HeadersInit = { "Content-Type": "application/json" };
 
   if (session?.githubId) {
-    const token = await createApiToken(session.githubId, session.user?.name ?? session.githubId);
+    const token = await mintApiToken(session.githubId, session.user?.name ?? session.githubId);
     headers["Authorization"] = "Bearer " + token;
   }
 

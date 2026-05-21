@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@litenova/config-tailwind": "workspace:*",
-    "@litenova/ui": "workspace:*",
     "@tiptap/extension-code-block-lowlight": "^2.10.4",
     "@tiptap/react": "^2.10.4",
     "@tiptap/starter-kit": "^2.10.4",

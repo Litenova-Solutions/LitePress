@@ -34,9 +34,9 @@ var api = builder.AddProject<Projects.LiteNova_Blog_WebApi>("api")
 
 // Inject the API's HTTP URL into both frontends.
 web.WithReference(api)
-   .WithEnvironment("NEXT_PUBLIC_API_URL", api.GetEndpoint("http"));
+   .WithEnvironment("API_URL", api.GetEndpoint("http"));
 
 admin.WithReference(api)
-     .WithEnvironment("NEXT_PUBLIC_API_URL", api.GetEndpoint("http"));
+     .WithEnvironment("API_URL", api.GetEndpoint("http"));
 
 builder.Build().Run();

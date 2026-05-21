@@ -1,23 +1,12 @@
 import { auth } from "../auth";
-import { SignJWT } from "jose";
+import { mintApiToken } from "./auth/mintApiToken";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
-const apiSecret = new TextEncoder().encode(
-  process.env.API_JWT_SECRET ?? "dev-secret-key-must-be-at-least-32-characters-long!"
-);
-
-async function createApiToken(sub: string, name: string): Promise<string> {
-  return new SignJWT({ sub, name })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1h")
-    .sign(apiSecret);
-}
+const API_URL = process.env.API_URL ?? "http://localhost:5000";
 
 async function getAuthHeaders(): Promise<HeadersInit> {
   const session = await auth();
   if (!session?.githubId) return {};
-  const token = await createApiToken(
+  const token = await mintApiToken(
     session.githubId,
     session.user?.name ?? session.githubId
   );
