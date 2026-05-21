@@ -1,5 +1,4 @@
 // Run order: postgres -> api -> (web + admin in parallel)
-// pnpm install is skipped here — run `pnpm install` from the repo root first.
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -13,13 +12,13 @@ var database = postgres.AddDatabase("Database");
 // Next.js frontends — registered first so their endpoint references
 // can be passed into the API's CORS config below.
 var web = builder.AddNextJsApp("web", "../../../web")
-    .WithPnpm(install: false)
+    .WithPnpm()
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .DisableBuildValidation();
 
 var admin = builder.AddNextJsApp("admin", "../../../admin")
-    .WithPnpm(install: false)
+    .WithPnpm()
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .DisableBuildValidation();

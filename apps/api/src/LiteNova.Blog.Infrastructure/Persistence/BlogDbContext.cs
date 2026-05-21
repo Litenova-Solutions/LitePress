@@ -7,12 +7,12 @@ namespace LiteNova.Blog.Infrastructure.Persistence;
 
 internal sealed class BlogDbContext : DbContext, LiteNova.Blog.Application.Read.Contracts.Shared.IDatabaseContext
 {
-    private readonly IEventPublisher _eventPublisher;
+    private readonly IEventMediator _eventMediator;
 
-    public BlogDbContext(DbContextOptions<BlogDbContext> options, IEventPublisher eventPublisher)
+    public BlogDbContext(DbContextOptions<BlogDbContext> options, IEventMediator eventMediator)
         : base(options)
     {
-        _eventPublisher = eventPublisher;
+        _eventMediator = eventMediator;
     }
 
     public DbSet<Post> Posts => Set<Post>();
@@ -42,7 +42,7 @@ internal sealed class BlogDbContext : DbContext, LiteNova.Blog.Application.Read.
 
         foreach (var domainEvent in domainEvents)
         {
-            await _eventPublisher.PublishAsync((dynamic)domainEvent, cancellationToken: cancellationToken);
+            await _eventMediator.PublishAsync(domainEvent, cancellationToken: cancellationToken);
         }
 
         return result;
