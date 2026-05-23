@@ -1,4 +1,5 @@
-import { apiGet, apiPost, apiPut, apiDelete } from "../../../lib/api";
+import { apiGet, apiPost } from "@/lib/api";
+import { DeleteTagButton } from "@/domain/tags/delete/DeleteTagButton";
 
 interface Tag {
   tagId: string;
@@ -13,11 +14,6 @@ async function createTag(formData: FormData) {
   await apiPost("/api/tags", { name });
 }
 
-async function deleteTag(tagId: string) {
-  "use server";
-  await apiDelete("/api/tags/" + tagId);
-}
-
 export default async function TagsPage() {
   const tags = await apiGet<Tag[]>("/api/tags");
 
@@ -26,10 +22,16 @@ export default async function TagsPage() {
       <h1 className="text-2xl font-bold mb-6">Tags</h1>
       <div className="max-w-2xl">
         <form action={createTag} className="flex gap-2 mb-6">
-          <input name="name" required placeholder="Tag name"
-            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <input
+            name="name"
+            required
+            placeholder="Tag name"
+            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
             Add Tag
           </button>
         </form>
@@ -50,13 +52,7 @@ export default async function TagsPage() {
                   <td className="px-4 py-3 text-gray-500 text-sm">{tag.slug}</td>
                   <td className="px-4 py-3 text-sm">{tag.postCount}</td>
                   <td className="px-4 py-3">
-                    <form action={deleteTag.bind(null, tag.tagId)}>
-                      <button type="submit"
-                        className="text-red-600 hover:underline text-sm"
-                        onClick={(e) => { if (!confirm("Delete tag?")) e.preventDefault(); }}>
-                        Delete
-                      </button>
-                    </form>
+                    <DeleteTagButton tagId={tag.tagId} tagName={tag.name} />
                   </td>
                 </tr>
               ))}

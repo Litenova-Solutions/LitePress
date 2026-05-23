@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { mintApiToken } from "../../../lib/auth/mintApiToken";
 
-const API_URL = process.env.API_URL ?? "http://localhost:5000";
+import { env } from "@/lib/env";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   return proxyRequest(req, await params, "GET");
@@ -27,7 +27,7 @@ async function proxyRequest(req: NextRequest, params: { path: string[] }, method
   }
 
   const apiPath = "/api/" + params.path.join("/");
-  const url = API_URL + apiPath + (req.nextUrl.search || "");
+  const url = env.API_URL + apiPath + (req.nextUrl.search || "");
 
   const body = method !== "GET" && method !== "DELETE"
     ? await req.text()

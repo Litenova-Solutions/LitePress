@@ -4,9 +4,13 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@litenova/api-client": "workspace:*",
+    "@litenova/api-types": "workspace:*",
     "@litenova/config-tailwind": "workspace:*",
     "@tiptap/extension-code-block-lowlight": "^2.10.4",
     "@tiptap/react": "^2.10.4",
@@ -16,13 +20,17 @@
     "next": "15.5.18",
     "next-auth": "5.0.0-beta.25",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@litenova/config-eslint": "workspace:*",
     "@litenova/config-typescript": "workspace:*",
+    "eslint": "^9.14.0",
     "@types/node": "^22.9.0",
     "@types/react": "^19.0.0",
     "typescript": "^5.6.3",
-    "tailwindcss": "^4.1.7"
+    "tailwindcss": "^4.1.7",
+    "vitest": "^3.1.4"
   }
 }
