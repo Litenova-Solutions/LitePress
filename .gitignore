@@ -52,3 +52,7 @@ coverage/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# Frontend tooling artifacts
+**/test-results/
+**/*.tsbuildinfo
