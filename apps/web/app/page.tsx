@@ -27,10 +27,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const title = sp.tag ? `Posts tagged: ${sp.tag}` : "Latest Posts";
+  const description = "Published posts from LiteNova Blog.";
+  const canonical = env.siteUrl + (sp.tag ? `/?tag=${sp.tag}` : "/");
+
   return {
     title,
-    description: "Published posts from LiteNova Blog.",
-    alternates: { canonical: env.siteUrl + (sp.tag ? `/?tag=${sp.tag}` : "/") },
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: "website" },
+    twitter: { card: "summary", title, description },
+    robots: { index: true, follow: true },
   };
 }
 

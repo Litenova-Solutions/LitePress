@@ -20,4 +20,4 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build --filter=web
+      - run: pnpm turbo lint type-check test build --filter=web

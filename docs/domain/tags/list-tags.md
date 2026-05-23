@@ -3,7 +3,7 @@
 | Field | Value |
 |:---|:---|
 | Feature | `tags` |
-| Status | Active (backend complete; web `/tags` page missing) |
+| Status | Active (v1 complete) |
 | Last updated | 2026-05-23 |
 
 ---

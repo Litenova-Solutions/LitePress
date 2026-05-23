@@ -8,6 +8,18 @@ export const metadata: Metadata = {
   title: "Tags",
   description: "Browse posts by tag.",
   alternates: { canonical: env.siteUrl + "/tags" },
+  openGraph: {
+    title: "Tags",
+    description: "Browse posts by tag.",
+    url: env.siteUrl + "/tags",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Tags",
+    description: "Browse posts by tag.",
+  },
+  robots: { index: true, follow: true },
 };
 
 interface TagSummary {

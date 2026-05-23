@@ -1,5 +1,7 @@
+import { z } from "zod";
 import { apiGet, apiPost } from "@/lib/api";
 import { DeleteTagButton } from "@/domain/tags/delete/DeleteTagButton";
+import { RenameTagButton } from "@/domain/tags/rename/RenameTagButton";
 
 interface Tag {
   tagId: string;
@@ -8,10 +10,17 @@ interface Tag {
   postCount: number;
 }
 
+const createTagSchema = z.object({
+  name: z.string().trim().min(1, "Tag name is required").max(50, "Tag name too long"),
+});
+
 async function createTag(formData: FormData) {
   "use server";
-  const name = formData.get("name") as string;
-  await apiPost("/api/tags", { name });
+  const parsed = createTagSchema.safeParse({ name: formData.get("name") });
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors[0]?.message ?? "Invalid tag name");
+  }
+  await apiPost("/api/tags", { name: parsed.data.name });
 }
 
 export default async function TagsPage() {
@@ -52,6 +61,7 @@ export default async function TagsPage() {
                   <td className="px-4 py-3 text-gray-500 text-sm">{tag.slug}</td>
                   <td className="px-4 py-3 text-sm">{tag.postCount}</td>
                   <td className="px-4 py-3">
+                    <RenameTagButton tagId={tag.tagId} tagName={tag.name} />
                     <DeleteTagButton tagId={tag.tagId} tagName={tag.name} />
                   </td>
                 </tr>

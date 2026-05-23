@@ -1,2 +1,0 @@
-import { TipTapEditor } from "./TipTapEditor";
-export function PostForm({ postId }: { postId?: string }) { return <form className="grid gap-3"><h1>{postId ? "Edit Post" : "New Post"}</h1><input placeholder="Title" /><textarea placeholder="Excerpt" /><TipTapEditor /><div className="flex gap-2"><button type="button">Save Draft</button><button type="button">Publish</button><button type="button">Schedule</button></div></form>; }

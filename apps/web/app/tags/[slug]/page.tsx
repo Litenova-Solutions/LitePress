@@ -11,9 +11,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const title = `Posts tagged: ${slug}`;
+  const description = `Published posts tagged with ${slug}.`;
+  const canonical = env.siteUrl + "/tags/" + slug;
+
   return {
-    title: `Posts tagged: ${slug}`,
-    alternates: { canonical: env.siteUrl + "/tags/" + slug },
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: "website" },
+    twitter: { card: "summary", title, description },
+    robots: { index: true, follow: true },
   };
 }
 

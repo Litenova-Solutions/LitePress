@@ -53,6 +53,6 @@ coverage/
 Thumbs.db
 Desktop.ini
 
-# Frontend tooling artifacts
-**/test-results/
-**/*.tsbuildinfo
+# Playwright E2E seed (generated locally)
+apps/web/e2e/.seed.json
+

@@ -3,7 +3,7 @@
 | Field | Value |
 |:---|:---|
 | Feature | `posts` |
-| Status | Active (backend complete; admin UI partial) |
+| Status | Active (v1 complete) |
 | Last updated | 2026-05-23 |
 
 ---

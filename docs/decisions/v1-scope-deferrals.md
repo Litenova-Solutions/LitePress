@@ -19,7 +19,7 @@ Explicitly defer the following to v2+ unless a new ADR promotes them:
 
 | Feature | Current state | v1 action |
 |:---|:---|:---|
-| Scheduled publishing | Orphan `PostStatus.Scheduled`, `PostScheduledEvent`, `PostAlreadyScheduledException` | Remove orphan code or leave unused; no endpoints |
+| Scheduled publishing | Deferred to v2+ | No endpoints; orphan domain types removed |
 | Cover image upload (R2) | Env vars may exist | URL string only; no upload UI |
 | Umami analytics | Env vars may exist | Not wired |
 | Outbox / worker | Reactions log-only OK | No outbox table |
@@ -31,7 +31,7 @@ Explicitly defer the following to v2+ unless a new ADR promotes them:
 ## Consequences
 
 - Domain docs and acceptance criteria exclude deferred features.
-- Orphan scheduled-post code should be removed in a cleanup PR to avoid agent confusion.
+- Orphan scheduled-post domain types were removed in v1 cleanup.
 
 ---
 
