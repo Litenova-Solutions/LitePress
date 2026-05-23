@@ -38,8 +38,9 @@ coverage/
 *.coveragexml
 *.trx
 
-# Publish output
-publish/
+# Publish output (dotnet publish folder at project root only)
+**/bin/**/publish/
+**/obj/**/publish/
 
 # JetBrains IDEs
 .idea/
