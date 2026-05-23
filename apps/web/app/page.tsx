@@ -12,7 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const title = sp.tag ? `Posts tagged: ${sp.tag}` : "Latest Posts";
-  const description = "Published posts from LiteNova Blog.";
+  const description = "Published posts from LitePress.";
   const canonical = env.siteUrl + (sp.tag ? `/?tag=${sp.tag}` : "/");
 
   return {

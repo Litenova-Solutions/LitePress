@@ -1,4 +1,4 @@
-# LiteNova Blog v1 Release Notes
+# LitePress v1 Release Notes
 
 | Field | Value |
 |:---|:---|
@@ -9,7 +9,7 @@
 
 ## Summary
 
-LiteNova Blog v1 delivers a dual-frontend blog platform aligned with Litenova Engineering Standards (ADDD): ASP.NET Core 10 API, Auth.js admin dashboard, and SEO-first public web.
+LitePress v1 delivers a dual-frontend publishing platform aligned with Litenova Engineering Standards (ADDD): ASP.NET Core 10 API, Auth.js admin dashboard, and SEO-first public web.
 
 ---
 

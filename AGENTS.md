@@ -1,8 +1,8 @@
-# LiteNova Blog - Agent Context
+# LitePress - Agent Context
 
 <!-- Last updated: 2026-05-23 -->
 
-This project follows the Litenova Solutions engineering standards.
+This project (**LitePress**) follows the Litenova Solutions engineering standards.
 Read `standards/AGENTS.md` before editing any code. Then read the convention file
 for the layer you are editing. Then read the project-specific files listed below.
 
@@ -35,6 +35,7 @@ project-specific overrides or additions.
 | Comments | Giscus (web frontend, GitHub Discussions backed). |
 | Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
 | Solution file | `apps/api/LiteNova.Blog.slnx` |
+| Product name | **LitePress** (public); .NET namespaces remain `LiteNova.Blog.*` until a future migration |
 | Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
 | Namespaces | `LiteNova.Blog.Domain`, `LiteNova.Blog.Application.*`, `LiteNova.Blog.Infrastructure`, `LiteNova.Blog.WebApi` |
 
@@ -46,10 +47,13 @@ Read these files before generating any domain or application code.
 
 | File | Contents |
 |:---|:---|
+| [docs/README.md](docs/README.md) | Documentation index (non-technical + technical) |
+| [docs/how-it-works.md](docs/how-it-works.md) | Plain-language product guide |
+| [docs/technical/](docs/technical/) | Architecture, development, env, API reference |
 | `docs/domain/README.md` | System map: all features and use cases. |
 | `docs/domain/{feature}/README.md` | Feature ubiquitous language, aggregates, invariants, events. |
 | `docs/domain/{feature}/{use-case}.md` | Use case contract: commands, endpoints, UI, acceptance criteria. |
-| `docs/decisions/` | Blog-specific ADRs (auth, dual apps, SEO, deferrals). |
+| `docs/decisions/` | LitePress ADRs (auth, dual apps, SEO, licensing, deferrals). |
 
 There are no separate inventory files. Domain docs are the source of truth.
 

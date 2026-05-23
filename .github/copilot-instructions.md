@@ -3,6 +3,8 @@
 The canonical agent guide is `AGENTS.md` at the repository root.
 Read `standards/AGENTS.md` when this file is used as a submodule.
 
+**Product:** LitePress — reference implementation of Litenova Engineering Standards.
+
 ## Before Generating Code
 
 1. Read `AGENTS.md` in full.
@@ -17,16 +19,13 @@ Read `standards/AGENTS.md` when this file is used as a submodule.
 
 All rules from `standards/AGENTS.md` apply without exception. Additional project rules:
 
-- **Bounded context.** All namespaces use the `Blog` prefix: `Blog.Domain`,
-  `Blog.Application.Write`, `Blog.Application.Read`, etc.
+- **Bounded context.** All namespaces use the `LiteNova.Blog.*` prefix (product name is LitePress).
 - **Author identity.** Read `AuthorId` from the JWT claim, never from the request body.
 - **Terminology.** Use `Post` not Article/Content/Entry. Use `Author` not Writer/Creator.
   Use `Tag` not Category/Label.
-- **No standards edits.** Never modify files inside `standards/`.
+- **No standards edits.** Never modify files inside `standards/` from this repo; propose changes upstream.
 
 ## Project-Specific Context
 
-Read `docs/domain/ubiquitous-language.md`, `docs/domain/aggregate-inventory.md`,
-`docs/domain/feature-inventory.md`, `docs/domain/exception-inventory.md`,
-`docs/domain/read-model-inventory.md`, `docs/domain/frontend-feature-inventory.md`,
-and `docs/domain/frontend-api-endpoints.md` before generating domain or application code.
+Read `docs/domain/README.md` and the relevant feature README and use case docs under
+`docs/domain/{feature}/` before generating domain or application code.

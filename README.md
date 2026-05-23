@@ -1,199 +1,190 @@
-# LiteNova Blog
+# LitePress
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial-blue.svg)](./LICENSE)
 
-LiteNova Blog is an open-source personal developer blog built with Next.js 15, ASP.NET Core 10, PostgreSQL, and LiteBus — orchestrated locally with .NET Aspire.
+Publishing stack from [Litenova Solutions](https://litenova.solutions): public reading site, private authoring dashboard, and .NET API backed by PostgreSQL. Reference implementation of [Litenova Engineering Standards](https://github.com/Litenova-Solutions/Engineering-Standards).
 
-## Tech Stack
+| Repository | Purpose |
+|:---|:---|
+| **[Litenova-Solutions/LitePress](https://github.com/Litenova-Solutions/LitePress)** (this repo) | LitePress application monorepo |
+| **[Litenova-Solutions/Engineering-Standards](https://github.com/Litenova-Solutions/Engineering-Standards)** | Shared conventions, ADRs, and agent contracts (`standards/` submodule) |
+
+---
+
+## License (read this first)
+
+| Audience | Terms |
+|:---|:---|
+| **Personal / noncommercial use** | Free under [PolyForm Noncommercial](./LICENSE) — hobby blogs, learning, forks for personal use |
+| **Companies & commercial use** | Requires a [commercial license](./COMMERCIAL-LICENSE.md) — contact [Litenova Solutions](https://litenova.solutions) |
+
+Details: [docs/decisions/licensing.md](docs/decisions/licensing.md).
+
+---
+
+## What you get
+
+- **Public web** (`apps/web`) — SEO-first site: home, post pages, tags, Giscus comments
+- **Admin** (`apps/admin`) — GitHub OAuth dashboard: TipTap editor, publish, tag management
+- **API** (`apps/api`) — ASP.NET Core 10, CQRS via LiteBus, OpenAPI, JWT auth
+- **Docs** — [How LitePress works](docs/how-it-works.md) · [Technical guide](docs/technical/README.md)
+
+---
+
+## Tech stack
 
 | Layer | Technology |
-|-------|-----------|
+|:---|:---|
 | Monorepo | Turborepo + pnpm workspaces |
-| Public website | Next.js 15 (App Router) |
-| Admin panel | Next.js 15 (App Router, Auth.js v5) |
-| API | ASP.NET Core 10 Minimal API |
-| Database | PostgreSQL 17 + EF Core 10 |
-| Messaging | [LiteBus](https://github.com/litenova/LiteBus) v4 (CQRS / event mediator) |
-| Validation | Ardalis.GuardClauses |
-| Styling | Tailwind CSS v4 + shadcn/ui |
-| Dev orchestration | .NET Aspire 13 |
+| Public web | Next.js 16 · React 19.2 · TypeScript 6 |
+| Admin | Next.js 16 · Auth.js v5 · TipTap |
+| API | ASP.NET Core 10 Minimal API · LiteBus CQRS |
+| Database | PostgreSQL 17 · EF Core 10 (snake_case) |
+| API types | OpenAPI → `@litenova/api-types` + `openapi-fetch` client |
+| Local orchestration | .NET Aspire AppHost |
+| CI | GitHub Actions (build, test, E2E publish flow) |
 
-## Repository Structure
+Engineering rules live in the [`standards/`](standards/) submodule. Domain docs are under [`docs/domain/`](docs/domain/).
+
+> **Note:** .NET projects still use the `LiteNova.Blog.*` namespace from early scaffolding; the product name is **LitePress**.
+
+---
+
+## Repository structure
 
 ```
-Blog/
+LitePress/
 ├── apps/
-│   ├── api/          # .NET 10 back-end (Aspire AppHost lives here too)
-│   ├── web/          # Next.js public blog (port 3000)
-│   └── admin/        # Next.js admin dashboard (port 3002)
-├── packages/         # Shared TypeScript packages (UI, configs)
-├── standards/        # Engineering standards (git submodule)
-└── docs/             # Project-level documentation
+│   ├── api/          # .NET solution + Aspire AppHost
+│   ├── web/          # Public Next.js app (port 3000)
+│   └── admin/        # Admin Next.js app (port 3002)
+├── packages/         # Shared TS: api-types, api-client, configs
+├── standards/        # Engineering Standards submodule
+└── docs/
+    ├── how-it-works.md
+    ├── technical/
+    ├── domain/
+    └── decisions/
 ```
+
+---
 
 ## Prerequisites
 
 | Tool | Version | Notes |
-|------|---------|-------|
-| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | Required for API and Aspire |
-| [Node.js](https://nodejs.org/) | 22+ | For Next.js frontends |
-| [pnpm](https://pnpm.io/installation) | 9+ | Workspace package manager |
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | any | PostgreSQL container via Aspire |
+|:---|:---|:---|
+| [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | API and Aspire |
+| [Node.js](https://nodejs.org/) | 22+ | Frontends |
+| [pnpm](https://pnpm.io/installation) | 10+ | Workspace package manager |
+| [Docker](https://www.docker.com/products/docker-desktop/) | any | PostgreSQL |
+| Aspire workload | — | `dotnet workload install aspire` (one-time) |
 
-> **Aspire workload** — Install once with: `dotnet workload install aspire`
+---
 
-## Quick Start — Aspire (recommended)
+## Quick start
 
-Aspire starts all services (PostgreSQL, API, web, admin) with a single command and provides a live dashboard.
-
-### 1. Clone
+### 1. Clone (including standards submodule)
 
 ```bash
-git clone https://github.com/litenova/Blog.git
-cd Blog
-git submodule update --init
+git clone https://github.com/Litenova-Solutions/LitePress.git
+cd LitePress
+git submodule update --init --recursive
 ```
 
-### 2. Install Node.js dependencies
+Or:
+
+```powershell
+pwsh scripts/bootstrap.ps1
+```
+
+### 2. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 3. Apply database migrations
-
-Aspire starts PostgreSQL automatically, but you must run migrations once (or after schema changes):
+### 3. Start PostgreSQL
 
 ```bash
-cd apps/api
+docker compose up -d
+```
+
+### 4. Apply database migrations
+
+```bash
 dotnet ef database update \
-  --project src/LiteNova.Blog.Infrastructure \
-  --startup-project src/LiteNova.Blog.WebApi \
-  -- --environment Development
+  --project apps/api/src/LiteNova.Blog.Infrastructure \
+  --startup-project apps/api/src/LiteNova.Blog.WebApi
 ```
 
-> **Connection string** — By default migrations connect to `localhost:5433`. Start the Aspire stack first (step 4), wait for PostgreSQL to be ready, then run migrations in a second terminal.
-
-### 4. Run with Aspire
+### 5. Run with Aspire (recommended)
 
 ```bash
-cd apps/api
-dotnet run --project src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.Blog.AppHost
 ```
 
-The Aspire dashboard opens automatically at `https://localhost:15888`. From there you can navigate to:
+Open the Aspire dashboard (typically `https://localhost:15888`) for API, web, and admin URLs.
 
-| Service | URL |
-|---------|-----|
-| Aspire dashboard | https://localhost:15888 |
-| Public web | http://localhost:3000 (dynamic — check dashboard) |
-| Admin panel | http://localhost:3002 (dynamic — check dashboard) |
-| API | http://localhost:5000 (dynamic — check dashboard) |
+### 6. Configure admin OAuth (first-time)
 
-> Ports are dynamically allocated by Aspire. Check the dashboard **Resources** tab for the actual URLs.
+Create `apps/admin/.env.local` — see [Environment variables](docs/technical/environment.md#admin-appsadmin).
 
-## Running Services Individually (without Aspire)
+---
 
-Useful for debugging a single layer. Requires PostgreSQL running separately (Docker or local).
+## Running without Aspire
 
-### Start PostgreSQL (Docker)
+| Service | Command | Default URL |
+|:---|:---|:---|
+| API | `dotnet run --project apps/api/src/LiteNova.Blog.WebApi` | http://localhost:5000 |
+| Web | `pnpm --filter web dev` | http://localhost:3000 |
+| Admin | `pnpm --filter admin dev` | http://localhost:3002 |
+
+See [Development guide](docs/technical/development.md).
+
+---
+
+## Verification
 
 ```bash
-docker run -d \
-  --name blog-postgres \
-  -e POSTGRES_DB=blog \
-  -e POSTGRES_USER=blog \
-  -e POSTGRES_PASSWORD=blog \
-  -p 5433:5432 \
-  postgres:17
+dotnet build apps/api/LiteNova.Blog.slnx --configuration Release
+dotnet test apps/api/LiteNova.Blog.slnx --configuration Release --no-build
+pnpm install --frozen-lockfile
+pnpm lint && pnpm type-check && pnpm test && pnpm build
+pnpm exec playwright test --config apps/web/playwright.config.ts
 ```
 
-### API
+E2E publish flow: [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml).
 
-```bash
-cd apps/api
-dotnet run --project src/LiteNova.Blog.WebApi
-# → http://localhost:5000
-```
+---
 
-### Public web
+## Documentation
 
-```bash
-cd apps/web
-pnpm dev
-# → http://localhost:3000
-```
+| Audience | Start here |
+|:---|:---|
+| Readers & authors | [How LitePress works](docs/how-it-works.md) |
+| Developers | [Technical documentation](docs/technical/README.md) |
+| AI agents / contributors | [AGENTS.md](AGENTS.md) |
+| Domain & use cases | [docs/domain/README.md](docs/domain/README.md) |
+| Decisions | [docs/decisions/README.md](docs/decisions/README.md) |
+| v1 scope | [docs/v1-release-notes.md](docs/v1-release-notes.md) |
 
-### Admin panel
+Per-app READMEs: [API](apps/api/README.md) · [Web](apps/web/README.md) · [Admin](apps/admin/README.md)
 
-```bash
-cd apps/admin
-pnpm dev
-# → http://localhost:3002
-```
-
-### All services via Turborepo
-
-```bash
-# From repo root — requires PostgreSQL already running
-pnpm dev
-```
-
-## Debugging
-
-See individual README files for per-project debug instructions:
-
-- [apps/api/README.md](apps/api/README.md) — .NET debugger, EF migrations
-- [apps/web/README.md](apps/web/README.md) — Next.js dev tools
-- [apps/admin/README.md](apps/admin/README.md) — Admin panel, Auth.js, GitHub OAuth
-
-### Debugging with Aspire + VS Code
-
-1. Install the [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit) and [Aspire](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-aspire) extensions.
-2. Open the repo root in VS Code.
-3. Use **Run and Debug → Start Debugging** on the `LiteNova.Blog.AppHost` project.
-4. Aspire starts all resources. The dashboard opens at `https://localhost:15888`.
-5. Set breakpoints in the API — the debugger attaches automatically.
-
-## Environment Variables
-
-### API (`apps/api/src/LiteNova.Blog.WebApi/`)
-
-| Variable | Default (dev) | Description |
-|----------|---------------|-------------|
-| `ConnectionStrings__Database` | `Host=localhost;Port=5433;...` | PostgreSQL connection string (injected by Aspire) |
-| `JwtSettings__Secret` | `dev-secret-key-must-be-at-least-32-characters-long!` | JWT signing key — **change in production** |
-| `Cors__WebOrigin` | `http://localhost:3000` | Allowed CORS origin for public web (injected by Aspire) |
-| `Cors__AdminOrigin` | `http://localhost:3002` | Allowed CORS origin for admin (injected by Aspire) |
-
-### Admin (`apps/admin/`)
-
-| Variable | Default (dev) | Description |
-|----------|---------------|-------------|
-| `NEXT_PUBLIC_API_URL` | `http://localhost:5000` | API base URL (injected by Aspire) |
-| `API_JWT_SECRET` | `dev-secret-key-must-be-at-least-32-characters-long!` | Must match API `JwtSettings__Secret` |
-| `AUTH_SECRET` | — | Auth.js secret — generate with `openssl rand -base64 32` |
-| `AUTH_GITHUB_ID` | — | GitHub OAuth App Client ID |
-| `AUTH_GITHUB_SECRET` | — | GitHub OAuth App Client Secret |
-| `GITHUB_OWNER_ID` | — | Your GitHub numeric user ID (only this user can sign in) |
-
-### Public web (`apps/web/`)
-
-| Variable | Default (dev) | Description |
-|----------|---------------|-------------|
-| `NEXT_PUBLIC_API_URL` | `http://localhost:5000` | API base URL (injected by Aspire) |
-
-## Running Tests
-
-```bash
-# .NET unit/architecture tests
-cd apps/api
-dotnet test LiteNova.Blog.slnx
-
-# Front-end lint
-pnpm lint
-```
+---
 
 ## Contributing
 
-See [AGENTS.md](AGENTS.md) for coding conventions and the agentic development guide.
+1. Read [AGENTS.md](AGENTS.md) and the relevant convention under `standards/docs/conventions/`.
+2. Update `docs/domain/` when behavior changes.
+3. Run verification commands above.
+4. By contributing, you agree your contributions are licensed under the same [PolyForm Noncommercial](./LICENSE) terms.
+
+Propose changes to Engineering Standards in the [Engineering-Standards](https://github.com/Litenova-Solutions/Engineering-Standards) repository, not inside the `standards/` submodule from this repo.
+
+---
+
+## License
+
+LitePress is licensed under the [PolyForm Noncommercial License 1.0.0](./LICENSE).
+
+**Commercial use** by companies and organizations requires a separate agreement. See [COMMERCIAL-LICENSE.md](./COMMERCIAL-LICENSE.md) and contact [Litenova Solutions](https://litenova.solutions).

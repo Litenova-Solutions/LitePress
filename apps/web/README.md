@@ -1,79 +1,91 @@
-# LiteNova Blog — Public Web
+# LitePress — Public Web
 
-Next.js 15 (App Router) public-facing blog that fetches content from the API.
+Next.js 16 public-facing blog. Server Components fetch published content from the API via typed `getApiClient()`.
 
-## Tech Stack
+User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/decisions/seo-public-web.md](../../docs/decisions/seo-public-web.md)
 
-- **Next.js 15** with App Router and React Server Components
-- **Tailwind CSS v4** + shadcn/ui
-- **Giscus** for GitHub-based comments
+---
 
-## Running
+## Stack
 
-### With Aspire (recommended)
+- Next.js 16 · React 19.2 · TypeScript 6
+- Tailwind CSS 4
+- `@litenova/api-client` + `@litenova/api-types` (OpenAPI)
+- Giscus comments (optional)
+- ProseMirror JSON → HTML via `@tiptap/html`
 
-Start from `apps/api/`:
+---
+
+## Run
+
+### With Aspire
 
 ```bash
-dotnet run --project src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.Blog.AppHost
 ```
 
-The web app starts automatically. Check the Aspire dashboard (`https://localhost:15888`) for the URL.
+Check Aspire dashboard for the web app URL.
 
 ### Standalone
 
 ```bash
-cd apps/web
-pnpm dev
+pnpm --filter web dev
 # → http://localhost:3000
 ```
 
-Set the API URL if the API is not on port 5000:
-
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:5000 pnpm dev
-```
-
-### Using a `.env.local` file
-
-Create `apps/web/.env.local`:
+Optional `apps/web/.env.local`:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
+API_URL=http://localhost:5000
+SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-## Environment Variables
+See [docs/technical/environment.md](../../docs/technical/environment.md).
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NEXT_PUBLIC_API_URL` | `http://localhost:5000` | API base URL |
-
-## Debugging
-
-1. Run `pnpm dev` — Next.js hot reloads on file save.
-2. Open Chrome DevTools or attach VS Code's **JavaScript Debugger** to `http://localhost:3000`.
-3. Server-side code (Server Components, `page.tsx`) can be debugged by adding `--inspect` to the Next.js dev command:
-
-```bash
-NODE_OPTIONS='--inspect' pnpm dev
-```
-
-Then attach VS Code using the **Node.js: Attach** launch config pointing at port `9229`.
+---
 
 ## Routes
 
 | Route | Description |
-|-------|-------------|
-| `/` | Home — list of latest posts |
-| `/[slug]` | Individual post page |
-| `/tags` | All tags |
-| `/tags/[slug]` | Posts for a tag |
+|:---|:---|
+| `/` | Published posts (paginated; optional `?tag=` filter) |
+| `/[slug]` | Post detail + JSON-LD + Giscus |
+| `/tags` | Tag index |
+| `/tags/[slug]` | Posts by tag |
+| `/sitemap.xml` | Dynamic sitemap |
+| `/robots.txt` | Crawler rules |
 
-## Building for Production
+---
 
-```bash
-pnpm build
-pnpm start
+## Code layout
+
+```
+apps/web/
+├── app/                    # Thin route shells
+├── domain/                 # Feature UI by use case
+│   ├── posts/list-published-posts/
+│   ├── posts/view-post-by-slug/
+│   └── tags/list-tags/
+├── shared/prosemirror/       # JSON → HTML renderer
+├── lib/api/client.ts       # getApiClient() for Server Components
+└── e2e/                    # Playwright tests
 ```
 
-> For containerised deployment, add `output: "standalone"` to `next.config.ts` and use `AddNextJsApp` in the Aspire AppHost (standalone mode is validated at publish time).
+---
+
+## Build and test
+
+```bash
+pnpm --filter web lint
+pnpm --filter web type-check
+pnpm --filter web test
+pnpm --filter web build
+pnpm exec playwright test --config apps/web/playwright.config.ts
+```
+
+---
+
+## SEO
+
+All public routes use `generateMetadata`. Post pages emit Open Graph, Twitter cards, and `BlogPosting` JSON-LD. See [seo-public-web.md](../../docs/decisions/seo-public-web.md).
