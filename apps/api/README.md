@@ -11,21 +11,21 @@ Full reference: [docs/technical/api-reference.md](../../docs/technical/api-refer
 ```
 apps/api/
 ├── src/
-│   ├── LiteNova.Blog.AppHost/              # .NET Aspire orchestration
-│   ├── LiteNova.Blog.Domain/
-│   ├── LiteNova.Blog.Application.Write.Contracts/
-│   ├── LiteNova.Blog.Application.Write/
-│   ├── LiteNova.Blog.Application.Read.Contracts/
-│   ├── LiteNova.Blog.Application.Read/
-│   ├── LiteNova.Blog.Application.Reactions/
-│   ├── LiteNova.Blog.Infrastructure/       # EF Core, repositories
-│   └── LiteNova.Blog.WebApi/               # IEndpoint classes, middleware
+│   ├── LiteNova.LitePress.AppHost/              # .NET Aspire orchestration
+│   ├── LiteNova.LitePress.Domain/
+│   ├── LiteNova.LitePress.Application.Write.Contracts/
+│   ├── LiteNova.LitePress.Application.Write/
+│   ├── LiteNova.LitePress.Application.Read.Contracts/
+│   ├── LiteNova.LitePress.Application.Read/
+│   ├── LiteNova.LitePress.Application.Reactions/
+│   ├── LiteNova.LitePress.Infrastructure/       # EF Core, repositories
+│   └── LiteNova.LitePress.WebApi/               # IEndpoint classes, middleware
 ├── tests/
-│   ├── LiteNova.Blog.Domain.Tests/
-│   ├── LiteNova.Blog.Application.Tests/
-│   ├── LiteNova.Blog.Architecture.Tests/
-│   └── LiteNova.Blog.Integration.Tests/
-├── LiteNova.Blog.slnx
+│   ├── LiteNova.LitePress.Domain.Tests/
+│   ├── LiteNova.LitePress.Application.Tests/
+│   ├── LiteNova.LitePress.Architecture.Tests/
+│   └── LiteNova.LitePress.Integration.Tests/
+├── LiteNova.LitePress.slnx
 ├── Directory.Build.props
 └── Directory.Packages.props
 ```
@@ -37,7 +37,7 @@ apps/api/
 ### With Aspire (recommended)
 
 ```bash
-dotnet run --project src/LiteNova.Blog.AppHost
+dotnet run --project src/LiteNova.LitePress.AppHost
 ```
 
 ### Standalone
@@ -45,14 +45,14 @@ dotnet run --project src/LiteNova.Blog.AppHost
 Requires PostgreSQL (see root [README](../../README.md) or `docker compose up -d`):
 
 ```bash
-dotnet run --project src/LiteNova.Blog.WebApi
+dotnet run --project src/LiteNova.LitePress.WebApi
 # → http://localhost:5000
 ```
 
 Environment:
 
 ```bash
-ConnectionStrings__Database="Host=localhost;Port=5433;Database=blog;Username=blog;Password=blog"
+ConnectionStrings__Database="Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress"
 JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 ```
 
@@ -63,13 +63,13 @@ JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 ```bash
 # Apply
 dotnet ef database update \
-  --project src/LiteNova.Blog.Infrastructure \
-  --startup-project src/LiteNova.Blog.WebApi
+  --project src/LiteNova.LitePress.Infrastructure \
+  --startup-project src/LiteNova.LitePress.WebApi
 
 # Add
 dotnet ef migrations add <Name> \
-  --project src/LiteNova.Blog.Infrastructure \
-  --startup-project src/LiteNova.Blog.WebApi
+  --project src/LiteNova.LitePress.Infrastructure \
+  --startup-project src/LiteNova.LitePress.WebApi
 ```
 
 ---
@@ -77,8 +77,8 @@ dotnet ef migrations add <Name> \
 ## Build and test
 
 ```bash
-dotnet build LiteNova.Blog.slnx --configuration Release
-dotnet test LiteNova.Blog.slnx --configuration Release --no-build
+dotnet build LiteNova.LitePress.slnx --configuration Release
+dotnet test LiteNova.LitePress.slnx --configuration Release --no-build
 ```
 
 ---

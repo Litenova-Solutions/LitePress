@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\LiteNova.LitePress.Domain\LiteNova.LitePress.Domain.csproj" />
+    <ProjectReference Include="..\LiteNova.LitePress.Application.Write.Contracts\LiteNova.LitePress.Application.Write.Contracts.csproj" />
+    <ProjectReference Include="..\LiteNova.LitePress.Application.Read.Contracts\LiteNova.LitePress.Application.Read.Contracts.csproj" />
+    <ProjectReference Include="..\LiteNova.LitePress.Application.Write\LiteNova.LitePress.Application.Write.csproj" />
+    <ProjectReference Include="..\LiteNova.LitePress.Application.Read\LiteNova.LitePress.Application.Read.csproj" />
+    <ProjectReference Include="..\LiteNova.LitePress.Application.Reactions\LiteNova.LitePress.Application.Reactions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteBus.Commands.Abstractions" />
+    <PackageReference Include="LiteBus.Messaging.Abstractions" />
+    <PackageReference Include="LiteBus.Events.Abstractions" />
+    <PackageReference Include="LiteBus.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+  </ItemGroup>
+</Project>

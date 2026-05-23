@@ -36,23 +36,23 @@ docker compose up -d
 Default connection (port **5433** on host):
 
 ```
-Host=localhost;Port=5433;Database=blog;Username=blog;Password=blog
+Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress
 ```
 
 Apply migrations:
 
 ```bash
 dotnet ef database update \
-  --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.WebApi
+  --project apps/api/src/LiteNova.LitePress.Infrastructure \
+  --startup-project apps/api/src/LiteNova.LitePress.WebApi
 ```
 
 Add a migration after domain/schema changes:
 
 ```bash
 dotnet ef migrations add <Name> \
-  --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.WebApi
+  --project apps/api/src/LiteNova.LitePress.Infrastructure \
+  --startup-project apps/api/src/LiteNova.LitePress.WebApi
 ```
 
 ---
@@ -62,7 +62,7 @@ dotnet ef migrations add <Name> \
 ### Option A: Aspire (all services)
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
 ```
 
 Aspire starts PostgreSQL, API, web, and admin. Open the dashboard (usually `https://localhost:15888`) for URLs and logs.
@@ -74,7 +74,7 @@ Run migrations in a second terminal before first use if the database is empty.
 Terminal 1 — Postgres (`docker compose up -d`) and API:
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.Blog.WebApi
+dotnet run --project apps/api/src/LiteNova.LitePress.WebApi
 ```
 
 Terminal 2 — Web:
@@ -124,8 +124,8 @@ Run before opening a PR:
 
 ```bash
 # Backend
-dotnet build apps/api/LiteNova.Blog.slnx --configuration Release
-dotnet test apps/api/LiteNova.Blog.slnx --configuration Release --no-build
+dotnet build apps/api/LiteNova.LitePress.slnx --configuration Release
+dotnet test apps/api/LiteNova.LitePress.slnx --configuration Release --no-build
 
 # Frontend (from repo root)
 pnpm install --frozen-lockfile
@@ -138,8 +138,8 @@ Requires Postgres, migrated API, and built web:
 
 ```bash
 docker compose up -d
-dotnet ef database update --project apps/api/src/LiteNova.Blog.Infrastructure --startup-project apps/api/src/LiteNova.Blog.WebApi
-dotnet run --project apps/api/src/LiteNova.Blog.WebApi &
+dotnet ef database update --project apps/api/src/LiteNova.LitePress.Infrastructure --startup-project apps/api/src/LiteNova.LitePress.WebApi
+dotnet run --project apps/api/src/LiteNova.LitePress.WebApi &
 pnpm --filter web build && pnpm --filter web start &
 pnpm exec playwright test --config apps/web/playwright.config.ts
 ```
@@ -180,7 +180,7 @@ Commits `packages/api-types/openapi.json` and `packages/api-types/src/api.d.ts`.
 ### API (VS Code)
 
 1. Install C# Dev Kit and Aspire extensions.
-2. Debug `LiteNova.Blog.AppHost` or `LiteNova.Blog.WebApi`.
+2. Debug `LiteNova.LitePress.AppHost` or `LiteNova.LitePress.WebApi`.
 3. Set breakpoints in command/query handlers or endpoints.
 
 ### Next.js
@@ -212,9 +212,9 @@ Attach VS Code **JavaScript Debug Terminal** or Node attach on port 9229.
 
 ## Solution file
 
-Use **`apps/api/LiteNova.Blog.slnx`** only. Test projects:
+Use **`apps/api/LiteNova.LitePress.slnx`** only. Test projects:
 
-- `LiteNova.Blog.Domain.Tests`
-- `LiteNova.Blog.Application.Tests`
-- `LiteNova.Blog.Architecture.Tests`
-- `LiteNova.Blog.Integration.Tests`
+- `LiteNova.LitePress.Domain.Tests`
+- `LiteNova.LitePress.Application.Tests`
+- `LiteNova.LitePress.Architecture.Tests`
+- `LiteNova.LitePress.Integration.Tests`

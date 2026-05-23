@@ -34,10 +34,10 @@ project-specific overrides or additions.
 | Rich Text Editor | TipTap (admin only). Stores ProseMirror JSON. |
 | Comments | Giscus (web frontend, GitHub Discussions backed). |
 | Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
-| Solution file | `apps/api/LiteNova.Blog.slnx` |
-| Product name | **LitePress** (public); .NET namespaces remain `LiteNova.Blog.*` until a future migration |
+| Product name | **LitePress** |
+| Solution file | `apps/api/LiteNova.LitePress.slnx` |
 | Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
-| Namespaces | `LiteNova.Blog.Domain`, `LiteNova.Blog.Application.*`, `LiteNova.Blog.Infrastructure`, `LiteNova.Blog.WebApi` |
+| Namespaces | `LiteNova.LitePress.Domain`, `LiteNova.LitePress.Application.*`, `LiteNova.LitePress.Infrastructure`, `LiteNova.LitePress.WebApi` |
 
 ---
 
@@ -63,7 +63,7 @@ There are no separate inventory files. Domain docs are the source of truth.
 
 These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 
-- MUST use `LiteNova.Blog.*` namespaces (not `Blog.*`).
+- MUST use `LiteNova.LitePress.*` namespaces (not bare `LitePress.*` or legacy `Blog.*`).
 - MUST read `docs/domain/{feature}/README.md` before writing domain code for that feature.
 - MUST read the use case doc at `docs/domain/{feature}/{use-case}.md` before implementing a use case.
 - MUST derive `AuthorId` from the authenticated user's JWT claim. Never accept `AuthorId` from the request body.
@@ -79,26 +79,26 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 
 ```bash
 # Build
-dotnet build apps/api/LiteNova.Blog.slnx
+dotnet build apps/api/LiteNova.LitePress.slnx
 
 # Test
-dotnet test apps/api/LiteNova.Blog.slnx
+dotnet test apps/api/LiteNova.LitePress.slnx
 
 # Run via Aspire (PostgreSQL + API)
-dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
 
 # Run API directly
-dotnet run --project apps/api/src/LiteNova.Blog.WebApi
+dotnet run --project apps/api/src/LiteNova.LitePress.WebApi
 
 # Add EF migration
 dotnet ef migrations add {MigrationName} \
-  --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.WebApi
+  --project apps/api/src/LiteNova.LitePress.Infrastructure \
+  --startup-project apps/api/src/LiteNova.LitePress.WebApi
 
 # Apply migration
 dotnet ef database update \
-  --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.WebApi
+  --project apps/api/src/LiteNova.LitePress.Infrastructure \
+  --startup-project apps/api/src/LiteNova.LitePress.WebApi
 
 # Frontend (admin)
 pnpm --filter admin dev

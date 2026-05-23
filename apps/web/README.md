@@ -21,7 +21,7 @@ User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/dec
 ### With Aspire
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
 ```
 
 Check Aspire dashboard for the web app URL.

@@ -1,6 +1,6 @@
 # API Reference
 
-REST API served by `LiteNova.Blog.WebApi`. OpenAPI spec: **`GET /openapi/v1.json`** when the API is running.
+REST API served by `LiteNova.LitePress.WebApi`. OpenAPI spec: **`GET /openapi/v1.json`** when the API is running.
 
 TypeScript types: `@litenova/api-types` (generated from OpenAPI).
 

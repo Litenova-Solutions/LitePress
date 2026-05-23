@@ -3,7 +3,7 @@
 | Field | Value |
 |:---|:---|
 | Bounded context | LitePress |
-| Namespaces | `LiteNova.Blog.*` |
+| Namespaces | `LiteNova.LitePress.*` |
 | Last updated | 2026-05-23 |
 
 > **Plain-language overview:** [How LitePress works](../how-it-works.md) · **Technical docs:** [technical/README.md](../technical/README.md)

@@ -46,12 +46,12 @@ Technical reference for the LitePress monorepo. For a non-technical overview, se
 
 ## Namespaces
 
-All .NET code uses the `LiteNova.Blog.*` prefix:
+All .NET code uses the `LiteNova.LitePress.*` prefix:
 
-- `LiteNova.Blog.Domain`
-- `LiteNova.Blog.Application.Write` / `.Read` / `.Reactions`
-- `LiteNova.Blog.Infrastructure`
-- `LiteNova.Blog.WebApi`
+- `LiteNova.LitePress.Domain`
+- `LiteNova.LitePress.Application.Write` / `.Read` / `.Reactions`
+- `LiteNova.LitePress.Infrastructure`
+- `LiteNova.LitePress.WebApi`
 
 Ubiquitous language: **Post**, **Tag**, **Author** (never Article, Category, Writer).
 

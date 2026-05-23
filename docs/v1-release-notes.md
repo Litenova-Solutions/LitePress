@@ -63,8 +63,8 @@ See [docs/decisions/v1-scope-deferrals.md](decisions/v1-scope-deferrals.md):
 ## Verification
 
 ```bash
-dotnet build apps/api/LiteNova.Blog.slnx --configuration Release
-dotnet test apps/api/LiteNova.Blog.slnx --configuration Release --no-build
+dotnet build apps/api/LiteNova.LitePress.slnx --configuration Release
+dotnet test apps/api/LiteNova.LitePress.slnx --configuration Release --no-build
 pnpm install --frozen-lockfile
 pnpm lint && pnpm type-check && pnpm test && pnpm build
 pnpm exec playwright test --config apps/web/playwright.config.ts

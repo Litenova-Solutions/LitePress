@@ -19,7 +19,7 @@ Read `standards/AGENTS.md` when this file is used as a submodule.
 
 All rules from `standards/AGENTS.md` apply without exception. Additional project rules:
 
-- **Bounded context.** All namespaces use the `LiteNova.Blog.*` prefix (product name is LitePress).
+- **Bounded context.** All namespaces use the `LiteNova.LitePress.*` prefix.
 - **Author identity.** Read `AuthorId` from the JWT claim, never from the request body.
 - **Terminology.** Use `Post` not Article/Content/Entry. Use `Author` not Writer/Creator.
   Use `Tag` not Category/Label.

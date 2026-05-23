@@ -10,7 +10,7 @@ Set via environment variables or `appsettings.json`. Aspire injects these in loc
 
 | Variable | Default (local) | Description |
 |:---|:---|:---|
-| `ConnectionStrings__Database` | `Host=localhost;Port=5433;Database=blog;Username=blog;Password=blog` | PostgreSQL |
+| `ConnectionStrings__Database` | `Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress` | PostgreSQL |
 | `JwtSettings__Secret` | *(must set in prod)* | HS256 signing key for API JWT (min 32 chars) |
 | `Cors__WebOrigin` | `http://localhost:3000` | CORS origin for public web |
 | `Cors__AdminOrigin` | `http://localhost:3002` | CORS origin for admin |

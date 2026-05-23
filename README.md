@@ -46,8 +46,6 @@ Details: [docs/decisions/licensing.md](docs/decisions/licensing.md).
 
 Engineering rules live in the [`standards/`](standards/) submodule. Domain docs are under [`docs/domain/`](docs/domain/).
 
-> **Note:** .NET projects still use the `LiteNova.Blog.*` namespace from early scaffolding; the product name is **LitePress**.
-
 ---
 
 ## Repository structure
@@ -113,14 +111,14 @@ docker compose up -d
 
 ```bash
 dotnet ef database update \
-  --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.WebApi
+  --project apps/api/src/LiteNova.LitePress.Infrastructure \
+  --startup-project apps/api/src/LiteNova.LitePress.WebApi
 ```
 
 ### 5. Run with Aspire (recommended)
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
 ```
 
 Open the Aspire dashboard (typically `https://localhost:15888`) for API, web, and admin URLs.
@@ -135,7 +133,7 @@ Create `apps/admin/.env.local` — see [Environment variables](docs/technical/en
 
 | Service | Command | Default URL |
 |:---|:---|:---|
-| API | `dotnet run --project apps/api/src/LiteNova.Blog.WebApi` | http://localhost:5000 |
+| API | `dotnet run --project apps/api/src/LiteNova.LitePress.WebApi` | http://localhost:5000 |
 | Web | `pnpm --filter web dev` | http://localhost:3000 |
 | Admin | `pnpm --filter admin dev` | http://localhost:3002 |
 
@@ -146,8 +144,8 @@ See [Development guide](docs/technical/development.md).
 ## Verification
 
 ```bash
-dotnet build apps/api/LiteNova.Blog.slnx --configuration Release
-dotnet test apps/api/LiteNova.Blog.slnx --configuration Release --no-build
+dotnet build apps/api/LiteNova.LitePress.slnx --configuration Release
+dotnet test apps/api/LiteNova.LitePress.slnx --configuration Release --no-build
 pnpm install --frozen-lockfile
 pnpm lint && pnpm type-check && pnpm test && pnpm build
 pnpm exec playwright test --config apps/web/playwright.config.ts

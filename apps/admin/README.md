@@ -21,7 +21,7 @@ User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · Auth: [docs/de
 ### With Aspire
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
 ```
 
 You still need GitHub OAuth env vars locally (see below).

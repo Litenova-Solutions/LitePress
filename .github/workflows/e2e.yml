@@ -24,9 +24,9 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: blog
-          POSTGRES_PASSWORD: blog
-          POSTGRES_DB: blog
+          POSTGRES_USER: litepress
+          POSTGRES_PASSWORD: litepress
+          POSTGRES_DB: litepress
         ports:
           - 5432:5432
         options: >-
@@ -36,7 +36,7 @@ jobs:
           --health-retries 5
 
     env:
-      ConnectionStrings__Database: Host=localhost;Port=5432;Database=blog;Username=blog;Password=blog
+      ConnectionStrings__Database: Host=localhost;Port=5432;Database=litepress;Username=litepress;Password=litepress
       JwtSettings__Secret: dev-secret-key-must-be-at-least-32-characters-long!
       E2E_API_URL: http://localhost:5000
       API_JWT_SECRET: dev-secret-key-must-be-at-least-32-characters-long!
@@ -53,8 +53,8 @@ jobs:
 
       - name: Restore and build API
         run: |
-          dotnet restore LiteNova.Blog.slnx
-          dotnet build LiteNova.Blog.slnx --configuration Release --no-restore
+          dotnet restore LiteNova.LitePress.slnx
+          dotnet build LiteNova.LitePress.slnx --configuration Release --no-restore
 
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef --version 10.0.4
@@ -62,13 +62,13 @@ jobs:
       - name: Apply database migrations
         run: |
           dotnet ef database update \
-            --project src/LiteNova.Blog.Infrastructure \
-            --startup-project src/LiteNova.Blog.WebApi \
+            --project src/LiteNova.LitePress.Infrastructure \
+            --startup-project src/LiteNova.LitePress.WebApi \
             --configuration Release
 
       - name: Start API
         run: |
-          dotnet run --project src/LiteNova.Blog.WebApi --configuration Release --no-build --urls http://localhost:5000 &
+          dotnet run --project src/LiteNova.LitePress.WebApi --configuration Release --no-build --urls http://localhost:5000 &
           for i in $(seq 1 30); do
             curl -sf http://localhost:5000/openapi/v1.json && break
             sleep 2

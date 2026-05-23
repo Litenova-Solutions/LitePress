@@ -20,6 +20,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: apps/api/global.json
-      - run: dotnet restore LiteNova.Blog.slnx
-      - run: dotnet build LiteNova.Blog.slnx --configuration Release --no-restore
-      - run: dotnet test LiteNova.Blog.slnx --configuration Release --no-build --collect:"XPlat Code Coverage"
+      - run: dotnet restore LiteNova.LitePress.slnx
+      - run: dotnet build LiteNova.LitePress.slnx --configuration Release --no-restore
+      - run: dotnet test LiteNova.LitePress.slnx --configuration Release --no-build --collect:"XPlat Code Coverage"
