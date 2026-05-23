@@ -1,6 +1,6 @@
-# Blog - Agent Context
+# LiteNova Blog - Agent Context
 
-<!-- Last updated: 2026-05-21 -->
+<!-- Last updated: 2026-05-23 -->
 
 This project follows the Litenova Solutions engineering standards.
 Read `standards/AGENTS.md` before editing any code. Then read the convention file
@@ -16,10 +16,10 @@ Read order:
 2. `standards/docs/architecture/clean-architecture.md` — layer diagram and responsibilities.
 3. The convention file for the layer you are editing (see index in `standards/AGENTS.md`).
 4. `standards/docs/conventions/shared/agentic-guardrails.md` — strict dependency lockdowns and scaffolding constraints.
-5. The project-specific files below for domain context.
+5. `standards/docs/guides/agentic-domain-driven-design.md` — domain doc tree and frontend layout.
+6. The project-specific files below for domain context.
 
-> **Note:** The `standards/` submodule has no published tags yet. Pin to the first
-> release tag as soon as one is published: `cd standards && git checkout vX.Y.Z`.
+Standards submodule pinned at `afcc8d0` (ADDD baseline).
 
 ---
 
@@ -30,29 +30,28 @@ project-specific overrides or additions.
 
 | Technology | Version / Notes |
 |:---|:---|
-| Authentication | Auth.js v5 — admin dashboard only. JWT session strategy. |
-| Rich Text Editor | TipTap (admin only, post content authoring) |
-| Comments | Giscus (web frontend, GitHub Discussions backed) |
-| Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()` |
-| Solution file | `apps/api/LiteNova.Blog.sln` |
+| Authentication | Auth.js v5 — admin dashboard only. GitHub OAuth, JWT session. API access via minted JWT + api-proxy. |
+| Rich Text Editor | TipTap (admin only). Stores ProseMirror JSON. |
+| Comments | Giscus (web frontend, GitHub Discussions backed). |
+| Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
+| Solution file | `apps/api/LiteNova.Blog.slnx` |
+| Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). |
+| Namespaces | `LiteNova.Blog.Domain`, `LiteNova.Blog.Application.*`, `LiteNova.Blog.Infrastructure`, `LiteNova.Blog.WebApi` |
 
 ---
 
 ## Project-Specific Context
 
-Read these files before generating any domain or application code. They contain
-the project's actual terms, aggregates, features, exceptions, and read models.
+Read these files before generating any domain or application code.
 
 | File | Contents |
 |:---|:---|
-| `docs/domain/ubiquitous-language.md` | Glossary of domain terms and their code mappings. |
-| `docs/domain/aggregate-inventory.md` | All aggregates, states, domain events, and repository interfaces. |
-| `docs/domain/feature-inventory.md` | All implemented and planned use cases with handler class names. |
-| `docs/domain/exception-inventory.md` | All custom exception types with categories and HTTP status codes. |
-| `docs/domain/read-model-inventory.md` | `IDatabaseContext` properties, query handlers, and approved denormalized read models. |
-| `docs/domain/frontend-feature-inventory.md` | All frontend routes and use cases (web + admin). |
-| `docs/domain/frontend-api-endpoints.md` | Backend API endpoints consumed by the frontend. |
-| `docs/adr/` | Project-specific architecture decisions. |
+| `docs/domain/README.md` | System map: all features and use cases. |
+| `docs/domain/{feature}/README.md` | Feature ubiquitous language, aggregates, invariants, events. |
+| `docs/domain/{feature}/{use-case}.md` | Use case contract: commands, endpoints, UI, acceptance criteria. |
+| `docs/decisions/` | Blog-specific ADRs (auth, dual apps, SEO, deferrals). |
+
+There are no separate inventory files. Domain docs are the source of truth.
 
 ---
 
@@ -60,14 +59,14 @@ the project's actual terms, aggregates, features, exceptions, and read models.
 
 These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 
-- MUST use `Blog` as the bounded context name in all namespaces: `Blog.Domain`, `Blog.Application.Write`, `Blog.Application.Read`, `Blog.Application.Reactions`, `Blog.Infrastructure`, `Blog.WebApi`.
-- MUST read `docs/domain/ubiquitous-language.md` before writing any domain code.
-- MUST read `docs/domain/aggregate-inventory.md` before creating or modifying aggregates or command handlers.
-- MUST read `docs/domain/feature-inventory.md` before adding a new use case to avoid duplicates.
+- MUST use `LiteNova.Blog.*` namespaces (not `Blog.*`).
+- MUST read `docs/domain/{feature}/README.md` before writing domain code for that feature.
+- MUST read the use case doc at `docs/domain/{feature}/{use-case}.md` before implementing a use case.
 - MUST derive `AuthorId` from the authenticated user's JWT claim. Never accept `AuthorId` from the request body.
 - MUST NOT use the terms "Article", "Content", or "Entry" in place of "Post" in code, comments, or documentation.
 - MUST NOT use the terms "Writer" or "Creator" in place of "Author" in code, comments, or documentation.
 - MUST NOT use the term "Category" or "Label" in place of "Tag" in code, comments, or documentation.
+- MUST place frontend feature code in `domain/{feature}/{use-case}/` in **each** app (`apps/web`, `apps/admin`) independently. No cross-app domain imports.
 - MUST NOT edit any file under `standards/`. Changes to the standards belong in the standards repository.
 
 ---
@@ -76,29 +75,35 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 
 ```bash
 # Build
-dotnet build apps/api/LiteNova.Blog.sln
+dotnet build apps/api/LiteNova.Blog.slnx
 
 # Test
-dotnet test apps/api/LiteNova.Blog.sln
+dotnet test apps/api/LiteNova.Blog.slnx
 
-# Run API
-dotnet run --project apps/api/src/LiteNova.Blog.Api
+# Run via Aspire (PostgreSQL + API)
+dotnet run --project apps/api/src/LiteNova.Blog.AppHost
+
+# Run API directly
+dotnet run --project apps/api/src/LiteNova.Blog.WebApi
 
 # Add EF migration
 dotnet ef migrations add {MigrationName} \
   --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.Api
+  --startup-project apps/api/src/LiteNova.Blog.WebApi
 
 # Apply migration
 dotnet ef database update \
   --project apps/api/src/LiteNova.Blog.Infrastructure \
-  --startup-project apps/api/src/LiteNova.Blog.Api
+  --startup-project apps/api/src/LiteNova.Blog.WebApi
 
 # Frontend (admin)
 pnpm --filter admin dev
 
 # Frontend (web)
 pnpm --filter web dev
+
+# Monorepo gates
+pnpm lint && pnpm type-check && pnpm test && pnpm build
 
 # Bootstrap submodules after clone
 pwsh scripts/bootstrap.ps1
