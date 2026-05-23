@@ -16,7 +16,7 @@ function readSeed(): { title: string; slug: string } | null {
 
 test("published post appears on home and slug page", async ({ page }) => {
   const seed = readSeed();
-  test.skip(!seed, "Requires API seed — run with E2E_API_URL and a running API");
+  test.skip(!seed, "Requires API seed from global setup");
 
   await page.goto("/");
   await expect(page.getByText(seed!.title)).toBeVisible();

@@ -1,26 +1,8 @@
 import type { MetadataRoute } from "next";
+import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
-interface PostSummary {
-  slug: string;
-  publishedAt?: string;
-}
-
-interface TagSummary {
-  slug: string;
-}
-
-async function fetchJson<T>(url: string): Promise<T | null> {
-  try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) {
-      return null;
-    }
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
-}
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = env.siteUrl;
@@ -30,26 +12,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteUrl + "/tags", lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   ];
 
-  const [postsData, tags] = await Promise.all([
-    fetchJson<{ items: PostSummary[] }>(env.API_URL + "/api/posts?page=1&pageSize=500"),
-    fetchJson<TagSummary[]>(env.API_URL + "/api/tags"),
-  ]);
+  try {
+    const client = await getApiClient({ revalidate: 3600 });
 
-  const posts = postsData?.items ?? [];
+    const [postsResult, tagsResult] = await Promise.all([
+      client.GET("/api/posts", { params: { query: { page: 1, pageSize: 500 } } }),
+      client.GET("/api/tags"),
+    ]);
 
-  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: siteUrl + "/" + post.slug,
-    lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.9,
-  }));
+    const posts = postsResult.data?.items ?? [];
+    const tags = tagsResult.data ?? [];
 
-  const tagRoutes: MetadataRoute.Sitemap = (tags ?? []).map((tag) => ({
-    url: siteUrl + "/tags/" + tag.slug,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+    const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+      url: siteUrl + "/" + post.slug,
+      lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    }));
 
-  return [...staticRoutes, ...postRoutes, ...tagRoutes];
+    const tagRoutes: MetadataRoute.Sitemap = tags.map((tag) => ({
+      url: siteUrl + "/tags/" + tag.slug,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+
+    return [...staticRoutes, ...postRoutes, ...tagRoutes];
+  } catch {
+    return staticRoutes;
+  }
 }

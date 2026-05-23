@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TagsIndex } from "@/domain/tags/list-tags/TagsIndex";
+import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -22,17 +23,13 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-interface TagSummary {
-  tagId: string;
-  name: string;
-  slug: string;
-  postCount: number;
-}
-
 export default async function TagsPage() {
-  const tags = (await fetch(env.API_URL + "/api/tags", {
-    next: { tags: ["tags"], revalidate: 3600 },
-  }).then((r) => r.json())) as TagSummary[];
+  const client = await getApiClient({ tags: ["tags"], revalidate: 3600 });
+  const { data, error } = await client.GET("/api/tags");
 
-  return <TagsIndex tags={tags} />;
+  if (error || !data) {
+    throw new Error("Failed to load tags");
+  }
+
+  return <TagsIndex tags={data} />;
 }

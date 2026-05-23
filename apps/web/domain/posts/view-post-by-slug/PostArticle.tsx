@@ -1,18 +1,8 @@
+import type { components } from "@litenova/api-types";
 import { renderProseMirrorToHtml } from "@/shared/prosemirror/renderContent";
 import { GiscusComments } from "./GiscusComments";
 
-export interface PostDetail {
-  postId: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  coverImageUrl?: string;
-  state: string;
-  publishedAt?: string;
-  authorName: string;
-  tags: Array<{ tagId: string; tagName: string; tagSlug: string }>;
-}
+export type PostDetail = components["schemas"]["PostDetailResult"];
 
 interface PostArticleProps {
   post: PostDetail;
@@ -33,7 +23,7 @@ export function PostArticle({ post }: PostArticleProps) {
       )}
       <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
       <div className="flex gap-4 text-sm text-gray-500 mb-6">
-        <span>{post.authorName}</span>
+        <span>{post.authorDisplayName}</span>
         {post.publishedAt && (
           <time dateTime={post.publishedAt}>
             {new Date(post.publishedAt).toLocaleDateString()}
@@ -49,10 +39,10 @@ export function PostArticle({ post }: PostArticleProps) {
           {post.tags.map((tag) => (
             <a
               key={tag.tagId}
-              href={"/tags/" + tag.tagSlug}
+              href={"/tags/" + tag.slug}
               className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
             >
-              {tag.tagName}
+              {tag.name}
             </a>
           ))}
         </div>

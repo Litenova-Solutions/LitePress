@@ -1,24 +1,15 @@
 import Link from "next/link";
-import { apiGet } from "../../../lib/api";
-
-interface PostSummary {
-  postId: string;
-  title: string;
-  slug: string;
-  state: string;
-  createdAt: string;
-  publishedAt?: string;
-}
-
-interface PagedResult {
-  items: PostSummary[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-}
+import { getApiClient } from "@/lib/api/client";
 
 export default async function PostsPage() {
-  const data = await apiGet<PagedResult>("/api/posts?page=1&pageSize=50");
+  const client = await getApiClient();
+  const { data, error } = await client.GET("/api/posts", {
+    params: { query: { page: 1, pageSize: 50 } },
+  });
+
+  if (error || !data) {
+    throw new Error("Failed to load posts");
+  }
 
   return (
     <section>
@@ -46,11 +37,11 @@ export default async function PostsPage() {
                 <td className="px-4 py-3 text-gray-500 text-sm">{post.slug}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                    post.state === "Published" ? "bg-green-100 text-green-800" :
-                    post.state === "Archived" ? "bg-gray-100 text-gray-600" :
+                    post.postState === "Published" ? "bg-green-100 text-green-800" :
+                    post.postState === "Archived" ? "bg-gray-100 text-gray-600" :
                     "bg-yellow-100 text-yellow-800"
                   }`}>
-                    {post.state}
+                    {post.postState}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-500">

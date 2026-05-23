@@ -1,13 +1,7 @@
+import type { components } from "@litenova/api-types";
 import Link from "next/link";
 
-export interface PostSummary {
-  postId: string;
-  title: string;
-  slug: string;
-  excerpt?: string;
-  publishedAt?: string;
-  tags: Array<{ tagId: string; tagName: string; tagSlug: string }>;
-}
+export type PostSummary = components["schemas"]["PostSummaryResult"];
 
 interface PostListProps {
   posts: PostSummary[];
@@ -36,10 +30,10 @@ export function PostList({ posts, heading, page, hasNextPage, tagSlug }: PostLis
               {post.tags?.map((tag) => (
                 <Link
                   key={tag.tagId}
-                  href={"/tags/" + tag.tagSlug}
+                  href={"/tags/" + tag.slug}
                   className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
                 >
-                  {tag.tagName}
+                  {tag.name}
                 </Link>
               ))}
             </div>

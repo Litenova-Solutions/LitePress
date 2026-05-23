@@ -1,24 +1,9 @@
 import type { Metadata } from "next";
 import { PostList } from "@/domain/posts/list-published-posts/PostList";
+import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
-
-interface PostSummary {
-  postId: string;
-  title: string;
-  slug: string;
-  excerpt?: string;
-  publishedAt?: string;
-  tags: Array<{ tagId: string; tagName: string; tagSlug: string }>;
-}
-
-interface PagedResult {
-  items: PostSummary[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-}
 
 export async function generateMetadata({
   searchParams,
@@ -49,13 +34,20 @@ export default async function HomePage({
   const page = parseInt(sp.page || "1", 10);
   const tag = sp.tag;
 
-  const url = tag
-    ? env.API_URL + "/api/posts?tag=" + tag + "&page=" + page + "&pageSize=10"
-    : env.API_URL + "/api/posts?page=" + page + "&pageSize=10";
+  const client = await getApiClient({ tags: ["posts"], revalidate: 3600 });
+  const { data, error } = await client.GET("/api/posts", {
+    params: {
+      query: {
+        page,
+        pageSize: 10,
+        tag,
+      },
+    },
+  });
 
-  const data = (await fetch(url, {
-    next: { tags: ["posts"], revalidate: 3600 },
-  }).then((r) => r.json())) as PagedResult;
+  if (error || !data) {
+    throw new Error("Failed to load posts");
+  }
 
   const heading = tag ? "Posts tagged: " + tag : "Latest Posts";
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostList } from "@/domain/posts/list-published-posts/PostList";
+import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -31,17 +32,24 @@ export default async function TagPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const client = await getApiClient({
+    tags: ["posts", "tag-" + slug],
+    revalidate: 3600,
+  });
 
-  const res = await fetch(
-    env.API_URL + "/api/posts?tag=" + slug + "&page=1&pageSize=20",
-    { next: { tags: ["posts", "tag-" + slug], revalidate: 3600 } }
-  );
+  const { data, error, response } = await client.GET("/api/posts", {
+    params: {
+      query: {
+        tag: slug,
+        page: 1,
+        pageSize: 20,
+      },
+    },
+  });
 
-  if (!res.ok) {
+  if (response.status === 404 || error || !data) {
     notFound();
   }
-
-  const data = await res.json();
 
   return (
     <PostList

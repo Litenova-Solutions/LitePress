@@ -1,11 +1,7 @@
+import type { components } from "@litenova/api-types";
 import Link from "next/link";
 
-export interface TagSummary {
-  tagId: string;
-  name: string;
-  slug: string;
-  postCount: number;
-}
+export type TagSummary = components["schemas"]["TagResult"];
 
 interface TagsIndexProps {
   tags: TagSummary[];

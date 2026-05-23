@@ -1,31 +1,27 @@
 import { env } from "@/lib/env";
-import { apiGet } from "@/lib/api";
-
-interface PostSummary {
-  postId: string;
-  title: string;
-  state: string;
-}
-
-interface TagSummary {
-  tagId: string;
-  name: string;
-}
-
-interface PagedPosts {
-  totalCount: number;
-  items: PostSummary[];
-}
+import { getApiClient } from "@/lib/api/client";
 
 export default async function DashboardPage() {
-  const [posts, tags] = await Promise.all([
-    apiGet<PagedPosts>("/api/posts?page=1&pageSize=500"),
-    apiGet<TagSummary[]>("/api/tags"),
+  const client = await getApiClient();
+
+  const [postsResult, tagsResult] = await Promise.all([
+    client.GET("/api/posts", { params: { query: { page: 1, pageSize: 500 } } }),
+    client.GET("/api/tags"),
   ]);
 
-  const draftCount = posts.items.filter((p) => p.state === "Draft").length;
-  const publishedCount = posts.items.filter((p) => p.state === "Published").length;
-  const archivedCount = posts.items.filter((p) => p.state === "Archived").length;
+  if (postsResult.error || !postsResult.data) {
+    throw new Error("Failed to load posts");
+  }
+  if (tagsResult.error || !tagsResult.data) {
+    throw new Error("Failed to load tags");
+  }
+
+  const posts = postsResult.data;
+  const tags = tagsResult.data;
+
+  const draftCount = posts.items.filter((p) => p.postState === "Draft").length;
+  const publishedCount = posts.items.filter((p) => p.postState === "Published").length;
+  const archivedCount = posts.items.filter((p) => p.postState === "Archived").length;
 
   return (
     <section>

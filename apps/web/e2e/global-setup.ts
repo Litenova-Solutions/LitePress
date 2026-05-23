@@ -1,5 +1,5 @@
 import { SignJWT } from "jose";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const SEED_FILE = join(__dirname, ".seed.json");
@@ -11,7 +11,7 @@ interface E2ESeed {
 
 export default async function globalSetup() {
   if (existsSync(SEED_FILE)) {
-    return;
+    unlinkSync(SEED_FILE);
   }
 
   const apiUrl = process.env.E2E_API_URL ?? "http://localhost:5000";
@@ -44,8 +44,7 @@ export default async function globalSetup() {
     });
 
     if (!createRes.ok) {
-      console.warn("E2E seed skipped: create failed", await createRes.text());
-      return;
+      throw new Error("create post failed: " + (await createRes.text()));
     }
 
     const { postId } = (await createRes.json()) as { postId: string };
@@ -56,8 +55,7 @@ export default async function globalSetup() {
     });
 
     if (!publishRes.ok) {
-      console.warn("E2E seed skipped: publish failed", await publishRes.text());
-      return;
+      throw new Error("publish post failed: " + (await publishRes.text()));
     }
 
     const getRes = await fetch(`${apiUrl}/api/posts/${postId}`, {
@@ -65,15 +63,16 @@ export default async function globalSetup() {
     });
 
     if (!getRes.ok) {
-      console.warn("E2E seed skipped: get failed", await getRes.text());
-      return;
+      throw new Error("get post failed: " + (await getRes.text()));
     }
 
     const post = (await getRes.json()) as { slug: string };
     const seed: E2ESeed = { title, slug: post.slug };
     writeFileSync(SEED_FILE, JSON.stringify(seed));
-    console.log("E2E seed created:", seed.slug);
   } catch (error) {
+    if (process.env.CI) {
+      throw error;
+    }
     console.warn("E2E seed skipped:", error);
   }
 }

@@ -1,25 +1,13 @@
 "use client";
 // Post editing requires client-side TipTap and api-proxy mutations.
 
+import type { components } from "@litenova/api-types";
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TipTapEditor } from "../create/TipTapEditor";
 
-interface Post {
-  postId: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  coverImageUrl?: string;
-  state: string;
-  tags: Array<{ tagId: string; tagName: string; tagSlug: string }>;
-}
-
-interface TagOption {
-  tagId: string;
-  name: string;
-}
+type PostDetail = components["schemas"]["PostDetailResult"];
+type TagOption = components["schemas"]["TagResult"];
 
 interface EditPostFormProps {
   params: Promise<{ id: string }>;
@@ -28,7 +16,7 @@ interface EditPostFormProps {
 export function EditPostForm({ params }: EditPostFormProps) {
   const { id } = use(params);
   const router = useRouter();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<PostDetail | null>(null);
   const [allTags, setAllTags] = useState<TagOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +31,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
     Promise.all([
       fetch("/api-proxy/posts/" + id).then((r) => r.json()),
       fetch("/api-proxy/tags").then((r) => r.json()),
-    ]).then(([postData, tagsData]: [Post, TagOption[]]) => {
+    ]).then(([postData, tagsData]: [PostDetail, TagOption[]]) => {
       setPost(postData);
       setAllTags(tagsData);
       setForm({
@@ -118,7 +106,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
     }
     const updated = (await fetch("/api-proxy/posts/" + id).then((r) =>
       r.json()
-    )) as Post;
+    )) as PostDetail;
     setPost(updated);
   }
 
@@ -126,9 +114,9 @@ export function EditPostForm({ params }: EditPostFormProps) {
     return <div className="text-gray-500">Loading...</div>;
   }
 
-  const isDraft = post.state === "Draft";
-  const isPublished = post.state === "Published";
-  const isArchived = post.state === "Archived";
+  const isDraft = post.postState === "Draft";
+  const isPublished = post.postState === "Published";
+  const isArchived = post.postState === "Archived";
   const assignedTagIds = new Set(post.tags?.map((t) => t.tagId) ?? []);
 
   return (
@@ -169,14 +157,14 @@ export function EditPostForm({ params }: EditPostFormProps) {
         <span
           className={
             "inline-block px-2 py-1 rounded text-xs font-semibold " +
-            (post.state === "Published"
+            (post.postState === "Published"
               ? "bg-green-100 text-green-800"
-              : post.state === "Archived"
+              : post.postState === "Archived"
                 ? "bg-gray-100 text-gray-600"
                 : "bg-yellow-100 text-yellow-800")
           }
         >
-          {post.state}
+          {post.postState}
         </span>
       </div>
       <form onSubmit={handleUpdate} className="max-w-2xl space-y-4">

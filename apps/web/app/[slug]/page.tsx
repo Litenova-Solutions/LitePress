@@ -1,24 +1,29 @@
 import type { Metadata } from "next";
+import type { components } from "@litenova/api-types";
 import { notFound } from "next/navigation";
-import { PostArticle, type PostDetail } from "@/domain/posts/view-post-by-slug/PostArticle";
+import { PostArticle } from "@/domain/posts/view-post-by-slug/PostArticle";
 import { excerptFromContent } from "@/shared/prosemirror/renderContent";
+import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
+type PostDetail = components["schemas"]["PostDetailResult"];
+
 async function fetchPost(slug: string): Promise<PostDetail | null> {
-  const res = await fetch(env.API_URL + "/api/posts/" + slug, {
-    next: { tags: ["posts", slug], revalidate: 3600 },
+  const client = await getApiClient({ tags: ["posts", slug], revalidate: 3600 });
+  const { data, error, response } = await client.GET("/api/posts/{slug}", {
+    params: { path: { slug } },
   });
 
-  if (res.status === 404) {
+  if (response.status === 404) {
     return null;
   }
-  if (!res.ok) {
+  if (error || !data) {
     throw new Error("Failed to load post");
   }
 
-  return res.json() as Promise<PostDetail>;
+  return data;
 }
 
 export async function generateMetadata({
@@ -28,7 +33,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await fetchPost(slug);
-  if (!post || post.state !== "Published") {
+  if (!post || post.postState !== "Published") {
     return { title: "Not Found" };
   }
 
@@ -44,7 +49,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       type: "article",
-      publishedTime: post.publishedAt,
+      publishedTime: post.publishedAt ?? undefined,
       images: post.coverImageUrl ? [{ url: post.coverImageUrl }] : undefined,
     },
     twitter: {
@@ -65,7 +70,7 @@ export default async function PostPage({
   const { slug } = await params;
   const post = await fetchPost(slug);
 
-  if (!post || post.state !== "Published") {
+  if (!post || post.postState !== "Published") {
     notFound();
   }
 
@@ -74,7 +79,7 @@ export default async function PostPage({
     "@type": "BlogPosting",
     headline: post.title,
     datePublished: post.publishedAt,
-    author: { "@type": "Person", name: post.authorName },
+    author: { "@type": "Person", name: post.authorDisplayName },
     description: post.excerpt || excerptFromContent(post.content),
     mainEntityOfPage: env.siteUrl + "/" + post.slug,
   };

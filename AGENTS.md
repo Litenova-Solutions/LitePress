@@ -35,7 +35,7 @@ project-specific overrides or additions.
 | Comments | Giscus (web frontend, GitHub Discussions backed). |
 | Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
 | Solution file | `apps/api/LiteNova.Blog.slnx` |
-| Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). |
+| Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
 | Namespaces | `LiteNova.Blog.Domain`, `LiteNova.Blog.Application.*`, `LiteNova.Blog.Infrastructure`, `LiteNova.Blog.WebApi` |
 
 ---

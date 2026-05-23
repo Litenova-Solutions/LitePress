@@ -1,14 +1,7 @@
 import { z } from "zod";
-import { apiGet, apiPost } from "@/lib/api";
+import { getApiClient } from "@/lib/api/client";
 import { DeleteTagButton } from "@/domain/tags/delete/DeleteTagButton";
 import { RenameTagButton } from "@/domain/tags/rename/RenameTagButton";
-
-interface Tag {
-  tagId: string;
-  name: string;
-  slug: string;
-  postCount: number;
-}
 
 const createTagSchema = z.object({
   name: z.string().trim().min(1, "Tag name is required").max(50, "Tag name too long"),
@@ -20,11 +13,24 @@ async function createTag(formData: FormData) {
   if (!parsed.success) {
     throw new Error(parsed.error.errors[0]?.message ?? "Invalid tag name");
   }
-  await apiPost("/api/tags", { name: parsed.data.name });
+
+  const client = await getApiClient();
+  const { error } = await client.POST("/api/tags", {
+    body: { name: parsed.data.name },
+  });
+
+  if (error) {
+    throw new Error("Failed to create tag");
+  }
 }
 
 export default async function TagsPage() {
-  const tags = await apiGet<Tag[]>("/api/tags");
+  const client = await getApiClient();
+  const { data, error } = await client.GET("/api/tags");
+
+  if (error || !data) {
+    throw new Error("Failed to load tags");
+  }
 
   return (
     <section>
@@ -55,7 +61,7 @@ export default async function TagsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {tags.map((tag) => (
+              {data.map((tag) => (
                 <tr key={tag.tagId} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium">{tag.name}</td>
                   <td className="px-4 py-3 text-gray-500 text-sm">{tag.slug}</td>
@@ -68,7 +74,7 @@ export default async function TagsPage() {
               ))}
             </tbody>
           </table>
-          {tags.length === 0 && (
+          {data.length === 0 && (
             <p className="text-center text-gray-500 py-8">No tags yet.</p>
           )}
         </div>

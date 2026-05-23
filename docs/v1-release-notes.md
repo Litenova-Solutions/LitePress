@@ -70,6 +70,8 @@ pnpm lint && pnpm type-check && pnpm test && pnpm build
 pnpm exec playwright test --config apps/web/playwright.config.ts
 ```
 
+E2E publish flow runs automatically in `.github/workflows/e2e.yml` (Postgres + API + web).
+
 ---
 
 ## Human Input Required for Production
@@ -85,6 +87,5 @@ pnpm exec playwright test --config apps/web/playwright.config.ts
 
 ## Known Limitations
 
-- Next.js 15.5.x / React 19.0.x / TypeScript 5.6.x (standards target 16.2 / 19.2 / 6.x upgrade pending)
 - OpenAPI types generated from live spec; run `pnpm generate:api-types` after API contract changes
-- Playwright E2E requires running web dev server or `PLAYWRIGHT_BASE_URL`
+- Full Playwright publish flow runs in the dedicated E2E workflow (Postgres + API + web)
