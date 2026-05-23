@@ -8,6 +8,7 @@ using LiteNova.Blog.Domain.Tags;
 using LiteNova.Blog.Infrastructure.Behaviors;
 using LiteNova.Blog.Infrastructure.Persistence;
 using LiteNova.Blog.Infrastructure.Persistence.Repositories;
+using EFCore.NamingConventions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,8 @@ public static class InfrastructureServiceRegistration
     {
         services.AddDbContext<BlogDbContext>(options =>
             options
-                .UseNpgsql(configuration.GetConnectionString("Database")));
+                .UseNpgsql(configuration.GetConnectionString("Database"))
+                .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IDatabaseContext>(
             sp => sp.GetRequiredService<BlogDbContext>());

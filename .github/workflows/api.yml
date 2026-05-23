@@ -5,15 +5,21 @@ on:
     branches: [main]
     paths:
       - "apps/api/**"
+  pull_request:
+    paths:
+      - "apps/api/**"
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
-      - run: dotnet restore apps/api/LiteNova.Blog.sln
-      - run: dotnet build apps/api/LiteNova.Blog.sln --no-restore
-      - run: dotnet test apps/api/LiteNova.Blog.sln --no-build
+          global-json-file: apps/api/global.json
+      - run: dotnet restore LiteNova.Blog.slnx
+      - run: dotnet build LiteNova.Blog.slnx --configuration Release --no-restore
+      - run: dotnet test LiteNova.Blog.slnx --configuration Release --no-build --collect:"XPlat Code Coverage"

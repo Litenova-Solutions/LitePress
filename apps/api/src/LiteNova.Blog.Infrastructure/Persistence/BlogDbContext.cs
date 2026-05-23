@@ -51,44 +51,5 @@ internal sealed class BlogDbContext : DbContext, LiteNova.Blog.Application.Read.
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BlogDbContext).Assembly);
-
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
-        {
-            // Owned entity types share the owner's table; their columns are explicitly
-            // configured in OwnsOne blocks, so skip them here to avoid shadow-property conflicts.
-            if (entity.IsOwned())
-            {
-                continue;
-            }
-
-            var tableName = entity.GetTableName();
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                entity.SetTableName(ToSnakeCase(tableName));
-            }
-
-            foreach (var property in entity.GetProperties())
-            {
-                var columnName = property.GetColumnName();
-                if (!string.IsNullOrEmpty(columnName))
-                {
-                    property.SetColumnName(ToSnakeCase(columnName));
-                }
-            }
-        }
-    }
-
-    private static string ToSnakeCase(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            return name;
-        }
-
-        var result = System.Text.RegularExpressions.Regex.Replace(
-            System.Text.RegularExpressions.Regex.Replace(name, @"([A-Z]+)([A-Z][a-z])", "$1_$2"),
-            @"([a-z\d])([A-Z])", "$1_$2");
-
-        return result.ToLowerInvariant();
     }
 }

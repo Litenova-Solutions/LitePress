@@ -15,6 +15,8 @@ global using LiteNova.Blog.Application.Write.Contracts.Posts.UpdatePost;
 global using LiteNova.Blog.Application.Write.Contracts.Posts.PublishPost;
 global using LiteNova.Blog.Application.Write.Contracts.Posts.ArchivePost;
 global using LiteNova.Blog.Application.Write.Contracts.Posts.DeletePost;
+global using LiteNova.Blog.Application.Write.Contracts.Posts.AddTagToPost;
+global using LiteNova.Blog.Application.Write.Contracts.Posts.RemoveTagFromPost;
 global using LiteNova.Blog.Application.Write.Contracts.Tags.CreateTag;
 global using LiteNova.Blog.Application.Write.Contracts.Tags.RenameTag;
 global using LiteNova.Blog.Application.Write.Contracts.Tags.DeleteTag;

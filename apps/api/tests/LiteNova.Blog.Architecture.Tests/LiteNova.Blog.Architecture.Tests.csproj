@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LiteNova.Blog.Application.Read\LiteNova.Blog.Application.Read.csproj" />
+    <ProjectReference Include="..\..\src\LiteNova.Blog.Application.Reactions\LiteNova.Blog.Application.Reactions.csproj" />
+    <ProjectReference Include="..\..\src\LiteNova.Blog.Application.Write\LiteNova.Blog.Application.Write.csproj" />
+    <ProjectReference Include="..\..\src\LiteNova.Blog.WebApi\LiteNova.Blog.WebApi.csproj" />
+  </ItemGroup>
+
+</Project>

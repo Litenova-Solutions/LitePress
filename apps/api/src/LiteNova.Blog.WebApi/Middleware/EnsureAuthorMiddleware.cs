@@ -25,7 +25,7 @@ internal sealed class EnsureAuthorMiddleware
             var sub = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                 ?? context.User.FindFirst("sub")?.Value;
 
-            if (sub is not null && !context.User.HasClaim("author_id", string.Empty))
+            if (sub is not null && context.User.FindFirst("author_id") is null)
             {
                 var command = new RegisterAuthorCommand
                 {
