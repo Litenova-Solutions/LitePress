@@ -1,61 +1,91 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PostArticle, type PostDetail } from "@/domain/posts/view-post-by-slug/PostArticle";
+import { excerptFromContent } from "@/shared/prosemirror/renderContent";
+import { env } from "@/lib/env";
 
-const API_URL = process.env.API_URL ?? "http://localhost:5000";
+export const dynamic = "force-dynamic";
 
-interface PostDetail {
-  postId: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  coverImageUrl?: string;
-  state: string;
-  publishedAt?: string;
-  authorName: string;
-  tags: Array<{ tagId: string; tagName: string; tagSlug: string }>;
-}
-
-export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-
-  const res = await fetch(API_URL + "/api/posts/" + slug, {
-    next: { tags: ["posts"], revalidate: 3600 },
+async function fetchPost(slug: string): Promise<PostDetail | null> {
+  const res = await fetch(env.API_URL + "/api/posts/" + slug, {
+    next: { tags: ["posts", slug], revalidate: 3600 },
   });
 
-  if (res.status === 404) notFound();
-  if (!res.ok) throw new Error("Failed to load post");
+  if (res.status === 404) {
+    return null;
+  }
+  if (!res.ok) {
+    throw new Error("Failed to load post");
+  }
 
-  const post = await res.json() as PostDetail;
+  return res.json() as Promise<PostDetail>;
+}
 
-  if (post.state !== "Published") notFound();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await fetchPost(slug);
+  if (!post || post.state !== "Published") {
+    return { title: "Not Found" };
+  }
+
+  const description = post.excerpt || excerptFromContent(post.content);
+  const canonical = env.siteUrl + "/" + post.slug;
+
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: post.title,
+      description,
+      url: canonical,
+      type: "article",
+      publishedTime: post.publishedAt,
+      images: post.coverImageUrl ? [{ url: post.coverImageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: post.coverImageUrl ? [post.coverImageUrl] : undefined,
+    },
+    robots: { index: true, follow: true },
+  };
+}
+
+export default async function PostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await fetchPost(slug);
+
+  if (!post || post.state !== "Published") {
+    notFound();
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    datePublished: post.publishedAt,
+    author: { "@type": "Person", name: post.authorName },
+    description: post.excerpt || excerptFromContent(post.content),
+    mainEntityOfPage: env.siteUrl + "/" + post.slug,
+  };
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <article>
-        {post.coverImageUrl && (
-          <img src={post.coverImageUrl} alt={post.title}
-            className="w-full h-64 object-cover rounded mb-8" />
-        )}
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-        <div className="flex gap-4 text-sm text-gray-500 mb-6">
-          <span>{post.authorName}</span>
-          {post.publishedAt && <span>{new Date(post.publishedAt).toLocaleDateString()}</span>}
-        </div>
-        <div
-          className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
-        {post.tags?.length > 0 && (
-          <div className="flex gap-2 mt-8 pt-8 border-t">
-            {post.tags.map((t) => (
-              <a key={t.tagId} href={"/?tag=" + t.tagSlug}
-                className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
-                {t.tagName}
-              </a>
-            ))}
-          </div>
-        )}
-      </article>
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PostArticle post={post} />
+    </>
   );
 }
