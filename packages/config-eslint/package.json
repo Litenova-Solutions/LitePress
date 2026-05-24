@@ -1,5 +1,5 @@
 {
-  "name": "@litenova/config-eslint",
+  "name": "@litepress/config-eslint",
   "version": "0.1.0",
   "private": true,
   "type": "module",

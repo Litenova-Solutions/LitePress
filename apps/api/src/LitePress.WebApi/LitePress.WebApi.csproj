@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\LitePress.Application.Write.Contracts\LitePress.Application.Write.Contracts.csproj" />
+    <ProjectReference Include="..\LitePress.Application.Read.Contracts\LitePress.Application.Read.Contracts.csproj" />
+    <ProjectReference Include="..\LitePress.Infrastructure\LitePress.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteBus.Commands.Abstractions" />
+    <PackageReference Include="LiteBus.Queries.Abstractions" />
+    <PackageReference Include="LiteBus.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Events.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

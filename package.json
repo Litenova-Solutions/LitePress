@@ -9,7 +9,7 @@
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "test": "turbo test",
-    "generate:api-types": "pnpm --filter @litenova/api-types generate:api-types"
+    "generate:api-types": "pnpm --filter @litepress/api-types generate:api-types"
   },
   "devDependencies": {
     "turbo": "^2.0.14",

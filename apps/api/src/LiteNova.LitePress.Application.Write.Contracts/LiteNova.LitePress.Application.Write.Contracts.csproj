@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\LiteNova.LitePress.Domain\LiteNova.LitePress.Domain.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="LiteBus.Commands.Abstractions" />
-  </ItemGroup>
-</Project>

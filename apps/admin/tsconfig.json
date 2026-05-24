@@ -1,5 +1,5 @@
 {
-  "extends": "@litenova/config-typescript/nextjs.json",
+  "extends": "@litepress/config-typescript/nextjs.json",
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"]

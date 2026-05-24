@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LitePress.AppHost/LitePress.AppHost.csproj" />
+    <Project Path="src/LitePress.Application.Reactions/LitePress.Application.Reactions.csproj" />
+    <Project Path="src/LitePress.Application.Read.Contracts/LitePress.Application.Read.Contracts.csproj" />
+    <Project Path="src/LitePress.Application.Read/LitePress.Application.Read.csproj" />
+    <Project Path="src/LitePress.Application.Write.Contracts/LitePress.Application.Write.Contracts.csproj" />
+    <Project Path="src/LitePress.Application.Write/LitePress.Application.Write.csproj" />
+    <Project Path="src/LitePress.Domain/LitePress.Domain.csproj" />
+    <Project Path="src/LitePress.Infrastructure/LitePress.Infrastructure.csproj" />
+    <Project Path="src/LitePress.WebApi/LitePress.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LitePress.Application.Tests/LitePress.Application.Tests.csproj" />
+    <Project Path="tests/LitePress.Architecture.Tests/LitePress.Architecture.Tests.csproj" />
+    <Project Path="tests/LitePress.Domain.Tests/LitePress.Domain.Tests.csproj" />
+    <Project Path="tests/LitePress.Integration.Tests/LitePress.Integration.Tests.csproj" />
+  </Folder>
+</Solution>

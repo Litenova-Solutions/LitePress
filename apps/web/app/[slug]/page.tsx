@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { components } from "@litenova/api-types";
+import type { components } from "@litepress/api-types";
 import { notFound } from "next/navigation";
 import { PostArticle } from "@/domain/posts/view-post-by-slug/PostArticle";
 import { excerptFromContent } from "@/shared/prosemirror/renderContent";

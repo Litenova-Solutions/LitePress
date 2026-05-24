@@ -1,0 +1,8 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using LiteBus.Commands.Abstractions;
+global using LitePress.Domain.Authors;
+global using LitePress.Domain.Posts;
+global using LitePress.Domain.Tags;

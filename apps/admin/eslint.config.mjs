@@ -1,4 +1,4 @@
-import baseConfig from "@litenova/config-eslint";
+import baseConfig from "@litepress/config-eslint";
 
 export default [
   ...baseConfig,

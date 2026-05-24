@@ -1,4 +1,4 @@
-import type { components } from "@litenova/api-types";
+import type { components } from "@litepress/api-types";
 import Link from "next/link";
 
 export type TagSummary = components["schemas"]["TagResult"];

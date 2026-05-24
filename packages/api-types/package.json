@@ -1,5 +1,5 @@
 {
-  "name": "@litenova/api-types",
+  "name": "@litepress/api-types",
   "version": "0.0.0",
   "private": true,
   "exports": {

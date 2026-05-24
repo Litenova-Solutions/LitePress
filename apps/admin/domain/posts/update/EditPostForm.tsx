@@ -1,7 +1,7 @@
 "use client";
 // Post editing requires client-side TipTap and api-proxy mutations.
 
-import type { components } from "@litenova/api-types";
+import type { components } from "@litepress/api-types";
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { TipTapEditor } from "../create/TipTapEditor";

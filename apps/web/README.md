@@ -10,7 +10,7 @@ User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/dec
 
 - Next.js 16 · React 19.2 · TypeScript 6
 - Tailwind CSS 4
-- `@litenova/api-client` + `@litenova/api-types` (OpenAPI)
+- `@litepress/api-client` + `@litepress/api-types` (OpenAPI)
 - Giscus comments (optional)
 - ProseMirror JSON → HTML via `@tiptap/html`
 
@@ -21,7 +21,7 @@ User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/dec
 ### With Aspire
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
+dotnet run --project apps/api/src/LitePress.AppHost
 ```
 
 Check Aspire dashboard for the web app URL.

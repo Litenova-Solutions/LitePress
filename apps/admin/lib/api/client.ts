@@ -1,5 +1,5 @@
-import createClient from "@litenova/api-client";
-import type { paths } from "@litenova/api-types";
+import createClient from "@litepress/api-client";
+import type { paths } from "@litepress/api-types";
 import { auth } from "@/auth";
 import { mintApiToken } from "@/lib/auth/mintApiToken";
 import { env } from "@/lib/env";

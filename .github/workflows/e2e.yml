@@ -53,8 +53,8 @@ jobs:
 
       - name: Restore and build API
         run: |
-          dotnet restore LiteNova.LitePress.slnx
-          dotnet build LiteNova.LitePress.slnx --configuration Release --no-restore
+          dotnet restore LitePress.slnx
+          dotnet build LitePress.slnx --configuration Release --no-restore
 
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef --version 10.0.4
@@ -62,13 +62,13 @@ jobs:
       - name: Apply database migrations
         run: |
           dotnet ef database update \
-            --project src/LiteNova.LitePress.Infrastructure \
-            --startup-project src/LiteNova.LitePress.WebApi \
+            --project src/LitePress.Infrastructure \
+            --startup-project src/LitePress.WebApi \
             --configuration Release
 
       - name: Start API
         run: |
-          dotnet run --project src/LiteNova.LitePress.WebApi --configuration Release --no-build --urls http://localhost:5000 &
+          dotnet run --project src/LitePress.WebApi --configuration Release --no-build --urls http://localhost:5000 &
           for i in $(seq 1 30); do
             curl -sf http://localhost:5000/openapi/v1.json && break
             sleep 2

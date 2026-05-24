@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\LitePress.Application.Read.Contracts\LitePress.Application.Read.Contracts.csproj" />
+    <ProjectReference Include="..\LitePress.Domain\LitePress.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteBus.Queries.Abstractions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+</Project>

@@ -17,7 +17,7 @@ The canonical agent guide for this project is `AGENTS.md` at the repository root
 
 All rules from `standards/AGENTS.md` apply. Additional project rules:
 
-- Bounded context name is `Blog`. Use it in all namespaces.
+- Bounded context name is `LitePress`. Use it in all namespaces.
 - `AuthorId` comes from the JWT claim only, never from the request body.
 - Use `Post`, `Author`, `Tag` — not synonyms (Article, Writer, Category, etc.).
 - Never edit files inside `standards/`.

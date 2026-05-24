@@ -40,7 +40,7 @@ Details: [docs/decisions/licensing.md](docs/decisions/licensing.md).
 | Admin | Next.js 16 · Auth.js v5 · TipTap |
 | API | ASP.NET Core 10 Minimal API · LiteBus CQRS |
 | Database | PostgreSQL 17 · EF Core 10 (snake_case) |
-| API types | OpenAPI → `@litenova/api-types` + `openapi-fetch` client |
+| API types | OpenAPI → `@litepress/api-types` + `openapi-fetch` client |
 | Local orchestration | .NET Aspire AppHost |
 | CI | GitHub Actions (build, test, E2E publish flow) |
 
@@ -111,14 +111,14 @@ docker compose up -d
 
 ```bash
 dotnet ef database update \
-  --project apps/api/src/LiteNova.LitePress.Infrastructure \
-  --startup-project apps/api/src/LiteNova.LitePress.WebApi
+  --project apps/api/src/LitePress.Infrastructure \
+  --startup-project apps/api/src/LitePress.WebApi
 ```
 
 ### 5. Run with Aspire (recommended)
 
 ```bash
-dotnet run --project apps/api/src/LiteNova.LitePress.AppHost
+dotnet run --project apps/api/src/LitePress.AppHost
 ```
 
 Open the Aspire dashboard (typically `https://localhost:15888`) for API, web, and admin URLs.
@@ -133,7 +133,7 @@ Create `apps/admin/.env.local` — see [Environment variables](docs/technical/en
 
 | Service | Command | Default URL |
 |:---|:---|:---|
-| API | `dotnet run --project apps/api/src/LiteNova.LitePress.WebApi` | http://localhost:5000 |
+| API | `dotnet run --project apps/api/src/LitePress.WebApi` | http://localhost:5000 |
 | Web | `pnpm --filter web dev` | http://localhost:3000 |
 | Admin | `pnpm --filter admin dev` | http://localhost:3002 |
 
@@ -144,8 +144,8 @@ See [Development guide](docs/technical/development.md).
 ## Verification
 
 ```bash
-dotnet build apps/api/LiteNova.LitePress.slnx --configuration Release
-dotnet test apps/api/LiteNova.LitePress.slnx --configuration Release --no-build
+dotnet build apps/api/LitePress.slnx --configuration Release
+dotnet test apps/api/LitePress.slnx --configuration Release --no-build
 pnpm install --frozen-lockfile
 pnpm lint && pnpm type-check && pnpm test && pnpm build
 pnpm exec playwright test --config apps/web/playwright.config.ts

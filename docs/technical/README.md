@@ -39,19 +39,19 @@ Technical reference for the LitePress monorepo. For a non-technical overview, se
 | PostgreSQL | 17 |
 | ORM | EF Core 10 + `UseSnakeCaseNamingConvention()` |
 | CQRS | LiteBus (`ICommandMediator` / `IQueryMediator`) |
-| Front-end API client | `openapi-fetch` via `@litenova/api-client` |
+| Front-end API client | `openapi-fetch` via `@litepress/api-client` |
 | Monorepo | Turborepo + pnpm 10 |
 
 ---
 
 ## Namespaces
 
-All .NET code uses the `LiteNova.LitePress.*` prefix:
+All .NET code uses the `LitePress.*` prefix:
 
-- `LiteNova.LitePress.Domain`
-- `LiteNova.LitePress.Application.Write` / `.Read` / `.Reactions`
-- `LiteNova.LitePress.Infrastructure`
-- `LiteNova.LitePress.WebApi`
+- `LitePress.Domain`
+- `LitePress.Application.Write` / `.Read` / `.Reactions`
+- `LitePress.Infrastructure`
+- `LitePress.WebApi`
 
 Ubiquitous language: **Post**, **Tag**, **Author** (never Article, Category, Writer).
 

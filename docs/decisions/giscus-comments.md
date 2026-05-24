@@ -17,7 +17,7 @@ Published posts should support reader comments without storing comment data in t
 
 Use [Giscus](https://giscus.app/) (GitHub Discussions-backed) on the public post detail page only.
 
-- Comments are external to the `LiteNova.LitePress` bounded context.
+- Comments are external to the `LitePress` bounded context.
 - `GiscusComments.tsx` is a client component (embed script requires browser).
 - Configuration via env: `NEXT_PUBLIC_GISCUS_REPO`, `NEXT_PUBLIC_GISCUS_REPO_ID`, `NEXT_PUBLIC_GISCUS_CATEGORY_ID` (public values only).
 

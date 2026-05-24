@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LitePress.Application.Read\LitePress.Application.Read.csproj" />
+    <ProjectReference Include="..\..\src\LitePress.Application.Reactions\LitePress.Application.Reactions.csproj" />
+    <ProjectReference Include="..\..\src\LitePress.Application.Write\LitePress.Application.Write.csproj" />
+    <ProjectReference Include="..\..\src\LitePress.WebApi\LitePress.WebApi.csproj" />
+  </ItemGroup>
+
+</Project>

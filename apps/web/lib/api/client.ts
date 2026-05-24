@@ -1,5 +1,5 @@
-import createClient from "@litenova/api-client";
-import type { paths } from "@litenova/api-types";
+import createClient from "@litepress/api-client";
+import type { paths } from "@litepress/api-types";
 import { env } from "@/lib/env";
 
 interface ApiClientOptions {

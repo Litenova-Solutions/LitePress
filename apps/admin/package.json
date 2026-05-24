@@ -9,9 +9,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@litenova/api-client": "workspace:*",
-    "@litenova/api-types": "workspace:*",
-    "@litenova/config-tailwind": "workspace:*",
+    "@litepress/api-client": "workspace:*",
+    "@litepress/api-types": "workspace:*",
+    "@litepress/config-tailwind": "workspace:*",
     "@tiptap/extension-code-block-lowlight": "^2.10.4",
     "@tiptap/react": "^2.10.4",
     "@tiptap/starter-kit": "^2.10.4",
@@ -24,8 +24,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@litenova/config-eslint": "workspace:*",
-    "@litenova/config-typescript": "workspace:*",
+    "@litepress/config-eslint": "workspace:*",
+    "@litepress/config-typescript": "workspace:*",
     "eslint": "^9.14.0",
     "@types/node": "^22.9.0",
     "@types/react": "^19.2.0",

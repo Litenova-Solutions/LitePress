@@ -11,21 +11,21 @@ Full reference: [docs/technical/api-reference.md](../../docs/technical/api-refer
 ```
 apps/api/
 ├── src/
-│   ├── LiteNova.LitePress.AppHost/              # .NET Aspire orchestration
-│   ├── LiteNova.LitePress.Domain/
-│   ├── LiteNova.LitePress.Application.Write.Contracts/
-│   ├── LiteNova.LitePress.Application.Write/
-│   ├── LiteNova.LitePress.Application.Read.Contracts/
-│   ├── LiteNova.LitePress.Application.Read/
-│   ├── LiteNova.LitePress.Application.Reactions/
-│   ├── LiteNova.LitePress.Infrastructure/       # EF Core, repositories
-│   └── LiteNova.LitePress.WebApi/               # IEndpoint classes, middleware
+│   ├── LitePress.AppHost/              # .NET Aspire orchestration
+│   ├── LitePress.Domain/
+│   ├── LitePress.Application.Write.Contracts/
+│   ├── LitePress.Application.Write/
+│   ├── LitePress.Application.Read.Contracts/
+│   ├── LitePress.Application.Read/
+│   ├── LitePress.Application.Reactions/
+│   ├── LitePress.Infrastructure/       # EF Core, repositories
+│   └── LitePress.WebApi/               # IEndpoint classes, middleware
 ├── tests/
-│   ├── LiteNova.LitePress.Domain.Tests/
-│   ├── LiteNova.LitePress.Application.Tests/
-│   ├── LiteNova.LitePress.Architecture.Tests/
-│   └── LiteNova.LitePress.Integration.Tests/
-├── LiteNova.LitePress.slnx
+│   ├── LitePress.Domain.Tests/
+│   ├── LitePress.Application.Tests/
+│   ├── LitePress.Architecture.Tests/
+│   └── LitePress.Integration.Tests/
+├── LitePress.slnx
 ├── Directory.Build.props
 └── Directory.Packages.props
 ```
@@ -37,7 +37,7 @@ apps/api/
 ### With Aspire (recommended)
 
 ```bash
-dotnet run --project src/LiteNova.LitePress.AppHost
+dotnet run --project src/LitePress.AppHost
 ```
 
 ### Standalone
@@ -45,7 +45,7 @@ dotnet run --project src/LiteNova.LitePress.AppHost
 Requires PostgreSQL (see root [README](../../README.md) or `docker compose up -d`):
 
 ```bash
-dotnet run --project src/LiteNova.LitePress.WebApi
+dotnet run --project src/LitePress.WebApi
 # → http://localhost:5000
 ```
 
@@ -63,13 +63,13 @@ JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 ```bash
 # Apply
 dotnet ef database update \
-  --project src/LiteNova.LitePress.Infrastructure \
-  --startup-project src/LiteNova.LitePress.WebApi
+  --project src/LitePress.Infrastructure \
+  --startup-project src/LitePress.WebApi
 
 # Add
 dotnet ef migrations add <Name> \
-  --project src/LiteNova.LitePress.Infrastructure \
-  --startup-project src/LiteNova.LitePress.WebApi
+  --project src/LitePress.Infrastructure \
+  --startup-project src/LitePress.WebApi
 ```
 
 ---
@@ -77,8 +77,8 @@ dotnet ef migrations add <Name> \
 ## Build and test
 
 ```bash
-dotnet build LiteNova.LitePress.slnx --configuration Release
-dotnet test LiteNova.LitePress.slnx --configuration Release --no-build
+dotnet build LitePress.slnx --configuration Release
+dotnet test LitePress.slnx --configuration Release --no-build
 ```
 
 ---

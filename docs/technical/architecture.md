@@ -136,9 +136,9 @@ See [admin-auth.md](../decisions/admin-auth.md).
 
 | Package | Purpose |
 |:---|:---|
-| `@litenova/api-types` | OpenAPI-generated TypeScript types (`paths`, `components`) |
-| `@litenova/api-client` | Re-export of `openapi-fetch` `createClient` |
-| `@litenova/config-*` | Shared ESLint, TypeScript, Tailwind presets |
+| `@litepress/api-types` | OpenAPI-generated TypeScript types (`paths`, `components`) |
+| `@litepress/api-client` | Re-export of `openapi-fetch` `createClient` |
+| `@litepress/config-*` | Shared ESLint, TypeScript, Tailwind presets |
 
 Regenerate types after API contract changes:
 

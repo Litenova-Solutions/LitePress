@@ -17,13 +17,13 @@ importers:
 
   apps/admin:
     dependencies:
-      '@litenova/api-client':
+      '@litepress/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@litenova/api-types':
+      '@litepress/api-types':
         specifier: workspace:*
         version: link:../../packages/api-types
-      '@litenova/config-tailwind':
+      '@litepress/config-tailwind':
         specifier: workspace:*
         version: link:../../packages/config-tailwind
       '@tiptap/extension-code-block-lowlight':
@@ -57,10 +57,10 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
-      '@litenova/config-eslint':
+      '@litepress/config-eslint':
         specifier: workspace:*
         version: link:../../packages/config-eslint
-      '@litenova/config-typescript':
+      '@litepress/config-typescript':
         specifier: workspace:*
         version: link:../../packages/config-typescript
       '@types/node':
@@ -90,13 +90,13 @@ importers:
       '@giscus/react':
         specifier: ^3.1.0
         version: 3.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@litenova/api-client':
+      '@litepress/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@litenova/api-types':
+      '@litepress/api-types':
         specifier: workspace:*
         version: link:../../packages/api-types
-      '@litenova/config-tailwind':
+      '@litepress/config-tailwind':
         specifier: workspace:*
         version: link:../../packages/config-tailwind
       '@tiptap/html':
@@ -118,10 +118,10 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
-      '@litenova/config-eslint':
+      '@litepress/config-eslint':
         specifier: workspace:*
         version: link:../../packages/config-eslint
-      '@litenova/config-typescript':
+      '@litepress/config-typescript':
         specifier: workspace:*
         version: link:../../packages/config-typescript
       '@playwright/test':

@@ -1,4 +1,4 @@
-import type { components } from "@litenova/api-types";
+import type { components } from "@litepress/api-types";
 import { renderProseMirrorToHtml } from "@/shared/prosemirror/renderContent";
 import { GiscusComments } from "./GiscusComments";
 
