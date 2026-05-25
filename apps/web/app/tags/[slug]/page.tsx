@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { PostList } from "@/features/posts/list-published-posts/PostList";
 import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
@@ -28,36 +27,43 @@ export async function generateMetadata({
 
 export default async function TagPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { slug } = await params;
+  const sp = await searchParams;
+  const page = parseInt(sp.page || "1", 10);
+
   const client = await getApiClient({
     tags: ["posts", "tag-" + slug],
     revalidate: 3600,
   });
 
-  const { data, error, response } = await client.GET("/api/posts", {
+  const result = await client.GET("/api/posts", {
     params: {
       query: {
         tag: slug,
-        page: 1,
-        pageSize: 20,
+        page,
+        pageSize: 10,
       },
     },
   });
 
-  if (response.status === 404 || error || !data) {
-    notFound();
+  if (result.error) {
+    throw new Error("Failed to load posts");
   }
+
+  const items = result.data?.items ?? [];
 
   return (
     <PostList
-      posts={data.items}
+      posts={items}
       heading={"Posts tagged: " + slug}
-      page={1}
-      hasNextPage={data.items.length === 20}
-      tagSlug={slug}
+      page={page}
+      hasNextPage={items.length === 10}
+      paginationBase={"/tags/" + slug}
     />
   );
 }

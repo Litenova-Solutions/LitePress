@@ -19,10 +19,34 @@ interface PostListProps {
   page: number;
   hasNextPage: boolean;
   tagSlug?: string;
+  /** Base path for pagination links. Defaults to `/` (home). Use `/tags/{slug}` on tag routes. */
+  paginationBase?: string;
 }
 
-export function PostList({ posts, heading, page, hasNextPage, tagSlug }: PostListProps) {
-  const tagQuery = tagSlug ? "&tag=" + tagSlug : "";
+function buildPageHref(basePath: string, page: number, tagSlug?: string): string {
+  const params = new URLSearchParams();
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+  if (tagSlug && basePath === "/") {
+    params.set("tag", tagSlug);
+  }
+  const query = params.toString();
+  return query ? basePath + "?" + query : basePath;
+}
+
+export function PostList({
+  posts,
+  heading,
+  page,
+  hasNextPage,
+  tagSlug,
+  paginationBase = "/",
+}: PostListProps) {
+  const emptyMessage =
+    tagSlug || paginationBase.startsWith("/tags/")
+      ? "No posts with this tag."
+      : "No posts yet.";
 
   return (
     <section className="space-y-8">
@@ -64,13 +88,16 @@ export function PostList({ posts, heading, page, hasNextPage, tagSlug }: PostLis
 
       {posts.length === 0 && (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">No posts yet.</CardContent>
+          <CardContent className="py-12 text-center text-muted-foreground">{emptyMessage}</CardContent>
         </Card>
       )}
 
       <nav className="flex justify-between" aria-label="Pagination">
         {page > 1 ? (
-          <Link href={"/?page=" + (page - 1) + tagQuery} className={buttonVariants({ variant: "outline" })}>
+          <Link
+            href={buildPageHref(paginationBase, page - 1, tagSlug)}
+            className={buttonVariants({ variant: "outline" })}
+          >
             Previous
           </Link>
         ) : (
@@ -78,7 +105,7 @@ export function PostList({ posts, heading, page, hasNextPage, tagSlug }: PostLis
         )}
         {hasNextPage && (
           <Link
-            href={"/?page=" + (page + 1) + tagQuery}
+            href={buildPageHref(paginationBase, page + 1, tagSlug)}
             className={cn(buttonVariants({ variant: "outline" }), "ml-auto")}
           >
             Next

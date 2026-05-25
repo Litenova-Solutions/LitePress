@@ -12,6 +12,7 @@ const lowlight = createLowlight(common);
 interface TipTapEditorProps {
   value: string;
   onChange: (json: string) => void;
+  editable?: boolean;
 }
 
 function parseInitialContent(value: string): object {
@@ -28,14 +29,22 @@ function parseInitialContent(value: string): object {
   };
 }
 
-export function TipTapEditor({ value, onChange }: TipTapEditorProps) {
+export function TipTapEditor({ value, onChange, editable = true }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit, CodeBlockLowlight.configure({ lowlight })],
     content: parseInitialContent(value),
+    editable,
     onUpdate: ({ editor: currentEditor }) => {
       onChange(JSON.stringify(currentEditor.getJSON()));
     },
   });
+
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+    editor.setEditable(editable);
+  }, [editor, editable]);
 
   useEffect(() => {
     if (!editor) {

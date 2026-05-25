@@ -287,6 +287,8 @@ export function EditPostForm({ params }: EditPostFormProps) {
               <Input
                 id="title"
                 required
+                readOnly={!isDraft}
+                disabled={!isDraft}
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               />
@@ -296,6 +298,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
               <Label htmlFor="content">Content</Label>
               <TipTapEditor
                 value={form.content}
+                editable={isDraft}
                 onChange={(content) => setForm((f) => ({ ...f, content }))}
               />
             </div>
@@ -305,6 +308,8 @@ export function EditPostForm({ params }: EditPostFormProps) {
               <Textarea
                 id="excerpt"
                 rows={3}
+                readOnly={!isDraft}
+                disabled={!isDraft}
                 value={form.excerpt}
                 onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
               />
@@ -315,6 +320,8 @@ export function EditPostForm({ params }: EditPostFormProps) {
               <Input
                 id="coverImageUrl"
                 type="url"
+                readOnly={!isDraft}
+                disabled={!isDraft}
                 value={form.coverImageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
               />

@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { readApiErrorMessage } from "@/lib/api/errors";
 
 export function CreatePostForm() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export function CreatePostForm() {
         }),
       });
       if (!res.ok) {
-        throw new Error(await res.text());
+        throw new Error(await readApiErrorMessage(res));
       }
       const data = (await res.json()) as { postId: string };
       toast.success("Post created");
