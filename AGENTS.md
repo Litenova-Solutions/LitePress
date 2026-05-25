@@ -19,7 +19,7 @@ Read order:
 5. `standards/docs/guides/agentic-domain-driven-design.md` — domain doc tree and frontend layout.
 6. The project-specific files below for domain context.
 
-Standards submodule pinned at `aaf892e` (local dev orchestration baseline).
+Standards submodule tracks [`main`](https://github.com/Litenova-Solutions/Engineering-Standards) on Engineering-Standards. After clone, run `git submodule update --init --recursive`. To pull the latest standards: `git submodule update --remote standards`.
 
 ---
 

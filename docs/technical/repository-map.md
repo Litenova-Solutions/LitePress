@@ -129,7 +129,7 @@ Regenerate types after API changes: `pnpm generate:api-types`
 
 Git submodule pointing at [Engineering-Standards](https://github.com/Litenova-Solutions/Engineering-Standards). Shared conventions, blueprints, CI templates.
 
-**Do not edit from LitePress.** Propose changes in the standards repository, then bump the submodule pin here.
+**Do not edit from LitePress.** Propose changes in the standards repository, then update the submodule (`git submodule update --remote standards`).
 
 After clone: `git submodule update --init --recursive` (or `scripts/bootstrap.*`).
 
