@@ -51,7 +51,11 @@ Admin OAuth gate: only GitHub user matching `GITHUB_OWNER_ID` may sign in. See [
 
 ---
 
-## UI (admin)
+## UI projection
+
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [login.md](../../ui/admin/pages/login.md) | OAuth sign-in triggers first API call after redirect |
 
 No dedicated registration UI. Author is registered transparently on first authenticated API interaction after GitHub OAuth login.
 

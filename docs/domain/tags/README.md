@@ -55,8 +55,8 @@ Stateless by existence: a tag is active while it exists in the database.
 
 | Use case | Doc | Backend | Frontend |
 |:---|:---|:---|:---|
-| Create tag | [create-tag.md](create-tag.md) | `Tags/Create/` | `domain/tags/create/` (admin) |
-| Rename tag | [rename-tag.md](rename-tag.md) | `Tags/Rename/` | `domain/tags/rename/` (admin) |
-| Delete tag | [delete-tag.md](delete-tag.md) | `Tags/Delete/` | `domain/tags/delete/` (admin) |
-| List tags | [list-tags.md](list-tags.md) | `Tags/GetAllTags/` | `domain/tags/list/` (web + admin) |
-| List posts by tag | [list-posts-by-tag.md](list-posts-by-tag.md) | `Posts/GetPostsByTag/` | `domain/tags/list-posts/` (web) |
+| Create tag | [create-tag.md](create-tag.md) | `Tags/Create/` | `app/(dashboard)/tags/page.tsx` inline (admin) |
+| Rename tag | [rename-tag.md](rename-tag.md) | `Tags/Rename/` | `features/tags/rename/` (admin) |
+| Delete tag | [delete-tag.md](delete-tag.md) | `Tags/Delete/` | `features/tags/delete/` (admin) |
+| List tags | [list-tags.md](list-tags.md) | `Tags/GetAllTags/` | `features/tags/list-tags/` (web); admin tags page inline |
+| List posts by tag | [list-posts-by-tag.md](list-posts-by-tag.md) | `Posts/GetPostsByTag/` | `features/posts/list-published-posts/` (web; shared `PostList`) |

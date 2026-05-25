@@ -53,7 +53,7 @@ LitePress currently ships two Next.js frontends and one API. The monorepo MAY ad
 | `apps/admin` | 3002 | Auth.js GitHub OAuth | Server: `getApiClient()` with minted JWT; client: `/api-proxy` |
 | `apps/api` | 5000 | JWT Bearer on mutating routes | PostgreSQL via EF Core |
 
-Each Next.js app is independent: own `domain/{feature}/{use-case}/` tree, own `components/ui/` (shadcn), shared CSS tokens from `@litepress/config-tailwind`. No cross-app domain imports.
+Each Next.js app is independent: own `features/{feature}/{use-case}/` tree, own `components/ui/` (shadcn), shared CSS tokens from `@litepress/config-tailwind`. No cross-app feature imports.
 
 ---
 

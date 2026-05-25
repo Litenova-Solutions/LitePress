@@ -59,40 +59,26 @@ Returns 201 with `{ postId, slug }` and `Location: /api/posts/{postId}`.
 
 ---
 
-## UI (admin)
+## UI projection
 
-### Route and entry
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-create.md](../../ui/admin/pages/post-create.md) | Create form |
 
-- Route: `app/(dashboard)/posts/new/page.tsx`
-- Domain entry: `domain/posts/create/CreatePostForm.tsx`
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
-### Components (shadcn/ui)
-
-Use local imports from `@/components/ui/`:
-
-| UI element | Component |
-|:---|:---|
-| Form shell | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent` |
-| Fields | `Label`, `Input`, `Textarea` |
-| Submit | `Button` |
-| API errors | `Alert`, `AlertTitle`, `AlertDescription` |
-| Success / failure feedback | `sonner` toast via `Toaster` in root layout |
-| Rich text | `TipTapEditor` (TipTap; admin-specific) |
-
-Shared theme: `@litepress/config-tailwind/theme.css`.
-
-### States
+### Operation states
 
 | State | Behavior |
 |:---|:---|
-| Loading | Submit button disabled during client mutation |
+| Submitting | Submit button disabled during client mutation |
 | Empty | Blank form with TipTap editor |
-| Error | Inline `Alert` and error toast on API failure |
-| Loaded | Redirect to post edit page on success |
+| Error | Inline alert and error toast on API failure |
+| Success | Redirect to post edit page |
 
 ### Mutations
 
-Client mutation via `/api-proxy/posts` with JSON body. TipTap outputs ProseMirror JSON for `content`. (Server Action + Zod in the action file remains the standards default for new forms; this use case currently uses the api-proxy client pattern documented here.)
+Client mutation via `/api-proxy/posts` with JSON body. TipTap outputs ProseMirror JSON for `content`.
 
 ---
 

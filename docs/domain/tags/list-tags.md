@@ -36,19 +36,14 @@ Post count reflects published posts only on the public side.
 
 ---
 
-## UI
+## UI projection
 
-### Web
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| web | [tags-index.md](../../ui/web/pages/tags-index.md) | Public tag index |
+| admin | [tags.md](../../ui/admin/pages/tags.md) | Tag list, create form, row actions |
 
-- Route: `app/tags/page.tsx` (to be created)
-- Target: `domain/tags/list/ListTagsPage.tsx`
-- Lists all tags linking to `/tags/{slug}`
-
-### Admin
-
-- Route: `app/(dashboard)/tags/page.tsx`
-- Target: `domain/tags/list/AdminTagsPage.tsx`
-- Includes create, rename, delete actions
+Shell: [web shell.md](../../ui/web/shell.md) · [admin shell.md](../../ui/admin/shell.md)
 
 ---
 

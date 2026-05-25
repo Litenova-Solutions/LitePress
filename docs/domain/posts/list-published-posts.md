@@ -4,7 +4,7 @@
 |:---|:---|
 | Feature | `posts` |
 | Status | Active (v1 complete) |
-| Last updated | 2026-05-23 |
+| Last updated | 2026-05-25 |
 
 ---
 
@@ -40,11 +40,19 @@ Optional `tag` query parameter routes to [list-posts-by-tag](../tags/list-posts-
 
 ---
 
-## UI (web)
+## UI projection
 
-Operation states and acceptance criteria stay in this doc. Page composition: [docs/ui/web/pages/home.md](../../ui/web/pages/home.md). Shell: [docs/ui/web/shell.md](../../ui/web/shell.md).
+Operation states and acceptance criteria stay in this doc. Page composition lives in UI projection docs.
 
-### States
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| web | [home.md](../../ui/web/pages/home.md) | Primary paginated list; optional `?tag=` filter branch |
+| web | [posts-by-tag.md](../../ui/web/pages/posts-by-tag.md) | Shared list UI on tag route |
+| admin | [posts-list.md](../../ui/admin/pages/posts-list.md) | Authenticated list (all post states) |
+
+Shell: [web shell.md](../../ui/web/shell.md) · [admin shell.md](../../ui/admin/shell.md)
+
+### Operation states
 
 | State | Behavior |
 |:---|:---|

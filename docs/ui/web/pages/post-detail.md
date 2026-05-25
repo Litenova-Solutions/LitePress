@@ -5,7 +5,8 @@
 | App | `apps/web` |
 | Route | `/[slug]` |
 | Route shell | [app/[slug]/page.tsx](../../../apps/web/app/[slug]/page.tsx) |
-| Domain entry | [PostArticle.tsx](../../../apps/web/domain/posts/view-post-by-slug/PostArticle.tsx), [GiscusComments.tsx](../../../apps/web/domain/posts/view-post-by-slug/GiscusComments.tsx) |
+| Feature entry | [PostArticle.tsx](../../../apps/web/features/posts/view-post-by-slug/PostArticle.tsx), [GiscusComments.tsx](../../../apps/web/features/posts/view-post-by-slug/GiscusComments.tsx) |
+| Last updated | 2026-05-25 |
 
 ---
 
@@ -17,12 +18,14 @@
 
 ---
 
-## Visible states
+## Screen states
 
 | State | User sees |
 |:---|:---|
+| Loading | Optional skeleton via `loading.tsx` |
 | Loaded | Title, author, date, cover image, prose body, tags, Giscus comments |
 | Not found / unpublished | Next.js `notFound()` (404) |
+| Error | Next.js `error.tsx` |
 
 ---
 

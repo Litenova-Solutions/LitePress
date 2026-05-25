@@ -72,8 +72,10 @@ Read these files before generating any domain or application code.
 | `docs/domain/README.md` | System map: all features and use cases. |
 | `docs/domain/{feature}/README.md` | Feature ubiquitous language, aggregates, invariants, events. |
 | `docs/domain/{feature}/{use-case}.md` | Use case contract: commands, endpoints, operation acceptance criteria. |
-| [docs/ui/README.md](docs/ui/README.md) | UI projection layer: shell and page composition per app. |
-| `docs/ui/{app}/pages/*.md` | One route; which use cases compose; visible states; e2e links. |
+| [docs/ui/README.md](docs/ui/README.md) | UI projection layer: shell and page composition per app (`web` and `admin` are separate trees). |
+| `docs/ui/{app}/pages/*.md` | One route per app; which use cases compose; screen states; e2e links. |
+| `standards/docs/templates/ui-page.md` | Page doc template (standards submodule). |
+| `standards/docs/templates/ui-shell.md` | Shell doc template (standards submodule). |
 | `docs/decisions/` | LitePress ADRs (auth, dual apps, SEO, licensing, deferrals). |
 
 Domain docs hold policy and operations. UI projection docs hold screen composition. App READMEs hold runbooks. Do not duplicate invariants or operation rules in UI docs.
@@ -87,12 +89,14 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 - MUST use `LitePress.*` namespaces (not legacy `Blog.*` or `LiteNova.*` prefixes).
 - MUST read `docs/domain/{feature}/README.md` before writing domain code for that feature.
 - MUST read the use case doc at `docs/domain/{feature}/{use-case}.md` before implementing a use case.
-- MUST read `docs/ui/{app}/shell.md` and the relevant `docs/ui/{app}/pages/*.md` before changing layout or page composition in that app.
+- MUST read `docs/ui/{app}/shell.md` and the relevant `docs/ui/{app}/pages/*.md` before changing layout or page composition in that app (`web` and `admin` are independent; read only the app you are editing).
+- MUST add or update `docs/ui/{app}/pages/{page}.md` using `standards/docs/templates/ui-page.md` when adding or changing a frontend route.
+- MUST link use-case docs § UI projection to every page doc where that operation appears (both directions).
 - MUST derive `AuthorId` from the authenticated user's JWT claim. Never accept `AuthorId` from the request body.
 - MUST NOT use the terms "Article", "Content", or "Entry" in place of "Post" in code, comments, or documentation.
 - MUST NOT use the terms "Writer" or "Creator" in place of "Author" in code, comments, or documentation.
 - MUST NOT use the term "Category" or "Label" in place of "Tag" in code, comments, or documentation.
-- MUST place frontend feature code in `domain/{feature}/{use-case}/` in **each** frontend app independently. No cross-app domain imports.
+- MUST place frontend feature code in `features/{feature}/{use-case}/` in **each** frontend app independently. No cross-app feature imports.
 - MUST use shadcn/ui in frontend apps unless a LitePress ADR documents a different UI stack for that app.
 
 ---

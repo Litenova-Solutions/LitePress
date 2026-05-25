@@ -77,7 +77,7 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `package.json` | App scripts; dev server port **3000** |
 | `.env.example` | Template for optional overrides — copy to `.env.local` |
 | `lib/env.ts` | Validated server/public env vars |
-| `domain/` | Feature UI aligned with `docs/domain/` |
+| `features/` | Feature UI aligned with `docs/domain/` |
 | `components/ui/` | shadcn/ui components (owned per app) |
 | `postcss.config.mjs` | Tailwind v4 PostCSS entry |
 | `e2e/` | Playwright tests; `.seed.json` is generated locally (gitignored) |
@@ -124,7 +124,7 @@ Regenerate types after API changes: `pnpm generate:api-types`
 | `technical/development.md` | Clone, run modes, debug, verification |
 | `technical/environment.md` | All env vars and OAuth setup |
 | `technical/repository-map.md` | This file |
-| `domain/` | Ubiquitous language, use cases, acceptance criteria |
+| `features/` | Ubiquitous language, use cases, acceptance criteria |
 | `decisions/` | LitePress ADRs (auth, dual apps, migrations, deferrals, …) |
 
 ---

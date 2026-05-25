@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getApiClient } from "@/lib/api/client";
-import { DeleteTagButton } from "@/domain/tags/delete/DeleteTagButton";
-import { RenameTagButton } from "@/domain/tags/rename/RenameTagButton";
+import { DeleteTagButton } from "@/features/tags/delete/DeleteTagButton";
+import { RenameTagButton } from "@/features/tags/rename/RenameTagButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

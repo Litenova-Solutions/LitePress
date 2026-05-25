@@ -53,9 +53,13 @@ Request: `{ name }`. Returns 201 with `{ tagId, slug }`.
 
 ---
 
-## UI (admin)
+## UI projection
 
-Inline create form on tags management page.
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [tags.md](../../ui/admin/pages/tags.md) | Inline create form |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ---
 

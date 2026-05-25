@@ -32,7 +32,7 @@ Example `app/globals.css`:
 
 @source "../app/**/*.{js,ts,jsx,tsx}";
 @source "../components/**/*.{js,ts,jsx,tsx}";
-@source "../domain/**/*.{js,ts,jsx,tsx}";
+@source "../features/**/*.{js,ts,jsx,tsx}";
 ```
 
 An app MAY override tokens in its own `globals.css` when documented in a use-case or ADR.

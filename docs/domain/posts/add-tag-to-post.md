@@ -55,9 +55,14 @@ Request body for add: `{ tagId }`.
 
 ---
 
-## UI (admin)
+## UI projection
 
-Tag multi-select on post create/edit form. Shows all tags with checkboxes or combobox.
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-editor.md](../../ui/admin/pages/post-editor.md) | Tag toggle list on shared editor |
+| admin | [post-create.md](../../ui/admin/pages/post-create.md) | Optional initial tag assignment at create |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ---
 

@@ -202,10 +202,10 @@ npx shadcn@latest add <component-name>
 Each app requires:
 
 - `postcss.config.mjs` with `@tailwindcss/postcss`
-- `app/globals.css` with `@import "tailwindcss"`, `@source` directives for `app/`, `components/`, and `domain/`
+- `app/globals.css` with `@import "tailwindcss"`, `@source` directives for `app/`, `components/`, and `features/`
 - `components.json` from `npx shadcn@latest init`
 
-Use-case docs under `docs/domain/` list shadcn components per screen and override generic standards wording when needed.
+Page composition and shadcn usage belong in `docs/ui/{app}/pages/*.md` and use-case docs § UI projection. Generic defaults are in `standards/docs/conventions/frontend/`.
 
 ---
 
@@ -281,7 +281,7 @@ Set breakpoints in command/query handlers, endpoints, or Next.js server componen
 |:---|:---|
 | New use case | `docs/domain/{feature}/{use-case}.md`, then `standards/docs/guides/add-new-use-case.md` |
 | API change | Layer convention in `standards/docs/conventions/backend/` |
-| Frontend change | `standards/docs/conventions/frontend/`, app `domain/` folder |
+| Frontend change | `standards/docs/conventions/frontend/`, app `features/` folder |
 | Agent work | [AGENTS.md](../../AGENTS.md) |
 
 ---

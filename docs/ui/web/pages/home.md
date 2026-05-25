@@ -5,29 +5,28 @@
 | App | `apps/web` |
 | Route | `/` |
 | Route shell | [app/page.tsx](../../../apps/web/app/page.tsx) |
-| Domain entry | [PostList.tsx](../../../apps/web/domain/posts/list-published-posts/PostList.tsx) |
+| Feature entry | [PostList.tsx](../../../apps/web/features/posts/list-published-posts/PostList.tsx) |
+| Last updated | 2026-05-25 |
 
 ---
 
 ## Use cases on this page
 
-| Use case | Doc |
-|:---|:---|
-| List published posts | [list-published-posts.md](../../domain/posts/list-published-posts.md) |
-
-Optional `?tag=` filter delegates to [list-posts-by-tag.md](../../domain/tags/list-posts-by-tag.md) query branch; list UI is shared with [posts-by-tag](posts-by-tag.md).
+| Use case | Doc | Notes |
+|:---|:---|:---|
+| List published posts | [list-published-posts.md](../../domain/posts/list-published-posts.md) | Primary list |
+| List posts by tag | [list-posts-by-tag.md](../../domain/tags/list-posts-by-tag.md) | Optional `?tag=` query branch; shared list UI with [posts-by-tag](posts-by-tag.md) |
 
 ---
 
-## Visible states
+## Screen states
 
 | State | User sees |
 |:---|:---|
-| Loaded (posts) | Paginated cards, newest first; title links to `/[slug]` |
+| Loading | Optional skeleton via `loading.tsx` |
+| Loaded | Paginated cards, newest first; title links to `/[slug]` |
 | Empty | "No posts yet." |
 | Error | Next.js `error.tsx` with retry |
-
-Loading skeleton: optional via `loading.tsx`.
 
 ---
 

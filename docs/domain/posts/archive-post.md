@@ -49,9 +49,13 @@ Returns 204 No Content.
 
 ---
 
-## UI (admin)
+## UI projection
 
-Archive action on post edit page and post list row actions.
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-editor.md](../../ui/admin/pages/post-editor.md) | Archive action on shared editor |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ---
 

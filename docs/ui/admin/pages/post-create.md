@@ -5,7 +5,8 @@
 | App | `apps/admin` |
 | Route | `/posts/new` |
 | Route shell | [app/(dashboard)/posts/new/page.tsx](../../../apps/admin/app/(dashboard)/posts/new/page.tsx) |
-| Domain entry | [CreatePostForm.tsx](../../../apps/admin/domain/posts/create/CreatePostForm.tsx) |
+| Feature entry | [CreatePostForm.tsx](../../../apps/admin/features/posts/create/CreatePostForm.tsx) |
+| Last updated | 2026-05-25 |
 
 ---
 
@@ -17,7 +18,7 @@
 
 ---
 
-## Visible states
+## Screen states
 
 | State | User sees |
 |:---|:---|
@@ -30,10 +31,15 @@
 
 ## Shell
 
-[Dashboard shell](../shell.md).
+Inherits [admin shell](../shell.md).
 
 ---
 
 ## Tests
+
+| Type | Location |
+|:---|:---|
+| Playwright | Not yet added for admin |
+| Integration | [create-post.md](../../domain/posts/create-post.md) API tests |
 
 Acceptance criteria: [create-post.md § Acceptance Criteria](../../domain/posts/create-post.md#acceptance-criteria).

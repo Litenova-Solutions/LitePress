@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PostList } from "@/domain/posts/list-published-posts/PostList";
+import { PostList } from "@/features/posts/list-published-posts/PostList";
 import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 

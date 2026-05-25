@@ -3,25 +3,39 @@
 | Field | Value |
 |:---|:---|
 | App | `apps/admin` |
-| Route | `/` (dashboard) |
+| Route | `/` |
 | Route shell | [app/(dashboard)/page.tsx](../../../apps/admin/app/(dashboard)/page.tsx) |
+| Feature entry | (inline in route shell) |
+| Last updated | 2026-05-25 |
 
 ---
 
 ## Use cases on this page
 
-Read-only summary from `GET /api/posts` (authenticated branch returns all states). No single domain use-case doc; aggregates counts from post list.
+Read-only summary from `GET /api/posts` and `GET /api/tags` (authenticated branch returns all post states). No single domain use-case doc; aggregates counts from post and tag lists.
 
 ---
 
-## Visible states
+## Screen states
 
 | State | User sees |
 |:---|:---|
-| Loaded | Draft, published, and archived counts; links to posts |
+| Loaded | Stat cards for total, published, and draft posts; tag count; link to create post |
+| Error | Next.js error boundary (failed API fetch) |
 
 ---
 
 ## Shell
 
-[Dashboard shell](../shell.md).
+Inherits [admin shell](../shell.md).
+
+---
+
+## Tests
+
+| Type | Location |
+|:---|:---|
+| Playwright | Not yet added for admin |
+| Integration | Post and tag list queries covered by API integration tests |
+
+Acceptance criteria: N/A (read-only dashboard aggregate; no dedicated use-case doc).

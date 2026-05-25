@@ -48,9 +48,13 @@ Returns 204 No Content.
 
 ---
 
-## UI (admin)
+## UI projection
 
-Delete action with confirmation dialog on post edit page.
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-editor.md](../../ui/admin/pages/post-editor.md) | Delete action with confirmation dialog |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ---
 

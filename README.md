@@ -63,7 +63,7 @@ LitePress/
 └── docs/
     ├── how-it-works.md
     ├── technical/
-    ├── domain/
+    ├── features/
     └── decisions/
 ```
 

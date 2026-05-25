@@ -50,11 +50,15 @@ Returns 204 No Content.
 
 ---
 
-## UI (admin)
+## UI projection
 
-Page composition: [docs/ui/admin/pages/post-editor.md](../../ui/admin/pages/post-editor.md) (shared editor surface).
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-editor.md](../../ui/admin/pages/post-editor.md) | Publish action on shared editor |
 
-### States
+Shell: [admin shell.md](../../ui/admin/shell.md)
+
+### Operation states
 
 | State | Behavior |
 |:---|:---|

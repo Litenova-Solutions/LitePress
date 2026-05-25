@@ -1,6 +1,10 @@
 # Public web — shell
 
-App: `apps/web` · Layout: [app/layout.tsx](../../../apps/web/app/layout.tsx)
+| Field | Value |
+|:---|:---|
+| App | `apps/web` |
+| Layout | [app/layout.tsx](../../../apps/web/app/layout.tsx) |
+| Last updated | 2026-05-25 |
 
 Shared chrome wraps every public route. Page docs describe route-specific content inside `main`.
 

@@ -34,21 +34,23 @@ Returns empty items if tag slug not found (not 404).
 
 ---
 
-## UI (web)
+## UI projection
 
-### Route and entry
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| web | [posts-by-tag.md](../../ui/web/pages/posts-by-tag.md) | Primary tag-filtered list |
+| web | [home.md](../../ui/web/pages/home.md) | Optional `?tag=` query branch |
 
-- Route: `app/tags/[slug]/page.tsx`
-- Target: `domain/tags/list-posts/ListPostsByTagPage.tsx`
+Shell: [web shell.md](../../ui/web/shell.md)
 
-### States
+### Operation states
 
 | State | Behavior |
 |:---|:---|
 | Loading | Skeleton list |
 | Empty | "No posts with this tag." |
 | Error | Error boundary |
-| Loaded | Paginated post list with tag name as `<h1>` |
+| Loaded | Paginated post list with tag name as heading |
 
 ---
 

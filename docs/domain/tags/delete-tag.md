@@ -47,6 +47,16 @@ Returns 204 No Content.
 
 ---
 
+## UI projection
+
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [tags.md](../../ui/admin/pages/tags.md) | Delete row action via [DeleteTagButton.tsx](../../../apps/admin/features/tags/delete/DeleteTagButton.tsx) |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
+
+---
+
 ## Acceptance Criteria
 
 1. Given a tag assigned to posts, when deleted, then posts no longer reference that tag. (Integration)

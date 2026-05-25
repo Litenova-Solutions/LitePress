@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TagsIndex } from "@/domain/tags/list-tags/TagsIndex";
+import { TagsIndex } from "@/features/tags/list-tags/TagsIndex";
 import { getApiClient } from "@/lib/api/client";
 import { env } from "@/lib/env";
 

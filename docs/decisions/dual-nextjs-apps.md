@@ -22,7 +22,7 @@ Run independent Next.js apps in the monorepo:
 | Web | `apps/web` | Public blog: lists, detail, tags, Giscus, SEO |
 | Admin | `apps/admin` | Authenticated dashboard: post/tag CRUD, TipTap editor |
 
-Each app follows `domain/{feature}/{use-case}/` layout independently. No app imports from another app's `domain/` folder.
+Each app follows `features/{feature}/{use-case}/` layout independently. No app imports from another app's `features/` folder.
 
 **UI projection docs** at `docs/ui/{app}/` describe shell and page composition (which use cases appear on each route). **Use-case docs** at `docs/domain/` define operations and invariants. **App READMEs** are runbooks only.
 

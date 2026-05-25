@@ -60,7 +60,7 @@ Shell, page composition, and route index: [docs/ui/web/](../../docs/ui/web/READM
 apps/web/
 ├── app/                    # Thin route shells
 ├── components/ui/          # shadcn/ui components (owned in this app)
-├── domain/                 # Feature UI by use case
+├── features/                 # Feature UI by use case
 │   ├── posts/list-published-posts/
 │   ├── posts/view-post-by-slug/
 │   └── tags/list-tags/

@@ -74,7 +74,7 @@ Shell, page composition, and route index: [docs/ui/admin/](../../docs/ui/admin/R
 apps/admin/
 ├── app/                    # Routes and layouts
 ├── components/ui/          # shadcn/ui components
-├── domain/                 # Feature UI by use case
+├── features/                 # Feature UI by use case
 │   ├── posts/create/
 │   ├── posts/update/
 │   └── tags/delete|rename/

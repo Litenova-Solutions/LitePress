@@ -5,7 +5,8 @@
 | App | `apps/web` |
 | Route | `/tags` |
 | Route shell | [app/tags/page.tsx](../../../apps/web/app/tags/page.tsx) |
-| Domain entry | [TagsIndex.tsx](../../../apps/web/domain/tags/list-tags/TagsIndex.tsx) |
+| Feature entry | [TagsIndex.tsx](../../../apps/web/features/tags/list-tags/TagsIndex.tsx) |
+| Last updated | 2026-05-25 |
 
 ---
 
@@ -17,12 +18,13 @@
 
 ---
 
-## Visible states
+## Screen states
 
 | State | User sees |
 |:---|:---|
 | Loaded | All tags with post counts; each links to `/tags/[slug]` |
 | Empty | Empty state message |
+| Error | Next.js error boundary (failed API fetch) |
 
 ---
 
@@ -33,5 +35,9 @@ Inherits [web shell](../shell.md).
 ---
 
 ## Tests
+
+| Type | Location |
+|:---|:---|
+| Playwright | (covered by tag navigation in publish flow where applicable) |
 
 Acceptance criteria: [list-tags.md § Acceptance Criteria](../../domain/tags/list-tags.md#acceptance-criteria).

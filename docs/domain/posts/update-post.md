@@ -59,14 +59,17 @@ Returns 200 with `{ postId, slug }`.
 
 ---
 
-## UI (admin)
+## UI projection
 
-### Route and entry
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [post-editor.md](../../ui/admin/pages/post-editor.md) | Edit form (Draft only) |
 
-- Route: `app/(dashboard)/posts/[id]/page.tsx`
-- Target domain entry: `domain/posts/update/EditPostPage.tsx`
+Shell: [admin shell.md](../../ui/admin/shell.md)
 
-### States
+Tag assignment is a separate use case ([add-tag-to-post.md](add-tag-to-post.md)).
+
+### Operation states
 
 | State | Behavior |
 |:---|:---|
@@ -74,8 +77,6 @@ Returns 200 with `{ postId, slug }`.
 | Empty | N/A (404 if post missing) |
 | Error | Toast on save failure; inline validation |
 | Loaded | Form pre-filled; save enabled only in Draft |
-
-Tag assignment is a separate use case ([add-tag-to-post.md](add-tag-to-post.md)).
 
 ---
 

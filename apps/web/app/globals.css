@@ -7,7 +7,7 @@
 
 @source "../app/**/*.{js,ts,jsx,tsx}";
 @source "../components/**/*.{js,ts,jsx,tsx}";
-@source "../domain/**/*.{js,ts,jsx,tsx}";
+@source "../features/**/*.{js,ts,jsx,tsx}";
 
 @theme inline {
     --font-heading: var(--font-sans);

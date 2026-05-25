@@ -83,11 +83,11 @@ Key relationships: `posts.author_id` → `authors.id`; `post_tags` → `posts.id
 
 | Use case | Doc | Backend | Frontend |
 |:---|:---|:---|:---|
-| Create post | [create-post.md](create-post.md) | `Posts/Create/` | `domain/posts/create/` (admin) |
-| Update post | [update-post.md](update-post.md) | `Posts/Update/` | `domain/posts/update/` (admin) |
-| Publish post | [publish-post.md](publish-post.md) | `Posts/Publish/` | `domain/posts/publish/` (admin) |
-| Archive post | [archive-post.md](archive-post.md) | `Posts/Archive/` | `domain/posts/archive/` (admin) |
-| Delete post | [delete-post.md](delete-post.md) | `Posts/Delete/` | `domain/posts/delete/` (admin) |
-| Add tag to post | [add-tag-to-post.md](add-tag-to-post.md) | `Posts/AddTag/` | `domain/posts/add-tag/` (admin) |
-| List published posts | [list-published-posts.md](list-published-posts.md) | `Posts/GetPublishedPosts/` | `domain/posts/list-published/` (web) |
-| View post by slug | [view-post-by-slug.md](view-post-by-slug.md) | `Posts/GetPostBySlug/` | `domain/posts/view-by-slug/` (web) |
+| Create post | [create-post.md](create-post.md) | `Posts/Create/` | `features/posts/create/` (admin) |
+| Update post | [update-post.md](update-post.md) | `Posts/Update/` | `features/posts/update/` (admin; shared editor surface) |
+| Publish post | [publish-post.md](publish-post.md) | `Posts/Publish/` | `features/posts/update/` (admin; action on editor) |
+| Archive post | [archive-post.md](archive-post.md) | `Posts/Archive/` | `features/posts/update/` (admin; action on editor) |
+| Delete post | [delete-post.md](delete-post.md) | `Posts/Delete/` | `features/posts/update/` (admin; action on editor) |
+| Add tag to post | [add-tag-to-post.md](add-tag-to-post.md) | `Posts/AddTag/` | `features/posts/update/`, `features/posts/create/` (admin) |
+| List published posts | [list-published-posts.md](list-published-posts.md) | `Posts/GetPublishedPosts/` | `features/posts/list-published-posts/` (web; admin list inline in route shell) |
+| View post by slug | [view-post-by-slug.md](view-post-by-slug.md) | `Posts/GetPostBySlug/` | `features/posts/view-post-by-slug/` (web) |

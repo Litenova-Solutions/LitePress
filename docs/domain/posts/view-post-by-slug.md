@@ -38,11 +38,15 @@ Note: GUID paths route to `GetPostById` (admin). Slug paths route here.
 
 ---
 
-## UI (web)
+## UI projection
 
-Page composition: [docs/ui/web/pages/post-detail.md](../../ui/web/pages/post-detail.md). Shell: [docs/ui/web/shell.md](../../ui/web/shell.md).
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| web | [post-detail.md](../../ui/web/pages/post-detail.md) | Article and comments |
 
-### States
+Shell: [web shell.md](../../ui/web/shell.md)
+
+### Operation states
 
 | State | Behavior |
 |:---|:---|

@@ -50,6 +50,16 @@ Request: `{ name }`. Returns 200.
 
 ---
 
+## UI projection
+
+| App | Page doc | Role on page |
+|:---|:---|:---|
+| admin | [tags.md](../../ui/admin/pages/tags.md) | Rename row action via [RenameTagButton.tsx](../../../apps/admin/features/tags/rename/RenameTagButton.tsx) |
+
+Shell: [admin shell.md](../../ui/admin/shell.md)
+
+---
+
 ## Acceptance Criteria
 
 1. Given an existing tag, when renamed to a unique name, then slug updates and public tag URLs reflect the new slug after cache revalidation. (Integration)

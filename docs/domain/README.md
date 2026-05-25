@@ -55,9 +55,9 @@
 
 ## Cross-Domain Notes
 
-- **Multiple frontends:** LitePress currently ships `apps/web` (public, SEO-first) and `apps/admin` (authenticated authoring). Additional apps MAY live under `apps/`; each owns its own `domain/{feature}/{use-case}/` tree with no cross-imports. See [dual-nextjs-apps ADR](../decisions/dual-nextjs-apps.md).
-- **UI projection docs:** Shell and page composition live under [docs/ui/](../ui/README.md). Use-case docs define operations; UI docs map routes to use cases without duplicating domain rules.
-- **UI default:** shadcn/ui in each frontend; shared CSS tokens in `@litepress/config-tailwind`. Presentation defaults are in each app's [ui/{app}/shell.md](../ui/web/shell.md).
+- **Multiple frontends:** LitePress currently ships `apps/web` (public, SEO-first) and `apps/admin` (authenticated authoring). Additional apps MAY live under `apps/`; each owns its own `features/{feature}/{use-case}/` tree with no cross-imports. See [dual-nextjs-apps ADR](../decisions/dual-nextjs-apps.md).
+- **UI projection docs:** Shell and page composition live under [docs/ui/](../ui/README.md) (`web` and `admin` are separate trees). Use-case docs § UI projection link to page docs; page docs map routes to use cases without duplicating domain rules.
+- **UI default:** shadcn/ui in each frontend; shared CSS tokens in `@litepress/config-tailwind`. Presentation defaults are in [ui/web/shell.md](../ui/web/shell.md) and [ui/admin/shell.md](../ui/admin/shell.md).
 - **Comments:** Giscus (GitHub Discussions) on published posts. External to the domain; see [docs/decisions/giscus-comments.md](../decisions/giscus-comments.md).
 - **Scheduled publishing:** Out of v1 scope; see [docs/decisions/v1-scope-deferrals.md](../decisions/v1-scope-deferrals.md).
 - **Author identity:** `AuthorId` is derived from the JWT `sub` claim. Never accepted from request bodies.

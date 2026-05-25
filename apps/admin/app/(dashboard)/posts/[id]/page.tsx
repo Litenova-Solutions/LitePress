@@ -1,4 +1,4 @@
-import { EditPostForm } from "@/domain/posts/update/EditPostForm";
+import { EditPostForm } from "@/features/posts/update/EditPostForm";
 
 export default function EditPostPage({
   params,
