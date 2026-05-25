@@ -31,7 +31,11 @@ internal sealed class TagRepository : ITagRepository
 
     public Task UpdateAsync(Tag tag, CancellationToken cancellationToken = default)
     {
-        _context.Tags.Update(tag);
+        if (_context.Entry(tag).State == EntityState.Detached)
+        {
+            _context.Tags.Update(tag);
+        }
+
         return Task.CompletedTask;
     }
 

@@ -48,6 +48,7 @@ appsettings.Development.json
 
 # Test and coverage output
 TestResults/
+.test-out/
 coverage/
 *.coveragexml
 *.trx

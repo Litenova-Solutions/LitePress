@@ -16,7 +16,7 @@ internal sealed class PostRepository : IPostRepository
     public async Task<Post> GetByIdAsync(PostId id, CancellationToken cancellationToken = default)
     {
         return await _context.Posts
-            .Include("_tags")
+            .Include(p => p.Tags)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
             ?? throw new PostNotFoundException(id);
     }
@@ -34,7 +34,11 @@ internal sealed class PostRepository : IPostRepository
 
     public Task UpdateAsync(Post post, CancellationToken cancellationToken = default)
     {
-        _context.Posts.Update(post);
+        if (_context.Entry(post).State == EntityState.Detached)
+        {
+            _context.Posts.Update(post);
+        }
+
         return Task.CompletedTask;
     }
 

@@ -50,8 +50,13 @@ internal sealed class PostConfiguration : IEntityTypeConfiguration<Post>
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.Property(p => p.PublishedAt).HasColumnName("published_at");
-        builder.Property(p => p.ArchivedAt).HasColumnName("archived_at");
+        builder.Property(p => p.PublishedAt)
+            .HasColumnName("published_at")
+            .HasField("_publishedAt");
+
+        builder.Property(p => p.ArchivedAt)
+            .HasColumnName("archived_at")
+            .HasField("_archivedAt");
         builder.Property(p => p.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(p => p.UpdatedAt).HasColumnName("updated_at").IsRequired();
 

@@ -110,6 +110,8 @@ app.MapOpenApi();
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapGet("/v1/scalar", () => Results.Redirect("/scalar/v1"));
+
     app.MapScalarApiReference(options =>
     {
         options.WithTitle("LitePress API");
