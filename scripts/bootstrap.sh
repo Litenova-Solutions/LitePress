@@ -44,8 +44,10 @@ copy_example_if_missing() {
 }
 
 app_host="$ROOT/apps/api/src/LitePress.AppHost"
+web_api="$ROOT/apps/api/src/LitePress.WebApi"
 copy_example_if_missing "$app_host/Properties/launchSettings.json.example" "$app_host/Properties/launchSettings.json"
 copy_example_if_missing "$app_host/appsettings.Development.json.example" "$app_host/appsettings.Development.json"
+copy_example_if_missing "$web_api/appsettings.Development.json.example" "$web_api/appsettings.Development.json"
 copy_example_if_missing "$ROOT/apps/admin/.env.example" "$ROOT/apps/admin/.env.local"
 
 check_frontend_ui_scaffold() {

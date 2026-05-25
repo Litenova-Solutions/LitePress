@@ -46,8 +46,10 @@ function Copy-ExampleIfMissing($Example, $Target) {
 }
 
 $appHost = Join-Path $Root "apps/api/src/LitePress.AppHost"
+$webApi = Join-Path $Root "apps/api/src/LitePress.WebApi"
 Copy-ExampleIfMissing (Join-Path $appHost "Properties/launchSettings.json.example") (Join-Path $appHost "Properties/launchSettings.json")
 Copy-ExampleIfMissing (Join-Path $appHost "appsettings.Development.json.example") (Join-Path $appHost "appsettings.Development.json")
+Copy-ExampleIfMissing (Join-Path $webApi "appsettings.Development.json.example") (Join-Path $webApi "appsettings.Development.json")
 Copy-ExampleIfMissing (Join-Path $Root "apps/admin/.env.example") (Join-Path $Root "apps/admin/.env.local")
 
 function Test-FrontendUiScaffold($AppPath, $AppName) {

@@ -14,20 +14,54 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { readApiErrorMessage } from "@/lib/api/errors";
 import { cn } from "@/lib/utils";
 
 type PostDetail = components["schemas"]["PostDetailResult"];
 type TagOption = components["schemas"]["TagResult"];
+type PostAction = "publish" | "archive" | "delete";
 
 interface EditPostFormProps {
   params: Promise<{ id: string }>;
 }
+
+const actionCopy: Record<
+  PostAction,
+  { title: string; description: string; confirmLabel: string; destructive?: boolean }
+> = {
+  publish: {
+    title: "Publish post?",
+    description: "This post will become visible on the public site.",
+    confirmLabel: "Publish",
+  },
+  archive: {
+    title: "Archive post?",
+    description: "This post will be removed from the public site but kept in the archive.",
+    confirmLabel: "Archive",
+  },
+  delete: {
+    title: "Delete post?",
+    description: "This action cannot be undone. Only draft and archived posts can be deleted.",
+    confirmLabel: "Delete",
+    destructive: true,
+  },
+};
 
 export function EditPostForm({ params }: EditPostFormProps) {
   const { id } = use(params);
@@ -35,6 +69,8 @@ export function EditPostForm({ params }: EditPostFormProps) {
   const [post, setPost] = useState<PostDetail | null>(null);
   const [allTags, setAllTags] = useState<TagOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PostAction | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
@@ -44,20 +80,38 @@ export function EditPostForm({ params }: EditPostFormProps) {
   });
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api-proxy/posts/" + id).then((r) => r.json()),
-      fetch("/api-proxy/tags").then((r) => r.json()),
-    ]).then(([postData, tagsData]: [PostDetail, TagOption[]]) => {
-      setPost(postData);
-      setAllTags(tagsData);
-      setForm({
-        title: postData.title,
-        content: postData.content,
-        excerpt: postData.excerpt || "",
-        coverImageUrl: postData.coverImageUrl || "",
+    async function loadPost(): Promise<PostDetail> {
+      const res = await fetch("/api-proxy/posts/" + id);
+      if (!res.ok) {
+        throw new Error(await readApiErrorMessage(res));
+      }
+      return (await res.json()) as PostDetail;
+    }
+
+    Promise.all([loadPost(), fetch("/api-proxy/tags").then((r) => r.json())])
+      .then(([postData, tagsData]: [PostDetail, TagOption[]]) => {
+        setPost(postData);
+        setAllTags(tagsData);
+        setForm({
+          title: postData.title,
+          content: postData.content,
+          excerpt: postData.excerpt || "",
+          coverImageUrl: postData.coverImageUrl || "",
+        });
+      })
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : "Failed to load post";
+        toast.error(message);
       });
-    });
   }, [id]);
+
+  async function fetchPost(): Promise<PostDetail> {
+    const res = await fetch("/api-proxy/posts/" + id);
+    if (!res.ok) {
+      throw new Error(await readApiErrorMessage(res));
+    }
+    return (await res.json()) as PostDetail;
+  }
 
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
@@ -70,44 +124,49 @@ export function EditPostForm({ params }: EditPostFormProps) {
         body: JSON.stringify(form),
       });
       if (!res.ok) {
-        throw new Error(await res.text());
+        throw new Error(await readApiErrorMessage(res));
       }
       toast.success("Post saved");
       router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
-      toast.error("Failed to save post");
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleAction(action: "publish" | "archive" | "delete") {
-    if (!confirm("Are you sure?")) {
-      return;
-    }
+  async function handleAction(action: PostAction) {
+    setActionLoading(true);
     try {
       if (action === "delete") {
         const res = await fetch("/api-proxy/posts/" + id, { method: "DELETE" });
         if (!res.ok) {
-          throw new Error(await res.text());
+          throw new Error(await readApiErrorMessage(res));
         }
         toast.success("Post deleted");
         router.push("/posts");
-      } else {
-        const res = await fetch("/api-proxy/posts/" + id + "/" + action, {
-          method: "POST",
-        });
-        if (!res.ok) {
-          throw new Error(await res.text());
-        }
-        toast.success(action === "publish" ? "Post published" : "Post archived");
-        router.refresh();
-        window.location.reload();
+        return;
       }
+
+      const res = await fetch("/api-proxy/posts/" + id + "/" + action, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        throw new Error(await readApiErrorMessage(res));
+      }
+
+      const updated = await fetchPost();
+      setPost(updated);
+      toast.success(action === "publish" ? "Post published" : "Post archived");
+      router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Action failed");
+      const message = err instanceof Error ? err.message : "Action failed";
+      toast.error(message);
+    } finally {
+      setActionLoading(false);
+      setPendingAction(null);
     }
   }
 
@@ -122,12 +181,10 @@ export function EditPostForm({ params }: EditPostFormProps) {
       body: assigned ? undefined : JSON.stringify({ tagId }),
     });
     if (!res.ok) {
-      toast.error(await res.text());
+      toast.error(await readApiErrorMessage(res));
       return;
     }
-    const updated = (await fetch("/api-proxy/posts/" + id).then((r) =>
-      r.json()
-    )) as PostDetail;
+    const updated = await fetchPost();
     setPost(updated);
   }
 
@@ -139,6 +196,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
   const isPublished = post.postState === "Published";
   const isArchived = post.postState === "Archived";
   const assignedTagIds = new Set(post.tags?.map((t) => t.tagId) ?? []);
+  const dialogCopy = pendingAction ? actionCopy[pendingAction] : null;
 
   return (
     <section className="mx-auto max-w-2xl space-y-6">
@@ -149,22 +207,66 @@ export function EditPostForm({ params }: EditPostFormProps) {
         </div>
         <div className="flex flex-wrap gap-2">
           {isDraft && (
-            <Button type="button" onClick={() => handleAction("publish")}>
+            <Button
+              type="button"
+              disabled={actionLoading}
+              onClick={() => setPendingAction("publish")}
+            >
               Publish
             </Button>
           )}
           {isPublished && (
-            <Button type="button" variant="secondary" onClick={() => handleAction("archive")}>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={actionLoading}
+              onClick={() => setPendingAction("archive")}
+            >
               Archive
             </Button>
           )}
           {(isDraft || isArchived) && (
-            <Button type="button" variant="destructive" onClick={() => handleAction("delete")}>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={actionLoading}
+              onClick={() => setPendingAction("delete")}
+            >
               Delete
             </Button>
           )}
         </div>
       </div>
+
+      <AlertDialog
+        open={pendingAction !== null}
+        onOpenChange={(open) => {
+          if (!open && !actionLoading) {
+            setPendingAction(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialogCopy?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{dialogCopy?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant={dialogCopy?.destructive ? "destructive" : "default"}
+              disabled={actionLoading || pendingAction === null}
+              onClick={() => {
+                if (pendingAction) {
+                  void handleAction(pendingAction);
+                }
+              }}
+            >
+              {actionLoading ? "Working..." : dialogCopy?.confirmLabel}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Card>
         <CardHeader>
