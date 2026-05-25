@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace LitePress.Infrastructure.Migrations;
+
 /// <inheritdoc />
 public partial class InitialCreate : Migration
 {
@@ -21,7 +22,7 @@ public partial class InitialCreate : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_authors", x => x.id);
+                table.PrimaryKey("pk_authors", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -43,7 +44,7 @@ public partial class InitialCreate : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_posts", x => x.id);
+                table.PrimaryKey("pk_posts", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -57,7 +58,7 @@ public partial class InitialCreate : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_tags", x => x.id);
+                table.PrimaryKey("pk_tags", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -69,9 +70,9 @@ public partial class InitialCreate : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_post_tags", x => new { x.post_id, x.tag_id });
+                table.PrimaryKey("pk_post_tags", x => new { x.post_id, x.tag_id });
                 table.ForeignKey(
-                    name: "FK_post_tags_posts_post_id",
+                    name: "fk_post_tags_posts_post_id",
                     column: x => x.post_id,
                     principalTable: "posts",
                     principalColumn: "id",

@@ -1,3 +1,4 @@
+using EFCore.NamingConventions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -11,7 +12,9 @@ internal sealed class LitePressDbContextFactory : IDesignTimeDbContextFactory<Li
             ?? "Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress";
 
         var optionsBuilder = new DbContextOptionsBuilder<LitePressDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder
+            .UseNpgsql(connectionString)
+            .UseSnakeCaseNamingConvention();
 
         return new LitePressDbContext(optionsBuilder.Options, new NoOpEventMediator());
     }

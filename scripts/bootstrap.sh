@@ -34,6 +34,20 @@ dotnet tool restore
 echo "Installing frontend dependencies..."
 pnpm install
 
+copy_example_if_missing() {
+  local example="$1"
+  local target="$2"
+  if [[ ! -f "$target" && -f "$example" ]]; then
+    cp "$example" "$target"
+    echo "Created $target from example."
+  fi
+}
+
+app_host="$ROOT/apps/api/src/LitePress.AppHost"
+copy_example_if_missing "$app_host/Properties/launchSettings.json.example" "$app_host/Properties/launchSettings.json"
+copy_example_if_missing "$app_host/appsettings.Development.json.example" "$app_host/appsettings.Development.json"
+copy_example_if_missing "$ROOT/apps/admin/.env.example" "$ROOT/apps/admin/.env.local"
+
 echo ""
 echo "Bootstrap complete."
 echo "  Recommended: pnpm dev:aspire"

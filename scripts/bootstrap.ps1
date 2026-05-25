@@ -38,6 +38,18 @@ dotnet tool restore
 Write-Host "Installing frontend dependencies..."
 pnpm install
 
+function Copy-ExampleIfMissing($Example, $Target) {
+    if (-not (Test-Path $Target) -and (Test-Path $Example)) {
+        Copy-Item $Example $Target
+        Write-Host "Created $Target from example."
+    }
+}
+
+$appHost = Join-Path $Root "apps/api/src/LitePress.AppHost"
+Copy-ExampleIfMissing (Join-Path $appHost "Properties/launchSettings.json.example") (Join-Path $appHost "Properties/launchSettings.json")
+Copy-ExampleIfMissing (Join-Path $appHost "appsettings.Development.json.example") (Join-Path $appHost "appsettings.Development.json")
+Copy-ExampleIfMissing (Join-Path $Root "apps/admin/.env.example") (Join-Path $Root "apps/admin/.env.local")
+
 Write-Host ""
 Write-Host "Bootstrap complete."
 Write-Host "  Recommended: pnpm dev:aspire"
