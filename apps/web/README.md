@@ -2,7 +2,7 @@
 
 Next.js 16 public-facing blog. Server Components fetch published content from the API via typed `getApiClient()`.
 
-User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/decisions/seo-public-web.md](../../docs/decisions/seo-public-web.md)
+User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · SEO: [docs/decisions/seo-public-web.md](../../docs/decisions/seo-public-web.md) · **UI projection:** [docs/ui/web/](../../docs/ui/web/README.md)
 
 ---
 
@@ -48,16 +48,9 @@ See [docs/technical/environment.md](../../docs/technical/environment.md).
 
 ---
 
-## Routes
+## UI projection
 
-| Route | Description |
-|:---|:---|
-| `/` | Published posts (paginated; optional `?tag=` filter) |
-| `/[slug]` | Post detail + JSON-LD + Giscus |
-| `/tags` | Tag index |
-| `/tags/[slug]` | Posts by tag |
-| `/sitemap.xml` | Dynamic sitemap |
-| `/robots.txt` | Crawler rules |
+Shell, page composition, and route index: [docs/ui/web/](../../docs/ui/web/README.md). This README covers run and build only.
 
 ---
 

@@ -27,6 +27,7 @@ Technical reference for the LitePress monorepo. For a non-technical overview, se
 | Admin | `apps/admin/` | [apps/admin/README.md](../../apps/admin/README.md) |
 | OpenAPI types | `packages/api-types/` | Generated from `/openapi/v1.json` |
 | Domain docs | `docs/domain/` | [domain/README.md](../domain/README.md) |
+| UI projection | `docs/ui/` | [ui/README.md](../ui/README.md) |
 | Standards | `standards/` submodule | [Engineering Standards](https://github.com/Litenova-Solutions/Engineering-Standards) |
 
 ---

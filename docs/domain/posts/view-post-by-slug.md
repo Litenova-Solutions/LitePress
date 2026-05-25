@@ -40,10 +40,7 @@ Note: GUID paths route to `GetPostById` (admin). Slug paths route here.
 
 ## UI (web)
 
-### Route and entry
-
-- Route: `app/[slug]/page.tsx`
-- Target domain entry: `domain/posts/view-by-slug/ViewPostBySlugPage.tsx`
+Page composition: [docs/ui/web/pages/post-detail.md](../../ui/web/pages/post-detail.md). Shell: [docs/ui/web/shell.md](../../ui/web/shell.md).
 
 ### States
 

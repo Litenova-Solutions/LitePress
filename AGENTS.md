@@ -12,9 +12,10 @@ for the layer you are editing. Then read the project-specific files listed below
 
 When guidance overlaps, use this order (most specific wins):
 
-1. **Use-case docs** — `docs/domain/{feature}/{use-case}.md` (commands, endpoints, UI, acceptance criteria)
-2. **LitePress app READMEs and ADRs** — `apps/{name}/README.md`, `docs/decisions/`
-3. **Engineering standards** — `standards/` submodule
+1. **Use-case docs** — `docs/domain/{feature}/{use-case}.md` (commands, endpoints, operation acceptance criteria)
+2. **UI projection docs** — `docs/ui/{app}/pages/*.md`, `docs/ui/{app}/shell.md` (shell, route composition, which use cases appear on a page)
+3. **App READMEs and ADRs** — `apps/{name}/README.md` (runbook only), `docs/decisions/`
+4. **Engineering standards** — `standards/` submodule
 
 Standards define defaults (shadcn/ui, Scalar in Development, monorepo layout). LitePress docs override them when they state a project-specific choice explicitly.
 
@@ -70,10 +71,12 @@ Read these files before generating any domain or application code.
 | [docs/technical/](docs/technical/) | Architecture, development, env, API reference |
 | `docs/domain/README.md` | System map: all features and use cases. |
 | `docs/domain/{feature}/README.md` | Feature ubiquitous language, aggregates, invariants, events. |
-| `docs/domain/{feature}/{use-case}.md` | Use case contract: commands, endpoints, UI, acceptance criteria. |
+| `docs/domain/{feature}/{use-case}.md` | Use case contract: commands, endpoints, operation acceptance criteria. |
+| [docs/ui/README.md](docs/ui/README.md) | UI projection layer: shell and page composition per app. |
+| `docs/ui/{app}/pages/*.md` | One route; which use cases compose; visible states; e2e links. |
 | `docs/decisions/` | LitePress ADRs (auth, dual apps, SEO, licensing, deferrals). |
 
-There are no separate inventory files. Domain docs are the source of truth.
+Domain docs hold policy and operations. UI projection docs hold screen composition. App READMEs hold runbooks. Do not duplicate invariants or operation rules in UI docs.
 
 ---
 
@@ -84,6 +87,7 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 - MUST use `LitePress.*` namespaces (not legacy `Blog.*` or `LiteNova.*` prefixes).
 - MUST read `docs/domain/{feature}/README.md` before writing domain code for that feature.
 - MUST read the use case doc at `docs/domain/{feature}/{use-case}.md` before implementing a use case.
+- MUST read `docs/ui/{app}/shell.md` and the relevant `docs/ui/{app}/pages/*.md` before changing layout or page composition in that app.
 - MUST derive `AuthorId` from the authenticated user's JWT claim. Never accept `AuthorId` from the request body.
 - MUST NOT use the terms "Article", "Content", or "Entry" in place of "Post" in code, comments, or documentation.
 - MUST NOT use the terms "Writer" or "Creator" in place of "Author" in code, comments, or documentation.

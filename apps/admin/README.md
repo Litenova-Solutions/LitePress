@@ -2,7 +2,7 @@
 
 Next.js 16 authoring dashboard. GitHub OAuth (single owner), TipTap editor, post/tag CRUD via API proxy.
 
-User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · Auth: [docs/decisions/admin-auth.md](../../docs/decisions/admin-auth.md)
+User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · Auth: [docs/decisions/admin-auth.md](../../docs/decisions/admin-auth.md) · **UI projection:** [docs/ui/admin/](../../docs/ui/admin/README.md)
 
 ---
 
@@ -62,20 +62,9 @@ Get your user ID: `curl https://api.github.com/users/<username>` → `"id"`.
 
 ---
 
-## Routes
+## UI projection
 
-| Route | Description |
-|:---|:---|
-| `/login` | GitHub sign-in |
-| `/` | Dashboard stats |
-| `/posts` | Post list |
-| `/posts/new` | Create draft |
-| `/posts/[id]` | Edit / publish / archive / delete / tag assignment |
-| `/tags` | Create, rename, delete tags |
-| `/api/auth/[...nextauth]` | Auth.js handlers |
-| `/api-proxy/[...path]` | Authenticated API proxy |
-
-All dashboard routes require session except auth endpoints.
+Shell, page composition, and route index: [docs/ui/admin/](../../docs/ui/admin/README.md). This README covers run and build only.
 
 ---
 

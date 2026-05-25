@@ -52,10 +52,7 @@ Returns 204 No Content.
 
 ## UI (admin)
 
-### Route and entry
-
-- Action on `app/(dashboard)/posts/[id]/page.tsx`
-- Target: `domain/posts/publish/actions.ts`
+Page composition: [docs/ui/admin/pages/post-editor.md](../../ui/admin/pages/post-editor.md) (shared editor surface).
 
 ### States
 

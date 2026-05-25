@@ -42,10 +42,7 @@ Optional `tag` query parameter routes to [list-posts-by-tag](../tags/list-posts-
 
 ## UI (web)
 
-### Route and entry
-
-- Route: `app/page.tsx`
-- Target domain entry: `domain/posts/list-published/ListPublishedPostsPage.tsx`
+Operation states and acceptance criteria stay in this doc. Page composition: [docs/ui/web/pages/home.md](../../ui/web/pages/home.md). Shell: [docs/ui/web/shell.md](../../ui/web/shell.md).
 
 ### States
 

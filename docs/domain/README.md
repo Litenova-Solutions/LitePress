@@ -4,7 +4,7 @@
 |:---|:---|
 | Bounded context | LitePress |
 | Namespaces | `LitePress.*` |
-| Last updated | 2026-05-23 |
+| Last updated | 2026-05-25 |
 
 > **Plain-language overview:** [How LitePress works](../how-it-works.md) · **Technical docs:** [technical/README.md](../technical/README.md)
 
@@ -56,7 +56,8 @@
 ## Cross-Domain Notes
 
 - **Multiple frontends:** LitePress currently ships `apps/web` (public, SEO-first) and `apps/admin` (authenticated authoring). Additional apps MAY live under `apps/`; each owns its own `domain/{feature}/{use-case}/` tree with no cross-imports. See [dual-nextjs-apps ADR](../decisions/dual-nextjs-apps.md).
-- **UI default:** shadcn/ui in each frontend; shared CSS tokens in `@litepress/config-tailwind`. Use-case docs list required components per screen.
+- **UI projection docs:** Shell and page composition live under [docs/ui/](../ui/README.md). Use-case docs define operations; UI docs map routes to use cases without duplicating domain rules.
+- **UI default:** shadcn/ui in each frontend; shared CSS tokens in `@litepress/config-tailwind`. Presentation defaults are in each app's [ui/{app}/shell.md](../ui/web/shell.md).
 - **Comments:** Giscus (GitHub Discussions) on published posts. External to the domain; see [docs/decisions/giscus-comments.md](../decisions/giscus-comments.md).
 - **Scheduled publishing:** Out of v1 scope; see [docs/decisions/v1-scope-deferrals.md](../decisions/v1-scope-deferrals.md).
 - **Author identity:** `AuthorId` is derived from the JWT `sub` claim. Never accepted from request bodies.

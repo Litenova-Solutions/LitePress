@@ -24,6 +24,8 @@ Run independent Next.js apps in the monorepo:
 
 Each app follows `domain/{feature}/{use-case}/` layout independently. No app imports from another app's `domain/` folder.
 
+**UI projection docs** at `docs/ui/{app}/` describe shell and page composition (which use cases appear on each route). **Use-case docs** at `docs/domain/` define operations and invariants. **App READMEs** are runbooks only.
+
 **UI:** shadcn/ui is the default in both apps. Each app owns `components/ui/` (CLI-generated). Shared **CSS theme tokens** live in `@litepress/config-tailwind`; React components are not shared. A future app MAY override UI choices via its own ADR and README.
 
 ---

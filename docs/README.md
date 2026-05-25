@@ -30,7 +30,7 @@ Documentation for [LitePress](https://github.com/Litenova-Solutions/LitePress), 
 
 ## Domain-driven design (ADDD)
 
-Use-case and feature docs are the source of truth for product behavior:
+Policy and operations (domain + use cases):
 
 | Path | Contents |
 |:---|:---|
@@ -38,6 +38,14 @@ Use-case and feature docs are the source of truth for product behavior:
 | [domain/posts/](domain/posts/) | Post aggregate and use cases |
 | [domain/tags/](domain/tags/) | Tag aggregate and use cases |
 | [domain/authors/](domain/authors/) | Author registration |
+
+UI projection (shell and page composition):
+
+| Path | Contents |
+|:---|:---|
+| [ui/README.md](ui/README.md) | Documentation layers and agent read order |
+| [ui/web/](ui/web/README.md) | Public app routes, shell, pages |
+| [ui/admin/](ui/admin/README.md) | Admin app routes, shell, pages |
 
 ---
 
