@@ -24,7 +24,7 @@ internal sealed class PostRepository : IPostRepository
     public async Task<bool> SlugExistsAsync(PostSlug slug, CancellationToken cancellationToken = default)
     {
         return await _context.Posts
-            .AnyAsync(p => p.Slug == slug, cancellationToken);
+            .AnyAsync(p => p.Slug.Value == slug.Value, cancellationToken);
     }
 
     public async Task AddAsync(Post post, CancellationToken cancellationToken = default)

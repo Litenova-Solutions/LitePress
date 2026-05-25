@@ -2,6 +2,17 @@ import { z } from "zod";
 import { getApiClient } from "@/lib/api/client";
 import { DeleteTagButton } from "@/domain/tags/delete/DeleteTagButton";
 import { RenameTagButton } from "@/domain/tags/rename/RenameTagButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const createTagSchema = z.object({
   name: z.string().trim().min(1, "Tag name is required").max(50, "Tag name too long"),
@@ -33,52 +44,60 @@ export default async function TagsPage() {
   }
 
   return (
-    <section>
-      <h1 className="text-2xl font-bold mb-6">Tags</h1>
-      <div className="max-w-2xl">
-        <form action={createTag} className="flex gap-2 mb-6">
-          <input
-            name="name"
-            required
-            placeholder="Tag name"
-            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Add Tag
-          </button>
-        </form>
-        <div className="bg-white rounded shadow overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Name</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Slug</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Posts</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {data.map((tag) => (
-                <tr key={tag.tagId} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{tag.name}</td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">{tag.slug}</td>
-                  <td className="px-4 py-3 text-sm">{tag.postCount}</td>
-                  <td className="px-4 py-3">
-                    <RenameTagButton tagId={tag.tagId} tagName={tag.name} />
-                    <DeleteTagButton tagId={tag.tagId} tagName={tag.name} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {data.length === 0 && (
-            <p className="text-center text-gray-500 py-8">No tags yet.</p>
-          )}
-        </div>
+    <section className="space-y-6">
+      <div>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Tags</h1>
+        <p className="text-sm text-muted-foreground">Create and manage topic labels for posts.</p>
       </div>
+
+      <Card className="max-w-3xl">
+        <CardHeader>
+          <CardTitle>Add tag</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={createTag} className="flex flex-col gap-3 sm:flex-row">
+            <Input name="name" required placeholder="Tag name" className="flex-1" />
+            <Button type="submit">Add tag</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-3xl">
+        <CardHeader>
+          <CardTitle>All tags</CardTitle>
+        </CardHeader>
+        <CardContent className="px-0 pb-0">
+          {data.length === 0 ? (
+            <p className="px-6 pb-6 text-center text-sm text-muted-foreground">No tags yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Posts</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.map((tag) => (
+                  <TableRow key={tag.tagId}>
+                    <TableCell className="font-medium">{tag.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{tag.slug}</TableCell>
+                    <TableCell>{tag.postCount}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <RenameTagButton tagId={tag.tagId} tagName={tag.name} />
+                        <DeleteTagButton tagId={tag.tagId} tagName={tag.name} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </section>
   );
 }

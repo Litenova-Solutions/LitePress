@@ -1,5 +1,14 @@
+import Link from "next/link";
 import { env } from "@/lib/env";
 import { getApiClient } from "@/lib/api/client";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default async function DashboardPage() {
   const client = await getApiClient();
@@ -23,30 +32,49 @@ export default async function DashboardPage() {
   const publishedCount = posts.items.filter((p) => p.postState === "Published").length;
   const archivedCount = posts.items.filter((p) => p.postState === "Archived").length;
 
+  const stats = [
+    { label: "Total posts", value: posts.totalCount, description: "All posts in the system" },
+    { label: "Published", value: publishedCount, description: "Live on the public site" },
+    { label: "Drafts", value: draftCount, description: "Work in progress" },
+    { label: "Tags", value: tags.length, description: "Topic labels" },
+  ] as const;
+
   return (
-    <section>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded shadow p-4">
-          <p className="text-sm text-gray-500">Total posts</p>
-          <p className="text-2xl font-bold">{posts.totalCount}</p>
+    <section className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Overview of your blog content.</p>
         </div>
-        <div className="bg-white rounded shadow p-4">
-          <p className="text-sm text-gray-500">Published</p>
-          <p className="text-2xl font-bold text-green-700">{publishedCount}</p>
-        </div>
-        <div className="bg-white rounded shadow p-4">
-          <p className="text-sm text-gray-500">Drafts</p>
-          <p className="text-2xl font-bold text-yellow-700">{draftCount}</p>
-        </div>
-        <div className="bg-white rounded shadow p-4">
-          <p className="text-sm text-gray-500">Tags</p>
-          <p className="text-2xl font-bold">{tags.length}</p>
-        </div>
+        <Link href="/posts/new" className={buttonVariants()}>
+          New post
+        </Link>
       </div>
-      <p className="text-sm text-gray-500">
-        Archived posts: {archivedCount}. API: {env.API_URL}
-      </p>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.label}>
+            <CardHeader>
+              <CardDescription>{stat.label}</CardDescription>
+              <CardTitle className="text-3xl tabular-nums">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">{stat.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Environment</CardTitle>
+          <CardDescription>Local development connection details.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-1 text-sm text-muted-foreground">
+          <p>Archived posts: {archivedCount}</p>
+          <p>API: {env.API_URL}</p>
+        </CardContent>
+      </Card>
     </section>
   );
 }

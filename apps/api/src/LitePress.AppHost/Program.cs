@@ -19,14 +19,16 @@ var database = postgres.AddDatabase("Database");
 
 // Next.js frontends — registered first so their endpoint references
 // can be passed into the API's CORS config below.
+// install: false — bootstrap runs `pnpm install` at the repo root. Aspire's
+// *-installer resources fail on Windows when pnpm is a .cmd shim (dotnet/aspire#14880).
 var web = builder.AddNextJsApp("web", "../../../web")
-    .WithPnpm()
+    .WithPnpm(install: false)
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .DisableBuildValidation();
 
 var admin = builder.AddNextJsApp("admin", "../../../admin")
-    .WithPnpm()
+    .WithPnpm(install: false)
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()
     .DisableBuildValidation()

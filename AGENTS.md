@@ -8,6 +8,20 @@ for the layer you are editing. Then read the project-specific files listed below
 
 ---
 
+## Documentation precedence
+
+When guidance overlaps, use this order (most specific wins):
+
+1. **Use-case docs** — `docs/domain/{feature}/{use-case}.md` (commands, endpoints, UI, acceptance criteria)
+2. **LitePress app READMEs and ADRs** — `apps/{name}/README.md`, `docs/decisions/`
+3. **Engineering standards** — `standards/` submodule
+
+Standards define defaults (shadcn/ui, Scalar in Development, monorepo layout). LitePress docs override them when they state a project-specific choice explicitly.
+
+Both repositories are under active development. Prefer the latest committed text and pinned versions in `standards.manifest.json` and project lockfiles over older examples.
+
+---
+
 ## Standards
 
 Read order:
@@ -20,6 +34,8 @@ Read order:
 6. The project-specific files below for domain context.
 
 Standards submodule tracks [`main`](https://github.com/Litenova-Solutions/Engineering-Standards) on Engineering-Standards. After clone, run `git submodule update --init --recursive`. To pull the latest standards: `git submodule update --remote standards`.
+
+During co-development, LitePress may carry standards changes in the submodule before they land upstream. Commit submodule pointer updates with the matching LitePress change.
 
 ---
 
@@ -36,7 +52,9 @@ project-specific overrides or additions.
 | Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
 | Product name | **LitePress** |
 | Solution file | `apps/api/LitePress.slnx` |
-| Frontends | Two Next.js apps: `apps/web` (public) and `apps/admin` (authoring). Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
+| Frontends | Two Next.js apps today: `apps/web` (public) and `apps/admin` (authoring). More apps MAY be added under `apps/`. Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
+| UI (default) | shadcn/ui CLI v4 in each frontend; shared tokens in `@litepress/config-tailwind`. Per-app `components/ui/`. |
+| API docs (dev) | `Microsoft.AspNetCore.OpenApi` + Scalar at `/scalar/v1` — see [scalar-api-docs ADR](docs/decisions/scalar-api-docs.md). |
 | Namespaces | `LitePress.Domain`, `LitePress.Application.*`, `LitePress.Infrastructure`, `LitePress.WebApi` |
 
 ---
@@ -70,8 +88,8 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 - MUST NOT use the terms "Article", "Content", or "Entry" in place of "Post" in code, comments, or documentation.
 - MUST NOT use the terms "Writer" or "Creator" in place of "Author" in code, comments, or documentation.
 - MUST NOT use the term "Category" or "Label" in place of "Tag" in code, comments, or documentation.
-- MUST place frontend feature code in `domain/{feature}/{use-case}/` in **each** app (`apps/web`, `apps/admin`) independently. No cross-app domain imports.
-- MUST NOT edit any file under `standards/`. Changes to the standards belong in the standards repository.
+- MUST place frontend feature code in `domain/{feature}/{use-case}/` in **each** frontend app independently. No cross-app domain imports.
+- MUST use shadcn/ui in frontend apps unless a LitePress ADR documents a different UI stack for that app.
 
 ---
 

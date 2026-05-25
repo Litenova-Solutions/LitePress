@@ -11,6 +11,8 @@ User guide: [docs/how-it-works.md](../../docs/how-it-works.md) · Auth: [docs/de
 - Next.js 16 · React 19.2 · TypeScript 6
 - Auth.js v5 (GitHub OAuth)
 - TipTap → ProseMirror JSON
+- shadcn/ui (`components/ui/`) + Tailwind v4
+- Shared theme: `@litepress/config-tailwind/theme.css`
 - Server: `getApiClient()` with minted JWT
 - Client mutations: `/api-proxy/*` route
 
@@ -82,6 +84,7 @@ All dashboard routes require session except auth endpoints.
 ```
 apps/admin/
 ├── app/                    # Routes and layouts
+├── components/ui/          # shadcn/ui components
 ├── domain/                 # Feature UI by use case
 │   ├── posts/create/
 │   ├── posts/update/

@@ -48,7 +48,24 @@ Open the Aspire dashboard (usually `https://localhost:15888`) for service URLs a
 
 **Migrations:** Applied automatically when the API starts in Development. See [local-dev-migrations ADR](../decisions/local-dev-migrations.md).
 
+**Dependencies:** Run `pwsh scripts/bootstrap.ps1` before the first `pnpm dev:aspire`. Bootstrap runs `pnpm install` at the repo root. The AppHost uses `WithPnpm(install: false)` so Aspire does not spawn a `*-installer` resource (broken on Windows when pnpm is a `.cmd` shim; see [dotnet/aspire#14880](https://github.com/microsoft/aspire/issues/14880)).
+
 **Admin OAuth:** Copy `apps/admin/.env.example` to `.env.local`, or set AppHost user secrets for `auth-github-id`, `auth-github-secret`, `auth-secret`, and `github-owner-id`.
+
+**Dev certificate:** Run `dotnet dev-certs https --trust` once to clear Aspire dashboard warnings about untrusted HTTPS.
+
+---
+
+## Database reset
+
+If migrations were recreated and the API fails with errors like `relation "authors" already exists`, the Postgres volume still holds the old schema.
+
+| Path | Command | Then |
+|:---|:---|:---|
+| Aspire | `pnpm db:reset:aspire` (`pnpm dev:stop` first) | `pnpm dev:aspire` — API migrates on startup |
+| Manual | `pnpm db:reset` | Start API with `dev-manual` or `pnpm dev:api` |
+
+Scripts: `scripts/db-reset.ps1` / `scripts/db-reset.sh` (pass `-Aspire` or `--aspire` for the Aspire volume).
 
 ---
 
@@ -119,6 +136,19 @@ dotnet ef migrations add <Name> \
 
 Convert generated migration files to file-scoped namespaces (IDE0161).
 
+### Reset (drop volume and re-apply)
+
+Use after squashing or resetting migrations when the local database still has old tables.
+
+```bash
+# Aspire (pnpm dev:stop first)
+pnpm db:reset:aspire
+pnpm dev:aspire
+
+# Manual path (docker compose on port 5433)
+pnpm db:reset
+```
+
 ---
 
 ## Admin first-time setup
@@ -132,6 +162,50 @@ cp apps/admin/.env.example apps/admin/.env.local
 ```
 
 4. Sign in at http://localhost:3002/login.
+
+---
+
+## API reference (local)
+
+When the API runs in Development:
+
+| Resource | URL (manual path) |
+|:---|:---|
+| OpenAPI JSON | http://localhost:5000/openapi/v1.json |
+| Scalar UI | http://localhost:5000/scalar/v1 |
+
+With Aspire, use the API URL from the dashboard and append `/scalar/v1`. Scalar is disabled outside Development.
+
+Regenerate TypeScript client types after API contract changes:
+
+```bash
+pnpm generate:api-types
+```
+
+See [apps/api/README.md](../../apps/api/README.md) for details.
+
+---
+
+## Frontend UI (shadcn/ui)
+
+LitePress uses shadcn/ui as the default UI in **every** frontend under `apps/`. Components live in each app's `components/ui/`. Shared design tokens live in `@litepress/config-tailwind/theme.css` (see [packages/config-tailwind/README.md](../../packages/config-tailwind/README.md)).
+
+Bootstrap verifies that each Next.js app has Tailwind + shadcn scaffolding. After clone, committed component files are sufficient; re-run bootstrap after pulling large UI changes.
+
+To add a component:
+
+```bash
+cd apps/admin   # or apps/web
+npx shadcn@latest add <component-name>
+```
+
+Each app requires:
+
+- `postcss.config.mjs` with `@tailwindcss/postcss`
+- `app/globals.css` with `@import "tailwindcss"`, `@source` directives for `app/`, `components/`, and `domain/`
+- `components.json` from `npx shadcn@latest init`
+
+Use-case docs under `docs/domain/` list shadcn components per screen and override generic standards wording when needed.
 
 ---
 

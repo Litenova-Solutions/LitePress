@@ -48,8 +48,27 @@ copy_example_if_missing "$app_host/Properties/launchSettings.json.example" "$app
 copy_example_if_missing "$app_host/appsettings.Development.json.example" "$app_host/appsettings.Development.json"
 copy_example_if_missing "$ROOT/apps/admin/.env.example" "$ROOT/apps/admin/.env.local"
 
+check_frontend_ui_scaffold() {
+  local app_path="$1"
+  local app_name="$2"
+  local missing=""
+  [[ -f "$app_path/postcss.config.mjs" ]] || missing+=" postcss.config.mjs"
+  [[ -f "$app_path/components.json" ]] || missing+=" components.json"
+  [[ -d "$app_path/components/ui" ]] || missing+=" components/ui/"
+  if [[ ! -f "$app_path/app/globals.css" ]] || ! grep -q '@import "tailwindcss"' "$app_path/app/globals.css" 2>/dev/null; then
+    missing+=" app/globals.css (@import tailwindcss)"
+  fi
+  if [[ -n "$missing" ]]; then
+    echo "warning: $app_name missing UI scaffold:$missing. See docs/technical/development.md" >&2
+  fi
+}
+
+check_frontend_ui_scaffold "$ROOT/apps/web" "apps/web"
+check_frontend_ui_scaffold "$ROOT/apps/admin" "apps/admin"
+
 echo ""
 echo "Bootstrap complete."
 echo "  Recommended: pnpm dev:aspire"
+echo "  API docs:     {api-url}/scalar/v1 (Development)"
 echo "  Admin OAuth:  cp apps/admin/.env.example apps/admin/.env.local"
 echo "  Manual path:  bash scripts/dev-manual.sh"

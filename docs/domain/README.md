@@ -55,7 +55,8 @@
 
 ## Cross-Domain Notes
 
-- **Dual frontends:** `apps/web` (public, SEO-first) and `apps/admin` (authenticated authoring). Each app owns its own `domain/{feature}/{use-case}/` tree. No cross-imports between apps.
+- **Multiple frontends:** LitePress currently ships `apps/web` (public, SEO-first) and `apps/admin` (authenticated authoring). Additional apps MAY live under `apps/`; each owns its own `domain/{feature}/{use-case}/` tree with no cross-imports. See [dual-nextjs-apps ADR](../decisions/dual-nextjs-apps.md).
+- **UI default:** shadcn/ui in each frontend; shared CSS tokens in `@litepress/config-tailwind`. Use-case docs list required components per screen.
 - **Comments:** Giscus (GitHub Discussions) on published posts. External to the domain; see [docs/decisions/giscus-comments.md](../decisions/giscus-comments.md).
 - **Scheduled publishing:** Out of v1 scope; see [docs/decisions/v1-scope-deferrals.md](../decisions/v1-scope-deferrals.md).
 - **Author identity:** `AuthorId` is derived from the JWT `sub` claim. Never accepted from request bodies.

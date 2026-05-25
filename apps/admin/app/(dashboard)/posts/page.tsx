@@ -1,5 +1,16 @@
 import Link from "next/link";
 import { getApiClient } from "@/lib/api/client";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { PostStatusBadge } from "@/components/PostStatusBadge";
 
 export default async function PostsPage() {
   const client = await getApiClient();
@@ -12,54 +23,63 @@ export default async function PostsPage() {
   }
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Posts</h1>
-        <Link href="/posts/new" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          New Post
+    <section className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight">Posts</h1>
+          <p className="text-sm text-muted-foreground">Manage drafts, published posts, and archives.</p>
+        </div>
+        <Link href="/posts/new" className={buttonVariants()}>
+          New post
         </Link>
       </div>
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Title</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Slug</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Created</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {data.items.map((post) => (
-              <tr key={post.postId} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{post.title}</td>
-                <td className="px-4 py-3 text-gray-500 text-sm">{post.slug}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                    post.postState === "Published" ? "bg-green-100 text-green-800" :
-                    post.postState === "Archived" ? "bg-gray-100 text-gray-600" :
-                    "bg-yellow-100 text-yellow-800"
-                  }`}>
-                    {post.postState}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-3">
-                  <Link href={`/posts/${post.postId}`} className="text-blue-600 hover:underline text-sm">
-                    Edit
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {data.items.length === 0 && (
-          <p className="text-center text-gray-500 py-8">No posts yet. Create your first post!</p>
-        )}
-      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All posts</CardTitle>
+        </CardHeader>
+        <CardContent className="px-0 pb-0">
+          {data.items.length === 0 ? (
+            <p className="px-6 pb-6 text-center text-sm text-muted-foreground">
+              No posts yet. Create your first post.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((post) => (
+                  <TableRow key={post.postId}>
+                    <TableCell className="font-medium">{post.title}</TableCell>
+                    <TableCell className="text-muted-foreground">{post.slug}</TableCell>
+                    <TableCell>
+                      <PostStatusBadge status={post.postState} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={`/posts/${post.postId}`}
+                        className={buttonVariants({ variant: "ghost", size: "sm" })}
+                      >
+                        Edit
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </section>
   );
 }

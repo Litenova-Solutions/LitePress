@@ -21,7 +21,7 @@ internal sealed class TagRepository : ITagRepository
 
     public async Task<bool> NameExistsAsync(TagName name, CancellationToken cancellationToken = default)
     {
-        return await _context.Tags.AnyAsync(t => t.Name == name, cancellationToken);
+        return await _context.Tags.AnyAsync(t => t.Name.Value == name.Value, cancellationToken);
     }
 
     public async Task AddAsync(Tag tag, CancellationToken cancellationToken = default)

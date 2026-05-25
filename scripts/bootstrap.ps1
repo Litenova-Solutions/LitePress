@@ -50,9 +50,29 @@ Copy-ExampleIfMissing (Join-Path $appHost "Properties/launchSettings.json.exampl
 Copy-ExampleIfMissing (Join-Path $appHost "appsettings.Development.json.example") (Join-Path $appHost "appsettings.Development.json")
 Copy-ExampleIfMissing (Join-Path $Root "apps/admin/.env.example") (Join-Path $Root "apps/admin/.env.local")
 
+function Test-FrontendUiScaffold($AppPath, $AppName) {
+    $missing = @()
+    if (-not (Test-Path (Join-Path $AppPath "postcss.config.mjs"))) { $missing += "postcss.config.mjs" }
+    if (-not (Test-Path (Join-Path $AppPath "components.json"))) { $missing += "components.json" }
+    if (-not (Test-Path (Join-Path $AppPath "components/ui"))) { $missing += "components/ui/" }
+    $globals = Join-Path $AppPath "app/globals.css"
+    if (-not (Test-Path $globals)) {
+        $missing += "app/globals.css"
+    } elseif (-not (Select-String -Path $globals -Pattern '@import "tailwindcss"' -Quiet)) {
+        $missing += 'app/globals.css (@import "tailwindcss")'
+    }
+    if ($missing.Count -gt 0) {
+        Write-Warning "$AppName missing UI scaffold: $($missing -join ', '). See docs/technical/development.md#frontend-ui-shadcnui"
+    }
+}
+
+Test-FrontendUiScaffold (Join-Path $Root "apps/web") "apps/web"
+Test-FrontendUiScaffold (Join-Path $Root "apps/admin") "apps/admin"
+
 Write-Host ""
 Write-Host "Bootstrap complete."
 Write-Host "  Recommended: pnpm dev:aspire"
+Write-Host "  API docs:     {api-url}/scalar/v1 (Development)"
 Write-Host "  Admin OAuth:  copy apps/admin/.env.example to apps/admin/.env.local (or set AppHost user secrets)"
 Write-Host "  Manual path:  pwsh scripts/dev-manual.ps1"
 

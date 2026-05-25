@@ -2,6 +2,8 @@
 
 Technical reference for the LitePress monorepo. For a non-technical overview, see [How LitePress works](../how-it-works.md).
 
+**Precedence:** LitePress docs here and under `docs/domain/` override the `standards/` submodule when they conflict on project-specific topics. Read standards for defaults, then LitePress docs for this product.
+
 ---
 
 ## Documents

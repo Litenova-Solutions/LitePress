@@ -48,8 +48,8 @@ export function TipTapEditor({ value, onChange }: TipTapEditorProps) {
   }, [editor, value]);
 
   return (
-    <div className="border rounded min-h-64 p-3 prose max-w-none focus-within:ring-2 focus-within:ring-blue-500">
-      <EditorContent editor={editor} />
+    <div className="min-h-64 rounded-lg border border-input bg-background p-3 text-sm focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+      <EditorContent editor={editor} className="prose prose-sm max-w-none dark:prose-invert" />
     </div>
   );
 }

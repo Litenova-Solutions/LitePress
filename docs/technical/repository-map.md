@@ -56,7 +56,7 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `src/LitePress.AppHost/` | **Aspire entry point.** Starts Postgres, API, web, admin; injects URLs and secrets |
 | `src/LitePress.AppHost/appsettings.Development.json` | Local AppHost parameter defaults (gitignored; copy from docs or use user secrets) |
 | `src/LitePress.ServiceDefaults/` | Shared OTel, health checks (`/health`, `/alive`), HTTP resilience |
-| `src/LitePress.WebApi/` | ASP.NET Core API: endpoints, middleware, OpenAPI |
+| `src/LitePress.WebApi/` | ASP.NET Core API: endpoints, middleware, OpenAPI, Scalar (dev) |
 | `src/LitePress.WebApi/appsettings.json` | Committed defaults (connection string for manual path, CORS, JWT placeholder) |
 | `src/LitePress.WebApi/appsettings.Development.json` | Local API overrides (gitignored) |
 | `src/LitePress.Infrastructure/` | EF Core, repositories, `DatabaseMigrationExtensions` (dev auto-migrate) |
@@ -78,6 +78,8 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `.env.example` | Template for optional overrides — copy to `.env.local` |
 | `lib/env.ts` | Validated server/public env vars |
 | `domain/` | Feature UI aligned with `docs/domain/` |
+| `components/ui/` | shadcn/ui components (owned per app) |
+| `postcss.config.mjs` | Tailwind v4 PostCSS entry |
 | `e2e/` | Playwright tests; `.seed.json` is generated locally (gitignored) |
 | `playwright.config.ts` | E2E config |
 
@@ -92,6 +94,8 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `package.json` | App scripts; dev server port **3002** |
 | `.env.example` | GitHub OAuth template — copy to `.env.local` for sign-in |
 | `lib/env.ts` | Auth.js and API env validation |
+| `components/ui/` | shadcn/ui components (owned per app) |
+| `postcss.config.mjs` | Tailwind v4 PostCSS entry |
 
 **Run:** `pnpm dev:admin` (OAuth requires real GitHub app credentials)
 
@@ -105,7 +109,7 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `@litepress/api-client` | `openapi-fetch` client wrapper |
 | `@litepress/config-eslint` | Shared ESLint config |
 | `@litepress/config-typescript` | Shared `tsconfig` base |
-| `@litepress/config-tailwind` | Shared Tailwind v4 setup |
+| `@litepress/config-tailwind` | Shared shadcn theme CSS tokens (not React components) |
 
 Regenerate types after API changes: `pnpm generate:api-types`
 

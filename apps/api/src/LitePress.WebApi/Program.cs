@@ -13,6 +13,7 @@ using LitePress.WebApi.Extensions;
 using LitePress.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -106,6 +107,15 @@ app.UseMiddleware<EnsureAuthorMiddleware>();
 
 // Endpoints
 app.MapOpenApi();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("LitePress API");
+    });
+}
+
 app.MapEndpoints();
 
 app.Run();

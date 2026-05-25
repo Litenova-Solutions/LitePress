@@ -1,4 +1,8 @@
 import type { components } from "@litepress/api-types";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { renderProseMirrorToHtml } from "@/shared/prosemirror/renderContent";
 import { GiscusComments } from "./GiscusComments";
 
@@ -12,41 +16,48 @@ export function PostArticle({ post }: PostArticleProps) {
   const html = renderProseMirrorToHtml(post.content);
 
   return (
-    <article>
+    <article className="space-y-8">
       {post.coverImageUrl && (
         <img
           src={post.coverImageUrl}
           alt={post.title}
-          className="w-full h-64 object-cover rounded mb-8"
+          className="h-64 w-full rounded-xl object-cover ring-1 ring-foreground/10"
           fetchPriority="high"
         />
       )}
-      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-      <div className="flex gap-4 text-sm text-gray-500 mb-6">
-        <span>{post.authorDisplayName}</span>
-        {post.publishedAt && (
-          <time dateTime={post.publishedAt}>
-            {new Date(post.publishedAt).toLocaleDateString()}
-          </time>
-        )}
-      </div>
-      <div
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+
+      <header className="space-y-4">
+        <h1 className="font-heading text-4xl font-semibold tracking-tight">{post.title}</h1>
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <span>{post.authorDisplayName}</span>
+          {post.publishedAt && (
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString()}
+            </time>
+          )}
+        </div>
+      </header>
+
+      <Card>
+        <CardContent className="pt-6">
+          <div
+            className="prose prose-lg max-w-none dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        </CardContent>
+      </Card>
+
       {post.tags?.length > 0 && (
-        <div className="flex gap-2 mt-8 pt-8 border-t">
+        <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (
-            <a
-              key={tag.tagId}
-              href={"/tags/" + tag.slug}
-              className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
-            >
-              {tag.name}
-            </a>
+            <Link key={tag.tagId} href={"/tags/" + tag.slug}>
+              <Badge variant="outline">{tag.name}</Badge>
+            </Link>
           ))}
         </div>
       )}
+
+      <Separator />
       <GiscusComments slug={post.slug} />
     </article>
   );

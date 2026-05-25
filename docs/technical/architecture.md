@@ -1,6 +1,8 @@
 # Architecture
 
-How LitePress is structured technically: three deployable apps, one API, one database, and shared TypeScript packages.
+How LitePress is structured technically: multiple deployable apps under `apps/`, one primary API, one database, and shared TypeScript packages.
+
+LitePress docs override engineering standards on overlapping topics. See [AGENTS.md](../../AGENTS.md#documentation-precedence).
 
 ---
 
@@ -41,7 +43,9 @@ flowchart TB
 
 ---
 
-## Three frontends, one backend
+## Deployable apps
+
+LitePress currently ships two Next.js frontends and one API. The monorepo MAY add more apps under `apps/`; see [monorepo-structure in standards](../../standards/docs/conventions/shared/monorepo-structure.md) and [dual-nextjs-apps ADR](../decisions/dual-nextjs-apps.md).
 
 | App | Port (dev) | Auth | Talks to API |
 |:---|:---|:---|:---|
@@ -49,9 +53,7 @@ flowchart TB
 | `apps/admin` | 3002 | Auth.js GitHub OAuth | Server: `getApiClient()` with minted JWT; client: `/api-proxy` |
 | `apps/api` | 5000 | JWT Bearer on mutating routes | PostgreSQL via EF Core |
 
-Both Next.js apps are independent: each has its own `domain/{feature}/{use-case}/` tree. They do not import from each other.
-
-See [dual-nextjs-apps.md](../decisions/dual-nextjs-apps.md).
+Each Next.js app is independent: own `domain/{feature}/{use-case}/` tree, own `components/ui/` (shadcn), shared CSS tokens from `@litepress/config-tailwind`. No cross-app domain imports.
 
 ---
 
@@ -74,7 +76,7 @@ Infrastructure (EF Core, repositories, pipeline)
 | `Application.Read` | Query handlers; projections via `IDatabaseContext` only |
 | `Application.Reactions` | Event handlers (v1: log-only side effects) |
 | `Infrastructure` | DbContext, repositories, naming conventions, DI |
-| `WebApi` | Minimal API endpoints, JWT, CORS, OpenAPI, middleware |
+| `WebApi` | Minimal API endpoints, JWT, CORS, OpenAPI, Scalar (Development) |
 
 **Rules that matter:**
 

@@ -14,3 +14,4 @@ For plain-language product behavior, see [How LitePress works](../how-it-works.m
 | [licensing.md](licensing.md) | PolyForm Noncommercial + commercial license |
 | [v1-scope-deferrals.md](v1-scope-deferrals.md) | Features deferred beyond v1 |
 | [local-dev-migrations.md](local-dev-migrations.md) | Development auto-migrate vs manual EF path |
+| [scalar-api-docs.md](scalar-api-docs.md) | Scalar UI for local OpenAPI reference |

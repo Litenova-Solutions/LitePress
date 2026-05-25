@@ -1,5 +1,15 @@
 import type { components } from "@litepress/api-types";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export type PostSummary = components["schemas"]["PostSummaryResult"];
 
@@ -15,52 +25,61 @@ export function PostList({ posts, heading, page, hasNextPage, tagSlug }: PostLis
   const tagQuery = tagSlug ? "&tag=" + tagSlug : "";
 
   return (
-    <section>
-      <h1 className="text-3xl font-bold mb-8">{heading}</h1>
-      <div className="space-y-8">
+    <section className="space-y-8">
+      <div>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">{heading}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Published posts from LitePress.</p>
+      </div>
+
+      <div className="space-y-4">
         {posts.map((post) => (
-          <article key={post.postId} className="border-b pb-8">
-            <h2 className="text-xl font-semibold mb-2">
-              <Link href={"/" + post.slug} className="hover:text-blue-600">
-                {post.title}
-              </Link>
-            </h2>
-            {post.excerpt && <p className="text-gray-600 mb-3">{post.excerpt}</p>}
-            <div className="flex gap-2 flex-wrap">
-              {post.tags?.map((tag) => (
-                <Link
-                  key={tag.tagId}
-                  href={"/tags/" + tag.slug}
-                  className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
-                >
-                  {tag.name}
+          <Card key={post.postId}>
+            <CardHeader>
+              <CardTitle className="text-xl">
+                <Link href={"/" + post.slug} className="hover:underline">
+                  {post.title}
                 </Link>
-              ))}
-            </div>
-            {post.publishedAt && (
-              <time dateTime={post.publishedAt} className="text-sm text-gray-400 mt-2 block">
-                {new Date(post.publishedAt).toLocaleDateString()}
-              </time>
-            )}
-          </article>
+              </CardTitle>
+              {post.excerpt && <CardDescription>{post.excerpt}</CardDescription>}
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag) => (
+                    <Link key={tag.tagId} href={"/tags/" + tag.slug}>
+                      <Badge variant="secondary">{tag.name}</Badge>
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {post.publishedAt && (
+                <time dateTime={post.publishedAt} className="block text-sm text-muted-foreground">
+                  {new Date(post.publishedAt).toLocaleDateString()}
+                </time>
+              )}
+            </CardContent>
+          </Card>
         ))}
       </div>
+
       {posts.length === 0 && (
-        <p className="text-gray-500 text-center py-12">No posts yet.</p>
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">No posts yet.</CardContent>
+        </Card>
       )}
-      <nav className="flex justify-between mt-8" aria-label="Pagination">
-        {page > 1 && (
-          <Link
-            href={"/?page=" + (page - 1) + tagQuery}
-            className="text-blue-600 hover:underline"
-          >
+
+      <nav className="flex justify-between" aria-label="Pagination">
+        {page > 1 ? (
+          <Link href={"/?page=" + (page - 1) + tagQuery} className={buttonVariants({ variant: "outline" })}>
             Previous
           </Link>
+        ) : (
+          <span />
         )}
         {hasNextPage && (
           <Link
             href={"/?page=" + (page + 1) + tagQuery}
-            className="text-blue-600 hover:underline ml-auto"
+            className={cn(buttonVariants({ variant: "outline" }), "ml-auto")}
           >
             Next
           </Link>

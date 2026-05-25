@@ -4,7 +4,23 @@
 import type { components } from "@litepress/api-types";
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { TipTapEditor } from "../create/TipTapEditor";
+import { PostStatusBadge } from "@/components/PostStatusBadge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type PostDetail = components["schemas"]["PostDetailResult"];
 type TagOption = components["schemas"]["TagResult"];
@@ -56,9 +72,12 @@ export function EditPostForm({ params }: EditPostFormProps) {
       if (!res.ok) {
         throw new Error(await res.text());
       }
+      toast.success("Post saved");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      toast.error("Failed to save post");
     } finally {
       setLoading(false);
     }
@@ -74,6 +93,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
         if (!res.ok) {
           throw new Error(await res.text());
         }
+        toast.success("Post deleted");
         router.push("/posts");
       } else {
         const res = await fetch("/api-proxy/posts/" + id + "/" + action, {
@@ -82,11 +102,12 @@ export function EditPostForm({ params }: EditPostFormProps) {
         if (!res.ok) {
           throw new Error(await res.text());
         }
+        toast.success(action === "publish" ? "Post published" : "Post archived");
         router.refresh();
         window.location.reload();
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Unknown error");
+      toast.error(err instanceof Error ? err.message : "Action failed");
     }
   }
 
@@ -101,7 +122,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
       body: assigned ? undefined : JSON.stringify({ tagId }),
     });
     if (!res.ok) {
-      alert(await res.text());
+      toast.error(await res.text());
       return;
     }
     const updated = (await fetch("/api-proxy/posts/" + id).then((r) =>
@@ -111,7 +132,7 @@ export function EditPostForm({ params }: EditPostFormProps) {
   }
 
   if (!post) {
-    return <div className="text-gray-500">Loading...</div>;
+    return <p className="text-sm text-muted-foreground">Loading...</p>;
   }
 
   const isDraft = post.postState === "Draft";
@@ -120,123 +141,121 @@ export function EditPostForm({ params }: EditPostFormProps) {
   const assignedTagIds = new Set(post.tags?.map((t) => t.tagId) ?? []);
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Edit Post</h1>
-        <div className="flex gap-2">
+    <section className="mx-auto max-w-2xl space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="font-heading text-3xl font-semibold tracking-tight">Edit post</h1>
+          <PostStatusBadge status={post.postState} />
+        </div>
+        <div className="flex flex-wrap gap-2">
           {isDraft && (
-            <button
-              type="button"
-              onClick={() => handleAction("publish")}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
-            >
+            <Button type="button" onClick={() => handleAction("publish")}>
               Publish
-            </button>
+            </Button>
           )}
           {isPublished && (
-            <button
-              type="button"
-              onClick={() => handleAction("archive")}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm"
-            >
+            <Button type="button" variant="secondary" onClick={() => handleAction("archive")}>
               Archive
-            </button>
+            </Button>
           )}
           {(isDraft || isArchived) && (
-            <button
-              type="button"
-              onClick={() => handleAction("delete")}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
-            >
+            <Button type="button" variant="destructive" onClick={() => handleAction("delete")}>
               Delete
-            </button>
+            </Button>
           )}
         </div>
       </div>
-      <div className="mb-4">
-        <span
-          className={
-            "inline-block px-2 py-1 rounded text-xs font-semibold " +
-            (post.postState === "Published"
-              ? "bg-green-100 text-green-800"
-              : post.postState === "Archived"
-                ? "bg-gray-100 text-gray-600"
-                : "bg-yellow-100 text-yellow-800")
-          }
-        >
-          {post.postState}
-        </span>
-      </div>
-      <form onSubmit={handleUpdate} className="max-w-2xl space-y-4">
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded">{error}</div>}
-        <div>
-          <label className="block text-sm font-medium mb-1">Title *</label>
-          <input
-            required
-            value={form.title}
-            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Content *</label>
-          <TipTapEditor
-            value={form.content}
-            onChange={(content) => setForm((f) => ({ ...f, content }))}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Excerpt</label>
-          <textarea
-            rows={3}
-            value={form.excerpt}
-            onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Cover Image URL</label>
-          <input
-            type="url"
-            value={form.coverImageUrl}
-            onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        {isDraft && (
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-        )}
-      </form>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Post details</CardTitle>
+          <CardDescription>Update title, content, and metadata.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleUpdate} className="space-y-5">
+            {error && (
+              <Alert variant="destructive">
+                <AlertTitle>Could not save post</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                required
+                value={form.title}
+                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="content">Content</Label>
+              <TipTapEditor
+                value={form.content}
+                onChange={(content) => setForm((f) => ({ ...f, content }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="excerpt">Excerpt</Label>
+              <Textarea
+                id="excerpt"
+                rows={3}
+                value={form.excerpt}
+                onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="coverImageUrl">Cover image URL</Label>
+              <Input
+                id="coverImageUrl"
+                type="url"
+                value={form.coverImageUrl}
+                onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
+              />
+            </div>
+
+            {isDraft && (
+              <Button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save changes"}
+              </Button>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+
       {isDraft && allTags.length > 0 && (
-        <div className="mt-8 max-w-2xl">
-          <h2 className="text-lg font-semibold mb-3">Tags</h2>
-          <div className="flex flex-wrap gap-2">
-            {allTags.map((tag) => {
-              const assigned = assignedTagIds.has(tag.tagId);
-              return (
-                <button
-                  key={tag.tagId}
-                  type="button"
-                  onClick={() => toggleTag(tag.tagId, assigned)}
-                  className={
-                    "text-sm px-3 py-1 rounded border " +
-                    (assigned
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400")
-                  }
-                >
-                  {tag.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Tags</CardTitle>
+            <CardDescription>Assign tags before publishing.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {allTags.map((tag) => {
+                const assigned = assignedTagIds.has(tag.tagId);
+                return (
+                  <button
+                    key={tag.tagId}
+                    type="button"
+                    onClick={() => toggleTag(tag.tagId, assigned)}
+                    className="rounded-full focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                  >
+                    <Badge
+                      variant={assigned ? "default" : "outline"}
+                      className={cn("cursor-pointer", assigned && "ring-1 ring-primary/30")}
+                    >
+                      {tag.name}
+                    </Badge>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       )}
     </section>
   );

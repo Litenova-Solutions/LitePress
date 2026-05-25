@@ -1,6 +1,9 @@
 "use client";
 // Rename requires browser prompt for the new name.
 
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
 interface RenameTagButtonProps {
   tagId: string;
   tagName: string;
@@ -20,20 +23,17 @@ export function RenameTagButton({ tagId, tagName }: RenameTagButtonProps) {
     });
 
     if (!res.ok) {
-      alert(await res.text());
+      toast.error(await res.text());
       return;
     }
 
+    toast.success("Tag renamed");
     window.location.reload();
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleRename}
-      className="text-blue-600 hover:underline text-sm mr-3"
-    >
+    <Button type="button" variant="outline" size="sm" onClick={handleRename}>
       Rename
-    </button>
+    </Button>
   );
 }

@@ -4,7 +4,7 @@
 |:---|:---|
 | Feature | `posts` |
 | Status | Active (v1 complete) |
-| Last updated | 2026-05-23 |
+| Last updated | 2026-05-25 |
 
 ---
 
@@ -64,20 +64,35 @@ Returns 201 with `{ postId, slug }` and `Location: /api/posts/{postId}`.
 ### Route and entry
 
 - Route: `app/(dashboard)/posts/new/page.tsx`
-- Target domain entry: `domain/posts/create/CreatePostPage.tsx`
+- Domain entry: `domain/posts/create/CreatePostForm.tsx`
+
+### Components (shadcn/ui)
+
+Use local imports from `@/components/ui/`:
+
+| UI element | Component |
+|:---|:---|
+| Form shell | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent` |
+| Fields | `Label`, `Input`, `Textarea` |
+| Submit | `Button` |
+| API errors | `Alert`, `AlertTitle`, `AlertDescription` |
+| Success / failure feedback | `sonner` toast via `Toaster` in root layout |
+| Rich text | `TipTapEditor` (TipTap; admin-specific) |
+
+Shared theme: `@litepress/config-tailwind/theme.css`.
 
 ### States
 
 | State | Behavior |
 |:---|:---|
-| Loading | Submit button disabled during Server Action |
+| Loading | Submit button disabled during client mutation |
 | Empty | Blank form with TipTap editor |
-| Error | Inline validation or toast on API failure |
+| Error | Inline `Alert` and error toast on API failure |
 | Loaded | Redirect to post edit page on success |
 
 ### Mutations
 
-Server Action with Zod validation. TipTap editor outputs ProseMirror JSON for `content`.
+Client mutation via `/api-proxy/posts` with JSON body. TipTap outputs ProseMirror JSON for `content`. (Server Action + Zod in the action file remains the standards default for new forms; this use case currently uses the api-proxy client pattern documented here.)
 
 ---
 

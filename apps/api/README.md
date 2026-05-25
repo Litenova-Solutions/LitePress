@@ -106,7 +106,8 @@ dotnet test LitePress.slnx --configuration Release --no-build
 | Auth | JWT Bearer; `AuthorId` from JWT, never request body |
 | Queries | `IDatabaseContext` projections; no repository injection |
 | DB naming | `UseSnakeCaseNamingConvention()` via EFCore.NamingConventions |
-| OpenAPI | `/openapi/v1.json` |
+| OpenAPI | `/openapi/v1.json` (machine-readable spec) |
+| API docs (dev) | `/scalar/v1` (Scalar UI, Development only) |
 | Health (dev) | `/health`, `/alive` via ServiceDefaults |
 | Domain docs | `docs/domain/` — update with code changes |
 
@@ -116,7 +117,14 @@ Engineering standards: [standards/AGENTS.md](../../standards/AGENTS.md) (submodu
 
 ## OpenAPI
 
-When running locally: http://localhost:5000/openapi/v1.json
+When running locally:
+
+| Resource | URL |
+|:---|:---|
+| OpenAPI JSON | http://localhost:5000/openapi/v1.json |
+| Scalar UI (Development only) | http://localhost:5000/scalar/v1 |
+
+The API uses `Microsoft.AspNetCore.OpenApi` for spec generation and `Scalar.AspNetCore` for the browsable reference UI. Scalar is mapped only when `ASPNETCORE_ENVIRONMENT=Development`. Production exposes the JSON endpoint only if you choose to map it; Scalar is not enabled in Production.
 
 Regenerate TypeScript types from repo root:
 
