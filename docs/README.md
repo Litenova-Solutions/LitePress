@@ -20,6 +20,7 @@ Documentation for [LitePress](https://github.com/Litenova-Solutions/LitePress), 
 | Document | Description |
 |:---|:---|
 | [Technical overview](technical/README.md) | Architecture, stack, and doc map |
+| [Repository map](technical/repository-map.md) | Where repo files live and what they do |
 | [Architecture](technical/architecture.md) | System diagram, apps, data flow, clean architecture |
 | [Development guide](technical/development.md) | Local setup, verification gates, CI, debugging |
 | [Environment variables](technical/environment.md) | All env vars for API, web, and admin |

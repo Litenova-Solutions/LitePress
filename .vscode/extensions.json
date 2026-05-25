@@ -1,0 +1,9 @@
+{
+  "version": "0.2.0",
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "ms-azuretools.vscode-aspire",
+    "dbaeumer.vscode-eslint"
+  ]
+}

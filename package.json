@@ -6,6 +6,12 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:aspire": "dotnet run --project apps/api/src/LitePress.AppHost",
+    "dev:api": "dotnet run --project apps/api/src/LitePress.WebApi",
+    "dev:web": "pnpm --filter web dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "db:migrate": "dotnet ef database update --project apps/api/src/LitePress.Infrastructure --startup-project apps/api/src/LitePress.WebApi",
+    "db:migrate:add": "dotnet ef migrations add",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "test": "turbo test",

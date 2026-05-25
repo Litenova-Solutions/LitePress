@@ -1,3 +1,6 @@
+# Used for: manual API-only dev, local E2E, CI-style reproduction.
+# NOT used when running LitePress.AppHost (Aspire manages its own Postgres).
+
 services:
   postgres:
     image: postgres:17

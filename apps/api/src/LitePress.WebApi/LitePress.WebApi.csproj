@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
+    <ProjectReference Include="..\LitePress.ServiceDefaults\LitePress.ServiceDefaults.csproj" />
     <ProjectReference Include="..\LitePress.Application.Write.Contracts\LitePress.Application.Write.Contracts.csproj" />
     <ProjectReference Include="..\LitePress.Application.Read.Contracts\LitePress.Application.Read.Contracts.csproj" />
     <ProjectReference Include="..\LitePress.Infrastructure\LitePress.Infrastructure.csproj" />

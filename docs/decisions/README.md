@@ -13,3 +13,4 @@ For plain-language product behavior, see [How LitePress works](../how-it-works.m
 | [seo-public-web.md](seo-public-web.md) | SEO strategy for public web app |
 | [licensing.md](licensing.md) | PolyForm Noncommercial + commercial license |
 | [v1-scope-deferrals.md](v1-scope-deferrals.md) | Features deferred beyond v1 |
+| [local-dev-migrations.md](local-dev-migrations.md) | Development auto-migrate vs manual EF path |

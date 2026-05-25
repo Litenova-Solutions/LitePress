@@ -56,15 +56,17 @@ jobs:
           dotnet restore LitePress.slnx
           dotnet build LitePress.slnx --configuration Release --no-restore
 
-      - name: Install EF Core tools
-        run: dotnet tool install --global dotnet-ef --version 10.0.4
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+        working-directory: .
 
       - name: Apply database migrations
         run: |
           dotnet ef database update \
-            --project src/LitePress.Infrastructure \
-            --startup-project src/LitePress.WebApi \
+            --project apps/api/src/LitePress.Infrastructure \
+            --startup-project apps/api/src/LitePress.WebApi \
             --configuration Release
+        working-directory: .
 
       - name: Start API
         run: |

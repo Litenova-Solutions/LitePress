@@ -2,6 +2,8 @@
 
 Validated configuration for API, web, and admin. Server-only secrets must **not** use the `NEXT_PUBLIC_` prefix.
 
+Example files: `apps/admin/.env.example`, `apps/web/.env.example`.
+
 ---
 
 ## API (`apps/api`)
@@ -10,8 +12,8 @@ Set via environment variables or `appsettings.json`. Aspire injects these in loc
 
 | Variable | Default (local) | Description |
 |:---|:---|:---|
-| `ConnectionStrings__Database` | `Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress` | PostgreSQL |
-| `JwtSettings__Secret` | *(must set in prod)* | HS256 signing key for API JWT (min 32 chars) |
+| `ConnectionStrings__Database` | `Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress` | PostgreSQL (manual path). Aspire injects its own connection string. |
+| `JwtSettings__Secret` | dev default in `appsettings.Development.json` | HS256 signing key for API JWT (min 32 chars). Aspire injects via AppHost parameter. |
 | `Cors__WebOrigin` | `http://localhost:3000` | CORS origin for public web |
 | `Cors__AdminOrigin` | `http://localhost:3002` | CORS origin for admin |
 
@@ -21,18 +23,18 @@ Set via environment variables or `appsettings.json`. Aspire injects these in loc
 
 ## Admin (`apps/admin`)
 
-Create `apps/admin/.env.local` (never commit). Validated in `apps/admin/lib/env.ts`.
+Copy `apps/admin/.env.example` to `apps/admin/.env.local` (never commit). Validated in `apps/admin/lib/env.ts`.
 
 | Variable | Required | Description |
 |:---|:---|:---|
-| `API_URL` | Yes (prod) | Backend base URL, e.g. `http://localhost:5000` |
-| `API_JWT_SECRET` | Yes (prod) | Must match API `JwtSettings__Secret` |
+| `API_URL` | Yes (prod) | Backend base URL. Aspire injects at startup. |
+| `API_JWT_SECRET` | Yes (prod) | Must match API `JwtSettings__Secret`. Aspire can inject via AppHost parameter. |
 | `AUTH_SECRET` | Yes (prod) | Auth.js encryption secret (`openssl rand -base64 32`) |
 | `AUTH_GITHUB_ID` | Yes | GitHub OAuth App client ID |
 | `AUTH_GITHUB_SECRET` | Yes | GitHub OAuth App client secret |
 | `GITHUB_OWNER_ID` | Yes | Numeric GitHub user ID allowed to sign in |
 
-Dev defaults exist for local experimentation but OAuth will not work until real GitHub credentials are set.
+Dev defaults exist in `env.ts` and AppHost `appsettings.Development.json` but OAuth will not work until real GitHub credentials are set.
 
 ### GitHub OAuth App settings (local)
 
@@ -41,15 +43,26 @@ Dev defaults exist for local experimentation but OAuth will not work until real 
 | Homepage URL | `http://localhost:3002` |
 | Authorization callback URL | `http://localhost:3002/api/auth/callback/github` |
 
+### AppHost user secrets (alternative to `.env.local`)
+
+```bash
+dotnet user-secrets set "Parameters:auth-github-id" "<client-id>" \
+  --project apps/api/src/LitePress.AppHost
+dotnet user-secrets set "Parameters:auth-github-secret" "<client-secret>" \
+  --project apps/api/src/LitePress.AppHost
+dotnet user-secrets set "Parameters:github-owner-id" "<numeric-id>" \
+  --project apps/api/src/LitePress.AppHost
+```
+
 ---
 
 ## Public web (`apps/web`)
 
-Create `apps/web/.env.local` as needed. Validated in `apps/web/lib/env.ts`.
+Copy `apps/web/.env.example` to `.env.local` when overriding defaults. Validated in `apps/web/lib/env.ts`.
 
 | Variable | Default (local) | Description |
 |:---|:---|:---|
-| `API_URL` | `http://localhost:5000` | Server-only API base URL |
+| `API_URL` | `http://localhost:5000` | Server-only API base URL. Aspire injects at startup. |
 | `SITE_URL` | `http://localhost:3000` | Canonical site URL for SEO |
 | `NEXT_PUBLIC_SITE_URL` | *(optional)* | Overrides public site URL when set |
 | `NEXT_PUBLIC_GISCUS_REPO` | *(optional)* | Giscus: `owner/repo` |
@@ -71,6 +84,8 @@ Used by Playwright global setup and `.github/workflows/e2e.yml`:
 | `PLAYWRIGHT_BASE_URL` | `http://localhost:3000` | Public web under test |
 | `API_URL` | `http://localhost:5000` | Web app server-side fetch |
 | `SITE_URL` | `http://localhost:3000` | SEO base URL in tests |
+
+Local E2E: `pwsh scripts/e2e-local.ps1`.
 
 ---
 

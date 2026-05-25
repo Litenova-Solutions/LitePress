@@ -12,6 +12,7 @@ Full reference: [docs/technical/api-reference.md](../../docs/technical/api-refer
 apps/api/
 ├── src/
 │   ├── LitePress.AppHost/              # .NET Aspire orchestration
+│   ├── LitePress.ServiceDefaults/      # OTel, health checks, service discovery
 │   ├── LitePress.Domain/
 │   ├── LitePress.Application.Write.Contracts/
 │   ├── LitePress.Application.Write/
@@ -36,15 +37,27 @@ apps/api/
 
 ### With Aspire (recommended)
 
+From repo root:
+
+```bash
+pnpm dev:aspire
+```
+
+Or from `apps/api`:
+
 ```bash
 dotnet run --project src/LitePress.AppHost
 ```
 
-### Standalone
+Migrations apply automatically in Development on API startup.
 
-Requires PostgreSQL (see root [README](../../README.md) or `docker compose up -d`):
+### Standalone (manual path)
+
+Requires docker-compose Postgres (port 5433):
 
 ```bash
+docker compose up -d
+pnpm db:migrate
 dotnet run --project src/LitePress.WebApi
 # → http://localhost:5000
 ```
@@ -61,16 +74,18 @@ JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 ## Migrations
 
 ```bash
-# Apply
-dotnet ef database update \
-  --project src/LitePress.Infrastructure \
-  --startup-project src/LitePress.WebApi
+dotnet tool restore
+
+# Apply (manual / CI path)
+pnpm db:migrate
 
 # Add
 dotnet ef migrations add <Name> \
   --project src/LitePress.Infrastructure \
   --startup-project src/LitePress.WebApi
 ```
+
+Aspire path: migrations run automatically in Development. See [local-dev-migrations ADR](../../docs/decisions/local-dev-migrations.md).
 
 ---
 
@@ -92,6 +107,7 @@ dotnet test LitePress.slnx --configuration Release --no-build
 | Queries | `IDatabaseContext` projections; no repository injection |
 | DB naming | `UseSnakeCaseNamingConvention()` via EFCore.NamingConventions |
 | OpenAPI | `/openapi/v1.json` |
+| Health (dev) | `/health`, `/alive` via ServiceDefaults |
 | Domain docs | `docs/domain/` — update with code changes |
 
 Engineering standards: [standards/AGENTS.md](../../standards/AGENTS.md) (submodule).

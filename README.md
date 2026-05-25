@@ -74,70 +74,60 @@ LitePress/
 | [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | API and Aspire |
 | [Node.js](https://nodejs.org/) | 22+ | Frontends |
 | [pnpm](https://pnpm.io/installation) | 10+ | Workspace package manager |
-| [Docker](https://www.docker.com/products/docker-desktop/) | any | PostgreSQL |
+| [Docker](https://www.docker.com/products/docker-desktop/) | any | Manual/E2E Postgres only |
 | Aspire workload | — | `dotnet workload install aspire` (one-time) |
 
 ---
 
 ## Quick start
 
-### 1. Clone (including standards submodule)
-
-```bash
-git clone https://github.com/Litenova-Solutions/LitePress.git
-cd LitePress
-git submodule update --init --recursive
-```
-
-Or:
+### 1. Bootstrap
 
 ```powershell
 pwsh scripts/bootstrap.ps1
 ```
 
-### 2. Install dependencies
+Linux/macOS:
 
 ```bash
-pnpm install
+bash scripts/bootstrap.sh
 ```
 
-### 3. Start PostgreSQL
+This initializes the `standards/` submodule, runs `dotnet tool restore`, and `pnpm install`.
+
+### 2. Run with Aspire (recommended)
 
 ```bash
-docker compose up -d
+pnpm dev:aspire
 ```
 
-### 4. Apply database migrations
+Aspire starts its own Postgres container, API, web, and admin. Migrations apply automatically in Development when the API starts. Open the Aspire dashboard (typically `https://localhost:15888`) for URLs and logs.
+
+Do **not** run `docker compose up` in the same session; Aspire uses a separate Postgres instance.
+
+### 3. Configure admin OAuth (first-time sign-in)
+
+Copy the example env file and add your GitHub OAuth credentials:
 
 ```bash
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
+cp apps/admin/.env.example apps/admin/.env.local
 ```
 
-### 5. Run with Aspire (recommended)
-
-```bash
-dotnet run --project apps/api/src/LitePress.AppHost
-```
-
-Open the Aspire dashboard (typically `https://localhost:15888`) for API, web, and admin URLs.
-
-### 6. Configure admin OAuth (first-time)
-
-Create `apps/admin/.env.local` — see [Environment variables](docs/technical/environment.md#admin-appsadmin).
+Or override AppHost parameters via user secrets. See [Environment variables](docs/technical/environment.md#admin-appsadmin).
 
 ---
 
-## Running without Aspire
+## Manual path (debugging one layer)
 
-| Service | Command | Default URL |
-|:---|:---|:---|
-| API | `dotnet run --project apps/api/src/LitePress.WebApi` | http://localhost:5000 |
-| Web | `pnpm --filter web dev` | http://localhost:3000 |
-| Admin | `pnpm --filter admin dev` | http://localhost:3002 |
+Use when you want fixed ports or to debug without Aspire.
 
-See [Development guide](docs/technical/development.md).
+| Step | Command |
+|:---|:---|
+| Postgres + API | `pwsh scripts/dev-manual.ps1` (or `bash scripts/dev-manual.sh`) |
+| Web (new terminal) | `pnpm dev:web` |
+| Admin (new terminal) | `pnpm dev:admin` |
+
+This path uses `docker compose` Postgres on port **5433**. See [Development guide](docs/technical/development.md).
 
 ---
 
@@ -148,7 +138,7 @@ dotnet build apps/api/LitePress.slnx --configuration Release
 dotnet test apps/api/LitePress.slnx --configuration Release --no-build
 pnpm install --frozen-lockfile
 pnpm lint && pnpm type-check && pnpm test && pnpm build
-pnpm exec playwright test --config apps/web/playwright.config.ts
+pwsh scripts/e2e-local.ps1
 ```
 
 E2E publish flow: [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml).
@@ -160,7 +150,7 @@ E2E publish flow: [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml).
 | Audience | Start here |
 |:---|:---|
 | Readers & authors | [How LitePress works](docs/how-it-works.md) |
-| Developers | [Technical documentation](docs/technical/README.md) |
+| Developers | [Technical documentation](docs/technical/README.md) · [Repository map](docs/technical/repository-map.md) |
 | AI agents / contributors | [AGENTS.md](AGENTS.md) |
 | Domain & use cases | [docs/domain/README.md](docs/domain/README.md) |
 | Decisions | [docs/decisions/README.md](docs/decisions/README.md) |
@@ -185,4 +175,4 @@ Propose changes to Engineering Standards in the [Engineering-Standards](https://
 
 LitePress is licensed under the [PolyForm Noncommercial License 1.0.0](./LICENSE).
 
-**Commercial use** by companies and organizations requires a separate agreement. See [COMMERCIAL-LICENSE.md](./COMMERCIAL-LICENSE.md) and contact [Litenova Solutions](https://litenova.solutions).
+**Commercial use** by companies and organizations requires a separate agreement. See [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) and contact [Litenova Solutions](https://litenova.solutions).

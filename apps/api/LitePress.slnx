@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/LitePress.AppHost/LitePress.AppHost.csproj" />
+    <Project Path="src/LitePress.ServiceDefaults/LitePress.ServiceDefaults.csproj" />
     <Project Path="src/LitePress.Application.Reactions/LitePress.Application.Reactions.csproj" />
     <Project Path="src/LitePress.Application.Read.Contracts/LitePress.Application.Read.Contracts.csproj" />
     <Project Path="src/LitePress.Application.Read/LitePress.Application.Read.csproj" />

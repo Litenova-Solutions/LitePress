@@ -1,46 +1,62 @@
-# Node
+# Node / pnpm
 node_modules/
 .pnpm-store/
+.pnpm-debug.log*
+
+# Next.js
 .next/
 out/
+
+# Frontend build output
 dist/
+build/
 
-# Build artifacts (all OSes)
-bin/
-obj/
+# TypeScript incremental build cache
+*.tsbuildinfo
 
-# Environment
-.env
-.env.local
-.env.*.local
+# ESLint cache
+.eslintcache
 
 # Turborepo
 .turbo/
 
-# dotnet
+# .NET build output
+bin/
+obj/
 *.user
 *.suo
 *.swp
 *.bak
 *.log
-*.DS_Store
-Thumbs.db
 .vs/
+
+# Publish output
+**/bin/**/publish/
+**/obj/**/publish/
+
+# Local-only launch and app settings (may contain secrets or machine-specific values)
 launchSettings.json
 appsettings.Development.json
 
-# EF Core migrations output (keep migration files but ignore generated sql)
+# Environment (keep .env.example committed)
+.env
+.env.local
+.env.*.local
+
+# EF Core generated SQL (keep migration C# files)
 *.mssql.sql
 
-# Test results
+# Test and coverage output
 TestResults/
 coverage/
 *.coveragexml
 *.trx
 
-# Publish output (dotnet publish folder at project root only)
-**/bin/**/publish/
-**/obj/**/publish/
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 
 # JetBrains IDEs
 .idea/
@@ -55,4 +71,3 @@ Desktop.ini
 
 # Playwright E2E seed (generated locally)
 apps/web/e2e/.seed.json
-

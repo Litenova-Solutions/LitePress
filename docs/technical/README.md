@@ -8,6 +8,7 @@ Technical reference for the LitePress monorepo. For a non-technical overview, se
 
 | Document | Contents |
 |:---|:---|
+| [Repository map](repository-map.md) | Where files live and what they do (scripts, config, run modes) |
 | [Architecture](architecture.md) | System design, clean architecture layers, request flows |
 | [Development guide](development.md) | Clone, run, test, debug, CI |
 | [Environment variables](environment.md) | Configuration for API, web, admin, production |

@@ -1,6 +1,6 @@
 # LitePress - Agent Context
 
-<!-- Last updated: 2026-05-23 -->
+<!-- Last updated: 2026-05-25 -->
 
 This project (**LitePress**) follows the Litenova Solutions engineering standards.
 Read `standards/AGENTS.md` before editing any code. Then read the convention file
@@ -19,7 +19,7 @@ Read order:
 5. `standards/docs/guides/agentic-domain-driven-design.md` — domain doc tree and frontend layout.
 6. The project-specific files below for domain context.
 
-Standards submodule pinned at `afcc8d0` (ADDD baseline).
+Standards submodule pinned at `aaf892e` (local dev orchestration baseline).
 
 ---
 
@@ -78,37 +78,34 @@ These rules extend `standards/AGENTS.md`. They do not replace any rule there.
 ## Commands
 
 ```bash
-# Build
-dotnet build apps/api/LitePress.slnx
+# Bootstrap (submodule, dotnet tools, pnpm install)
+pwsh scripts/bootstrap.ps1
 
-# Test
-dotnet test apps/api/LitePress.slnx
+# Full stack (recommended)
+pnpm dev:aspire
 
-# Run via Aspire (PostgreSQL + API)
-dotnet run --project apps/api/src/LitePress.AppHost
+# Manual path
+pwsh scripts/dev-manual.ps1   # Postgres + API
+pnpm dev:web
+pnpm dev:admin
 
-# Run API directly
-dotnet run --project apps/api/src/LitePress.WebApi
+# Frontends only (API + Postgres must already run)
+pnpm dev
 
-# Add EF migration
+# Database
+dotnet tool restore
+pnpm db:migrate
 dotnet ef migrations add {MigrationName} \
   --project apps/api/src/LitePress.Infrastructure \
   --startup-project apps/api/src/LitePress.WebApi
 
-# Apply migration
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
-
-# Frontend (admin)
-pnpm --filter admin dev
-
-# Frontend (web)
-pnpm --filter web dev
+# Build / test
+dotnet build apps/api/LitePress.slnx
+dotnet test apps/api/LitePress.slnx
 
 # Monorepo gates
 pnpm lint && pnpm type-check && pnpm test && pnpm build
 
-# Bootstrap submodules after clone
-pwsh scripts/bootstrap.ps1
+# Local E2E
+pwsh scripts/e2e-local.ps1
 ```

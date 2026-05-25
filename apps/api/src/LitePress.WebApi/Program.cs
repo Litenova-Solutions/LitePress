@@ -7,6 +7,8 @@ using LitePress.Application.Reactions;
 using LitePress.Application.Write;
 using LitePress.Infrastructure;
 using LitePress.Infrastructure.DependencyInjection;
+using LitePress.Infrastructure.Persistence;
+using LitePress.ServiceDefaults;
 using LitePress.WebApi.Extensions;
 using LitePress.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +16,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 // Authentication
 var jwtSecret = builder.Configuration["JwtSettings:Secret"]
@@ -85,6 +89,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
+
+// Development-only: apply pending EF migrations (never in Production).
+await app.Services.ApplyDevelopmentMigrationsAsync(
+    app.Environment,
+    app.Configuration);
 
 // Middleware pipeline
 app.UseExceptionHandler();

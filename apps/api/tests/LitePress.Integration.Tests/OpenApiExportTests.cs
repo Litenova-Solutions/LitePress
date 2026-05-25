@@ -10,6 +10,7 @@ public sealed class OpenApiExportTests : IClassFixture<WebApplicationFactory<Pro
     {
         _client = factory.WithWebHostBuilder(builder =>
         {
+            builder.UseSetting("Database:ApplyMigrationsOnStartup", "false");
             builder.UseSetting("JwtSettings:Secret", "dev-secret-key-must-be-at-least-32-characters-long!");
             builder.UseSetting("ConnectionStrings:Database", "Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress");
         }).CreateClient();

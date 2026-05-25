@@ -2,9 +2,21 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+$Root = Join-Path $PSScriptRoot ".."
+Push-Location $Root
+
+function Test-Command($Name) {
+    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+        Write-Warning "$Name is not on PATH. Install it before running LitePress."
+        return $false
+    }
+    return $true
+}
+
+Write-Host "Initializing git submodules..."
 git submodule update --init --recursive
 
-$standardsPath = Join-Path $PSScriptRoot ".." "standards"
+$standardsPath = Join-Path $Root "standards"
 Push-Location $standardsPath
 $tag = git describe --tags HEAD 2>&1
 if ($LASTEXITCODE -ne 0) {
@@ -12,4 +24,24 @@ if ($LASTEXITCODE -ne 0) {
 } else {
     Write-Host "Standards pinned to: $tag"
 }
+Pop-Location
+
+Write-Host "Checking prerequisites..."
+Test-Command "dotnet" | Out-Null
+Test-Command "node" | Out-Null
+Test-Command "pnpm" | Out-Null
+Test-Command "docker" | Out-Null
+
+Write-Host "Restoring pinned dotnet tools..."
+dotnet tool restore
+
+Write-Host "Installing frontend dependencies..."
+pnpm install
+
+Write-Host ""
+Write-Host "Bootstrap complete."
+Write-Host "  Recommended: pnpm dev:aspire"
+Write-Host "  Admin OAuth:  copy apps/admin/.env.example to apps/admin/.env.local (or set AppHost user secrets)"
+Write-Host "  Manual path:  pwsh scripts/dev-manual.ps1"
+
 Pop-Location

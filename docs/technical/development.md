@@ -4,98 +4,120 @@ How to clone, run, test, and debug LitePress locally.
 
 ---
 
+## Which path am I on?
+
+| Goal | Path | Postgres |
+|:---|:---|:---|
+| Full stack, daily work | **Aspire** (`pnpm dev:aspire`) | Aspire container (dynamic port) |
+| Debug API only | **Manual** (`scripts/dev-manual.*`) | docker compose port **5433** |
+| Debug one frontend | Manual API + `pnpm dev:web` or `dev:admin` | docker compose port **5433** |
+| Frontends only | `pnpm dev` | Requires API + Postgres already running |
+| Local E2E | `pwsh scripts/e2e-local.ps1` | docker compose port **5433** |
+
+Do **not** run `docker compose up` and Aspire in the same session unless you know which connection string each command uses.
+
+---
+
 ## Clone and bootstrap
-
-```bash
-git clone https://github.com/Litenova-Solutions/LitePress.git
-cd LitePress
-cd LitePress
-git submodule update --init --recursive
-pnpm install
-```
-
-Windows:
 
 ```powershell
 pwsh scripts/bootstrap.ps1
-pnpm install
 ```
+
+Linux/macOS:
+
+```bash
+bash scripts/bootstrap.sh
+```
+
+The script initializes the `standards/` submodule, restores pinned `dotnet-ef`, and runs `pnpm install`.
 
 The `standards/` directory is a git submodule pointing at [Engineering-Standards](https://github.com/Litenova-Solutions/Engineering-Standards). Do not edit it from the LitePress repo.
 
 ---
 
-## Database
+## Path A: Aspire (recommended)
 
-Start PostgreSQL:
+Starts Postgres, API, web, and admin with dynamic ports and injected env vars.
 
 ```bash
-docker compose up -d
+pnpm dev:aspire
 ```
 
-Default connection (port **5433** on host):
+Open the Aspire dashboard (usually `https://localhost:15888`) for service URLs and logs.
+
+**Migrations:** Applied automatically when the API starts in Development. See [local-dev-migrations ADR](../decisions/local-dev-migrations.md).
+
+**Admin OAuth:** Copy `apps/admin/.env.example` to `.env.local`, or set AppHost user secrets for `auth-github-id`, `auth-github-secret`, `auth-secret`, and `github-owner-id`.
+
+---
+
+## Path B: Manual services
+
+For layer-isolated debugging with fixed ports.
+
+### 1. Postgres + API
+
+```powershell
+pwsh scripts/dev-manual.ps1
+```
+
+```bash
+bash scripts/dev-manual.sh
+```
+
+Uses docker compose Postgres on port **5433**:
 
 ```
 Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress
 ```
 
-Apply migrations:
+### 2. Frontends (separate terminals)
 
 ```bash
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
+pnpm dev:web      # http://localhost:3000
+pnpm dev:admin    # http://localhost:3002
 ```
 
-Add a migration after domain/schema changes:
+Admin requires `.env.local`; see [environment.md](environment.md).
 
-```bash
-dotnet ef migrations add <Name> \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
-```
-
----
-
-## Run modes
-
-### Option A: Aspire (all services)
-
-```bash
-dotnet run --project apps/api/src/LitePress.AppHost
-```
-
-Aspire starts PostgreSQL, API, web, and admin. Open the dashboard (usually `https://localhost:15888`) for URLs and logs.
-
-Run migrations in a second terminal before first use if the database is empty.
-
-### Option B: Individual services
-
-Terminal 1 — Postgres (`docker compose up -d`) and API:
-
-```bash
-dotnet run --project apps/api/src/LitePress.WebApi
-```
-
-Terminal 2 — Web:
-
-```bash
-pnpm --filter web dev
-```
-
-Terminal 3 — Admin (requires `.env.local`; see [environment.md](environment.md)):
-
-```bash
-pnpm --filter admin dev
-```
-
-### Option C: Turborepo dev (frontends only)
+### 3. Frontends only via Turbo
 
 ```bash
 pnpm dev
 ```
 
-Requires PostgreSQL and API already running.
+Requires Postgres and API already running.
+
+---
+
+## Database migrations
+
+### Apply (manual / CI path)
+
+```bash
+pnpm db:migrate
+```
+
+Or:
+
+```bash
+dotnet tool restore
+dotnet ef database update \
+  --project apps/api/src/LitePress.Infrastructure \
+  --startup-project apps/api/src/LitePress.WebApi
+```
+
+### Add after schema changes
+
+```bash
+dotnet tool restore
+dotnet ef migrations add <Name> \
+  --project apps/api/src/LitePress.Infrastructure \
+  --startup-project apps/api/src/LitePress.WebApi
+```
+
+Convert generated migration files to file-scoped namespaces (IDE0161).
 
 ---
 
@@ -103,15 +125,10 @@ Requires PostgreSQL and API already running.
 
 1. Create a [GitHub OAuth App](https://github.com/settings/developers) with callback `http://localhost:3002/api/auth/callback/github`.
 2. Get your numeric GitHub user ID: `curl https://api.github.com/users/<username>` → `"id"`.
-3. Create `apps/admin/.env.local`:
+3. Copy and edit the env file:
 
-```env
-API_URL=http://localhost:5000
-API_JWT_SECRET=dev-secret-key-must-be-at-least-32-characters-long!
-AUTH_SECRET=<openssl rand -base64 32>
-AUTH_GITHUB_ID=<oauth client id>
-AUTH_GITHUB_SECRET=<oauth client secret>
-GITHUB_OWNER_ID=<your numeric id>
+```bash
+cp apps/admin/.env.example apps/admin/.env.local
 ```
 
 4. Sign in at http://localhost:3002/login.
@@ -123,25 +140,16 @@ GITHUB_OWNER_ID=<your numeric id>
 Run before opening a PR:
 
 ```bash
-# Backend
 dotnet build apps/api/LitePress.slnx --configuration Release
 dotnet test apps/api/LitePress.slnx --configuration Release --no-build
-
-# Frontend (from repo root)
 pnpm install --frozen-lockfile
 pnpm lint && pnpm type-check && pnpm test && pnpm build
 ```
 
 ### Playwright E2E
 
-Requires Postgres, migrated API, and built web:
-
-```bash
-docker compose up -d
-dotnet ef database update --project apps/api/src/LitePress.Infrastructure --startup-project apps/api/src/LitePress.WebApi
-dotnet run --project apps/api/src/LitePress.WebApi &
-pnpm --filter web build && pnpm --filter web start &
-pnpm exec playwright test --config apps/web/playwright.config.ts
+```powershell
+pwsh scripts/e2e-local.ps1
 ```
 
 - `home page loads` — always runs
@@ -177,19 +185,13 @@ Commits `packages/api-types/openapi.json` and `packages/api-types/src/api.d.ts`.
 
 ## Debugging
 
-### API (VS Code)
+### VS Code / Cursor (committed configs)
 
-1. Install C# Dev Kit and Aspire extensions.
-2. Debug `LitePress.AppHost` or `LitePress.WebApi`.
-3. Set breakpoints in command/query handlers or endpoints.
+1. Install recommended extensions (`.vscode/extensions.json`).
+2. **F5 → Debug AppHost (Aspire)** for full-stack .NET debugging.
+3. For Next.js: run with `NODE_OPTIONS='--inspect' pnpm dev:web`, then use **Aspire + Next.js debug** compound config.
 
-### Next.js
-
-```bash
-NODE_OPTIONS='--inspect' pnpm --filter web dev
-```
-
-Attach VS Code **JavaScript Debug Terminal** or Node attach on port 9229.
+Set breakpoints in command/query handlers, endpoints, or Next.js server components.
 
 ### Auth issues (admin)
 
