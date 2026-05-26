@@ -1,15 +1,17 @@
 using LitePress.Application.Write.Contracts.Posts.UpdatePost;
-using LitePress.Application.Write.Contracts.Posts.CreatePost.Exceptions;
+using LitePress.Application.Write.Contracts.Shared;
 
 namespace LitePress.Application.Write.Posts.Update;
 
 internal sealed class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, UpdatePostCommandResult>
 {
     private readonly IPostRepository _postRepository;
+    private readonly IClock _clock;
 
-    public UpdatePostCommandHandler(IPostRepository postRepository)
+    public UpdatePostCommandHandler(IPostRepository postRepository, IClock clock)
     {
         _postRepository = postRepository;
+        _clock = clock;
     }
 
     public async Task<UpdatePostCommandResult> HandleAsync(UpdatePostCommand command, CancellationToken cancellationToken)
@@ -20,7 +22,8 @@ internal sealed class UpdatePostCommandHandler : ICommandHandler<UpdatePostComma
             new PostTitle(command.Title),
             new PostContent(command.Content),
             command.Excerpt is not null ? new PostExcerpt(command.Excerpt) : null,
-            command.CoverImageUrl is not null ? new PostCoverImageUrl(command.CoverImageUrl) : null);
+            command.CoverImageUrl is not null ? new PostCoverImageUrl(command.CoverImageUrl) : null,
+            _clock.UtcNow);
 
         await _postRepository.UpdateAsync(post, cancellationToken);
 

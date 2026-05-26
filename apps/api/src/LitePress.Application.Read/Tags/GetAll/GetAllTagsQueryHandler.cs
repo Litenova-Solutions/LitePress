@@ -16,7 +16,8 @@ internal sealed class GetAllTagsQueryHandler : IQueryHandler<GetAllTagsQuery, IR
                 t.Id.Value,
                 t.Name.Value,
                 t.Slug.Value,
-                _db.Posts.Count(p => p.Tags.Any(pt => pt.TagId == t.Id) && EF.Property<string>(p, "_stateType") == "Published")
+                _db.Posts.Count(p => p.Tags.Any(pt => pt.TagId == t.Id)
+                    && EF.Property<string>(p, PostStateColumns.StateType) == PostStateColumns.Published)
             ))
             .ToListAsync(cancellationToken);
     }

@@ -11,9 +11,8 @@ internal sealed class GetPostBySlugQueryHandler : IQueryHandler<GetPostBySlugQue
 
     public async Task<PostDetailResult> HandleAsync(GetPostBySlugQuery query, CancellationToken cancellationToken)
     {
-        var post = await _db.Posts
-            .AsNoTracking()
-            .Where(p => p.Slug.Value == query.Slug && EF.Property<string>(p, "_stateType") == "Published")
+        var post = await PostStateQuery.WherePublished(_db.Posts.AsNoTracking())
+            .Where(p => p.Slug.Value == query.Slug)
             .Select(p => new
             {
                 p.Id,
@@ -23,9 +22,8 @@ internal sealed class GetPostBySlugQueryHandler : IQueryHandler<GetPostBySlugQue
                 Excerpt = p.Excerpt != null ? p.Excerpt.Value : null,
                 CoverImageUrl = p.CoverImageUrl != null ? p.CoverImageUrl.Value : null,
                 p.AuthorId,
-                p.PublishedAt,
+                PublishedAt = EF.Property<DateTimeOffset>(p, PostStateColumns.PublishedAt),
                 p.CreatedAt,
-                StateType = EF.Property<string>(p, "_stateType"),
                 Tags = p.Tags.Select(t => t.TagId).ToList()
             })
             .FirstOrDefaultAsync(cancellationToken);
@@ -49,7 +47,16 @@ internal sealed class GetPostBySlugQueryHandler : IQueryHandler<GetPostBySlugQue
             .ToListAsync(cancellationToken);
 
         return new PostDetailResult(
-            post.Id.Value, post.Title, post.Slug, post.Content, post.Excerpt, post.CoverImageUrl,
-            authorName, post.StateType, post.CreatedAt, post.PublishedAt, tags);
+            post.Id.Value,
+            post.Title,
+            post.Slug,
+            post.Content,
+            post.Excerpt,
+            post.CoverImageUrl,
+            authorName,
+            "Published",
+            post.CreatedAt,
+            post.PublishedAt,
+            tags);
     }
 }

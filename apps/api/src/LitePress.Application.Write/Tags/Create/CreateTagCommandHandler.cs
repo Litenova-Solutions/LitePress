@@ -1,3 +1,4 @@
+using LitePress.Application.Write.Contracts.Shared;
 using LitePress.Application.Write.Contracts.Tags.CreateTag;
 using LitePress.Application.Write.Contracts.Tags.CreateTag.Exceptions;
 using LitePress.Domain.Tags.Exceptions;
@@ -7,10 +8,12 @@ namespace LitePress.Application.Write.Tags.Create;
 internal sealed class CreateTagCommandHandler : ICommandHandler<CreateTagCommand, CreateTagCommandResult>
 {
     private readonly ITagRepository _tagRepository;
+    private readonly IClock _clock;
 
-    public CreateTagCommandHandler(ITagRepository tagRepository)
+    public CreateTagCommandHandler(ITagRepository tagRepository, IClock clock)
     {
         _tagRepository = tagRepository;
+        _clock = clock;
     }
 
     public async Task<CreateTagCommandResult> HandleAsync(CreateTagCommand command, CancellationToken cancellationToken)
@@ -22,7 +25,7 @@ internal sealed class CreateTagCommandHandler : ICommandHandler<CreateTagCommand
             throw new TagNameAlreadyExistsException(name);
         }
 
-        var tag = Tag.Create(command.TagId, name);
+        var tag = Tag.Create(command.TagId, name, _clock.UtcNow);
         await _tagRepository.AddAsync(tag, cancellationToken);
 
         return new CreateTagCommandResult(tag.Id.Value, tag.Slug.Value);

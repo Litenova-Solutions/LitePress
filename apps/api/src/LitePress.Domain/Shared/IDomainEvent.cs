@@ -1,5 +1,4 @@
-using LiteBus.Events.Abstractions;
-
 namespace LitePress.Domain.Shared;
 
-public interface IDomainEvent : IEvent { }
+/// <summary>Marker interface for domain events raised by aggregate roots.</summary>
+public interface IDomainEvent;

@@ -4,6 +4,7 @@ global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using LiteBus.Queries.Abstractions;
+global using LitePress.Application.Read.Contracts.Posts;
 global using LitePress.Application.Read.Contracts.Shared;
 global using LitePress.Domain.Authors;
 global using LitePress.Domain.Posts;

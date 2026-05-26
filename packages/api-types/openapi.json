@@ -10,6 +10,18 @@
     }
   ],
   "paths": {
+    "/v1/scalar": {
+      "get": {
+        "tags": [
+          "LitePress.WebApi"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/tags/{id}": {
       "put": {
         "tags": [
@@ -1148,6 +1160,9 @@
     }
   },
   "tags": [
+    {
+      "name": "LitePress.WebApi"
+    },
     {
       "name": "Tags"
     },

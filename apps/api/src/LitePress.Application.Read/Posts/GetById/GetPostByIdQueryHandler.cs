@@ -22,10 +22,10 @@ internal sealed class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, 
                 Excerpt = p.Excerpt != null ? p.Excerpt.Value : null,
                 CoverImageUrl = p.CoverImageUrl != null ? p.CoverImageUrl.Value : null,
                 p.AuthorId,
-                p.PublishedAt,
-                p.ArchivedAt,
+                StateType = EF.Property<string>(p, PostStateColumns.StateType),
+                PublishedAt = EF.Property<DateTimeOffset?>(p, PostStateColumns.PublishedAt),
+                ArchivedAt = EF.Property<DateTimeOffset?>(p, PostStateColumns.ArchivedAt),
                 p.CreatedAt,
-                StateType = EF.Property<string>(p, "_stateType"),
                 Tags = p.Tags.Select(t => t.TagId).ToList()
             })
             .FirstOrDefaultAsync(cancellationToken)
@@ -44,6 +44,8 @@ internal sealed class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, 
             .Select(t => new TagSummaryResult(t.Id.Value, t.Name.Value, t.Slug.Value))
             .ToListAsync(cancellationToken);
 
+        var state = PostStateQuery.FromColumns(post.StateType, post.PublishedAt, post.ArchivedAt);
+
         return new PostDetailResult(
             post.Id.Value,
             post.Title,
@@ -52,9 +54,9 @@ internal sealed class GetPostByIdQueryHandler : IQueryHandler<GetPostByIdQuery, 
             post.Excerpt,
             post.CoverImageUrl,
             authorName,
-            post.StateType,
+            PostReadState.ResolveLabel(state),
             post.CreatedAt,
-            post.PublishedAt,
+            state is PublishedPostState published ? published.PublishedAt : null,
             tags);
     }
 }

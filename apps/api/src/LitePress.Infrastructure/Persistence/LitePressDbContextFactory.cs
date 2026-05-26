@@ -1,4 +1,5 @@
 using EFCore.NamingConventions;
+using LitePress.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -14,8 +15,9 @@ internal sealed class LitePressDbContextFactory : IDesignTimeDbContextFactory<Li
         var optionsBuilder = new DbContextOptionsBuilder<LitePressDbContext>();
         optionsBuilder
             .UseNpgsql(connectionString)
-            .UseSnakeCaseNamingConvention();
+            .UseSnakeCaseNamingConvention()
+            .AddInterceptors(new PostStatePersistenceInterceptor());
 
-        return new LitePressDbContext(optionsBuilder.Options, new NoOpEventMediator());
+        return new LitePressDbContext(optionsBuilder.Options);
     }
 }

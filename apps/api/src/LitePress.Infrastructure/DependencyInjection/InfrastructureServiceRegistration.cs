@@ -1,13 +1,11 @@
 using LitePress.Application.Read.Contracts.Shared;
-using LitePress.Application.Reactions.Posts.OnPostCreated;
-using LitePress.Application.Write.Posts.Create;
-using LitePress.Application.Read.Posts.GetById;
+using LitePress.Application.Write.Contracts.Shared;
 using LitePress.Domain.Authors;
 using LitePress.Domain.Posts;
 using LitePress.Domain.Tags;
-using LitePress.Infrastructure.Behaviors;
 using LitePress.Infrastructure.Persistence;
 using LitePress.Infrastructure.Persistence.Repositories;
+using LitePress.Infrastructure.Time;
 using EFCore.NamingConventions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,10 +19,13 @@ public static class InfrastructureServiceRegistration
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddSingleton<IClock, SystemClock>();
+
         services.AddDbContext<LitePressDbContext>(options =>
             options
                 .UseNpgsql(configuration.GetConnectionString("Database"))
-                .UseSnakeCaseNamingConvention());
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(new PostStatePersistenceInterceptor()));
 
         services.AddScoped<IDatabaseContext>(
             sp => sp.GetRequiredService<LitePressDbContext>());

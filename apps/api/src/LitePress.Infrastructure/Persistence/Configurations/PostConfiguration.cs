@@ -1,3 +1,4 @@
+using LitePress.Application.Read.Contracts.Posts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -45,22 +46,25 @@ internal sealed class PostConfiguration : IEntityTypeConfiguration<Post>
             b.Property(u => u.Value).HasColumnName("cover_image_url").HasMaxLength(2048);
         });
 
-        builder.Property<string>("_stateType")
-            .HasColumnName("state")
-            .HasMaxLength(20)
-            .IsRequired();
-
-        builder.Property(p => p.PublishedAt)
-            .HasColumnName("published_at")
-            .HasField("_publishedAt");
-
-        builder.Property(p => p.ArchivedAt)
-            .HasColumnName("archived_at")
-            .HasField("_archivedAt");
         builder.Property(p => p.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(p => p.UpdatedAt).HasColumnName("updated_at").IsRequired();
 
         builder.Ignore(p => p.State);
+
+        builder.Property<string>(PostStateColumns.StateType)
+            .HasColumnName("state_type")
+            .HasMaxLength(20)
+            .IsRequired()
+            .HasDefaultValue(PostStateColumns.Draft);
+
+        builder.Property<DateTimeOffset?>(PostStateColumns.PublishedAt)
+            .HasColumnName("published_at");
+
+        builder.Property<DateTimeOffset?>(PostStateColumns.ArchivedAt)
+            .HasColumnName("archived_at");
+
+        builder.HasIndex(PostStateColumns.StateType).HasDatabaseName("ix_posts_state_type");
+        builder.HasIndex(PostStateColumns.PublishedAt).HasDatabaseName("ix_posts_published_at");
 
         builder.HasMany(p => p.Tags)
             .WithOne()

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LitePress.Infrastructure.Migrations
 {
     [DbContext(typeof(LitePressDbContext))]
-    [Migration("20260525122317_InitialCreate")]
+    [Migration("20260526080010_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -79,21 +79,29 @@ namespace LitePress.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("published_at");
 
+                    b.Property<string>("StateType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Draft")
+                        .HasColumnName("state_type");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
-
-                    b.Property<string>("_stateType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("state");
 
                     b.HasKey("Id")
                         .HasName("pk_posts");
 
                     b.HasIndex("AuthorId")
                         .HasDatabaseName("ix_posts_author_id");
+
+                    b.HasIndex("PublishedAt")
+                        .HasDatabaseName("ix_posts_published_at");
+
+                    b.HasIndex("StateType")
+                        .HasDatabaseName("ix_posts_state_type");
 
                     b.ToTable("posts", (string)null);
                 });

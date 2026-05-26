@@ -23,22 +23,24 @@ internal sealed class GetPostsByTagQueryHandler : IQueryHandler<GetPostsByTagQue
             return new PagedResult<PostSummaryResult> { Items = [], TotalCount = 0, PageNumber = pageNumber, PageSize = pageSize };
         }
 
-        var baseQuery = _db.Posts.AsNoTracking()
-            .Where(p => EF.Property<string>(p, "_stateType") == "Published"
-                && p.Tags.Any(t => t.TagId == tag.Id));
+        var baseQuery = PostStateQuery.WherePublished(_db.Posts.AsNoTracking())
+            .Where(p => p.Tags.Any(t => t.TagId == tag.Id));
 
         var totalCount = query.Pagination.SkipTotalCount ? 0 : await baseQuery.CountAsync(cancellationToken);
 
-        var posts = await baseQuery
-            .OrderByDescending(p => p.PublishedAt)
+        var posts = await PostStateQuery.OrderByPublishedAtDescending(baseQuery)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .Select(p => new
             {
-                p.Id, Title = p.Title.Value, Slug = p.Slug.Value,
+                p.Id,
+                Title = p.Title.Value,
+                Slug = p.Slug.Value,
                 Excerpt = p.Excerpt != null ? p.Excerpt.Value : null,
                 CoverImageUrl = p.CoverImageUrl != null ? p.CoverImageUrl.Value : null,
-                p.AuthorId, p.PublishedAt, p.CreatedAt,
+                p.AuthorId,
+                PublishedAt = EF.Property<DateTimeOffset>(p, PostStateColumns.PublishedAt),
+                p.CreatedAt,
                 Tags = p.Tags.Select(t => t.TagId).ToList()
             })
             .ToListAsync(cancellationToken);
@@ -56,16 +58,24 @@ internal sealed class GetPostsByTagQueryHandler : IQueryHandler<GetPostsByTagQue
             .ToDictionaryAsync(t => new TagId(t.TagId), cancellationToken);
 
         var items = posts.Select(p => new PostSummaryResult(
-            p.Id.Value, p.Title, p.Slug, p.Excerpt, p.CoverImageUrl,
+            p.Id.Value,
+            p.Title,
+            p.Slug,
+            p.Excerpt,
+            p.CoverImageUrl,
             authors.GetValueOrDefault(p.AuthorId, string.Empty),
-            "Published", p.CreatedAt, p.PublishedAt,
+            "Published",
+            p.CreatedAt,
+            p.PublishedAt,
             p.Tags.Select(id => tagLookup.GetValueOrDefault(id, new TagSummaryResult(id.Value, string.Empty, string.Empty))).ToList()
         )).ToList();
 
         return new PagedResult<PostSummaryResult>
         {
-            Items = items, TotalCount = totalCount,
-            PageNumber = pageNumber, PageSize = pageSize
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
         };
     }
 }
