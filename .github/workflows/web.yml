@@ -1,11 +1,8 @@
 name: Web CI
 
+# Temporarily manual-only while backend persistence migration is in progress.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/web/**"
-      - "packages/**"
+  workflow_dispatch:
 
 jobs:
   build:

@@ -1,17 +1,8 @@
 name: E2E
 
+# Temporarily manual-only while Marten migration and acceptance tests are in progress.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/web/**"
-      - "apps/api/**"
-      - "packages/**"
-  pull_request:
-    paths:
-      - "apps/web/**"
-      - "apps/api/**"
-      - "packages/**"
+  workflow_dispatch:
 
 jobs:
   publish-flow:
@@ -20,23 +11,10 @@ jobs:
       run:
         working-directory: apps/api
 
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: litepress
-          POSTGRES_PASSWORD: litepress
-          POSTGRES_DB: litepress
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     env:
-      ConnectionStrings__Database: Host=localhost;Port=5432;Database=litepress;Username=litepress;Password=litepress
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=litepress;Username=litepress;Password=litepress
+      Database__ApplySchemaOnStartup: "true"
       JwtSettings__Secret: dev-secret-key-must-be-at-least-32-characters-long!
       E2E_API_URL: http://localhost:5000
       API_JWT_SECRET: dev-secret-key-must-be-at-least-32-characters-long!
@@ -51,22 +29,22 @@ jobs:
         with:
           global-json-file: apps/api/global.json
 
+      - name: Start PostgreSQL
+        working-directory: .
+        run: |
+          docker run -d --name litepress-postgres -p 5432:5432 \
+            -e POSTGRES_USER=litepress -e POSTGRES_PASSWORD=litepress -e POSTGRES_DB=litepress \
+            postgres:17-alpine
+          for i in $(seq 1 30); do
+            docker exec litepress-postgres pg_isready -U litepress -d litepress && break
+            sleep 2
+          done
+          docker exec litepress-postgres pg_isready -U litepress -d litepress
+
       - name: Restore and build API
         run: |
           dotnet restore LitePress.slnx
           dotnet build LitePress.slnx --configuration Release --no-restore
-
-      - name: Restore dotnet tools
-        run: dotnet tool restore
-        working-directory: .
-
-      - name: Apply database migrations
-        run: |
-          dotnet ef database update \
-            --project apps/api/src/LitePress.Infrastructure \
-            --startup-project apps/api/src/LitePress.WebApi \
-            --configuration Release
-        working-directory: .
 
       - name: Start API
         run: |

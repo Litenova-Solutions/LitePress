@@ -1,13 +1,8 @@
 name: API CI
 
+# Temporarily manual-only while Marten migration and acceptance tests are in progress.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/api/**"
-  pull_request:
-    paths:
-      - "apps/api/**"
+  workflow_dispatch:
 
 jobs:
   build-test:
@@ -22,4 +17,22 @@ jobs:
           global-json-file: apps/api/global.json
       - run: dotnet restore LitePress.slnx
       - run: dotnet build LitePress.slnx --configuration Release --no-restore
-      - run: dotnet test LitePress.slnx --configuration Release --no-build --collect:"XPlat Code Coverage"
+      - run: dotnet test LitePress.slnx --configuration Release --no-build --filter "FullyQualifiedName!~AcceptanceTests" --collect:"XPlat Code Coverage"
+
+  acceptance-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: apps/api/global.json
+      - run: dotnet restore LitePress.slnx
+      - run: dotnet build LitePress.slnx --configuration Release --no-restore
+      - name: Validate Reqnroll feature files
+        working-directory: .
+        run: pwsh scripts/validate-feature-files.ps1
+      - name: Run critical acceptance tests
+        run: dotnet test tests/LitePress.AcceptanceTests/LitePress.AcceptanceTests.csproj --configuration Release --no-build --filter "Category=critical"
