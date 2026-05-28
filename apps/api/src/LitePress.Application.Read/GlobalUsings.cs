@@ -9,4 +9,3 @@ global using LitePress.Application.Read.Contracts.Shared;
 global using LitePress.Domain.Authors;
 global using LitePress.Domain.Posts;
 global using LitePress.Domain.Tags;
-global using Microsoft.EntityFrameworkCore;

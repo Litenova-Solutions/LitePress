@@ -5,7 +5,8 @@ using LitePress.Integration.Tests.Infrastructure;
 
 namespace LitePress.Integration.Tests.Posts;
 
-public sealed class PostExceptionHandlingTests : IClassFixture<ApiIntegrationFixture>
+[Collection(ApiIntegrationCollection.Name)]
+public sealed class PostExceptionHandlingTests
 {
     private readonly HttpClient _client;
 

@@ -1,13 +1,8 @@
 using LitePress.Application.Read.Contracts.Shared;
 using LitePress.Application.Write.Contracts.Shared;
-using LitePress.Domain.Authors;
-using LitePress.Domain.Posts;
-using LitePress.Domain.Tags;
-using LitePress.Infrastructure.Persistence;
+using LitePress.Infrastructure.Marten;
 using LitePress.Infrastructure.Persistence.Repositories;
 using LitePress.Infrastructure.Time;
-using EFCore.NamingConventions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,16 +15,8 @@ public static class InfrastructureServiceRegistration
         IConfiguration configuration)
     {
         services.AddSingleton<IClock, SystemClock>();
-
-        services.AddDbContext<LitePressDbContext>(options =>
-            options
-                .UseNpgsql(configuration.GetConnectionString("Database"))
-                .UseSnakeCaseNamingConvention()
-                .AddInterceptors(new PostStatePersistenceInterceptor()));
-
-        services.AddScoped<IDatabaseContext>(
-            sp => sp.GetRequiredService<LitePressDbContext>());
-
+        services.AddMartenStore(configuration);
+        services.AddScoped<IReadDatabase, MartenReadDatabase>();
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IAuthorRepository, AuthorRepository>();

@@ -50,7 +50,7 @@ project-specific overrides or additions.
 | Authentication | Auth.js v5 — admin dashboard only. GitHub OAuth, JWT session. API access via minted JWT + api-proxy. |
 | Rich Text Editor | TipTap (admin only). Stores ProseMirror JSON. |
 | Comments | Giscus (web frontend, GitHub Discussions backed). |
-| Database | PostgreSQL via EF Core with `UseSnakeCaseNamingConventions()`. |
+| Database | PostgreSQL via [Marten](https://martendb.io) document store (aggregate roots as JSON). See [martendb-persistence ADR](docs/decisions/martendb-persistence.md). |
 | Product name | **LitePress** |
 | Solution file | `apps/api/LitePress.slnx` |
 | Frontends | Two Next.js apps today: `apps/web` (public) and `apps/admin` (authoring). More apps MAY be added under `apps/`. Next.js 16.2.x, React 19.2.x, TypeScript 6.x. |
@@ -118,12 +118,8 @@ pnpm dev:admin
 # Frontends only (API + Postgres must already run)
 pnpm dev
 
-# Database
-dotnet tool restore
+# Database (Marten schema)
 pnpm db:migrate
-dotnet ef migrations add {MigrationName} \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
 
 # Build / test
 dotnet build apps/api/LitePress.slnx

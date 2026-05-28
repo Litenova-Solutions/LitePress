@@ -1,10 +1,9 @@
+using System.Text.Json;
 using LitePress.Application.Read.Contracts.Shared.Exceptions;
 using LitePress.Application.Write.Contracts.Shared.Exceptions;
 using LitePress.Domain.Shared.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 namespace LitePress.WebApi.Middleware;
 
 internal sealed class GlobalExceptionHandler : IExceptionHandler
@@ -51,15 +50,6 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
                     Instance = httpContext.Request.Path
                 }),
 
-            DbUpdateConcurrencyException =>
-                (StatusCodes.Status409Conflict, new ProblemDetails
-                {
-                    Status = StatusCodes.Status409Conflict,
-                    Title = "Conflict",
-                    Detail = "The resource was modified by another actor. Retrieve the latest version and retry.",
-                    Instance = httpContext.Request.Path
-                }),
-
             _ =>
                 (StatusCodes.Status500InternalServerError, new ProblemDetails
                 {
@@ -85,7 +75,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/problem+json";
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+        await httpContext.Response.WriteAsync(JsonSerializer.Serialize(problem), cancellationToken);
 
         return true;
     }

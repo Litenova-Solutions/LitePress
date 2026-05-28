@@ -37,7 +37,7 @@ if ($pids.Count -eq 0) {
     }
 }
 
-Write-Host "Stopping Aspire Postgres containers (litepress-postgres-data)..."
+Write-Host "Stopping Aspire PostgreSQL containers (litepress-postgres-data)..."
 $containerIds = @(docker ps -aq --filter "volume=litepress-postgres-data" 2>$null)
 if ($containerIds.Count -eq 0) {
     Write-Host "  No running containers using litepress-postgres-data."

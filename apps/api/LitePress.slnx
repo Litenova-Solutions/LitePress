@@ -16,5 +16,6 @@
     <Project Path="tests/LitePress.Architecture.Tests/LitePress.Architecture.Tests.csproj" />
     <Project Path="tests/LitePress.Domain.Tests/LitePress.Domain.Tests.csproj" />
     <Project Path="tests/LitePress.Integration.Tests/LitePress.Integration.Tests.csproj" />
+    <Project Path="tests/LitePress.AcceptanceTests/LitePress.AcceptanceTests.csproj" />
   </Folder>
 </Solution>

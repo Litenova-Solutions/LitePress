@@ -40,8 +40,8 @@ Technical reference for the LitePress monorepo. For a non-technical overview, se
 | Next.js | 16.2.x |
 | React | 19.2.x |
 | TypeScript | 6.x |
-| PostgreSQL | 17 |
-| ORM | EF Core 10 + `UseSnakeCaseNamingConvention()` |
+| Database | PostgreSQL v2 |
+| SDK | `PostgreSQL.Net` (see [martendb-persistence ADR](../decisions/martendb-persistence.md)) |
 | CQRS | LiteBus (`ICommandMediator` / `IQueryMediator`) |
 | Front-end API client | `openapi-fetch` via `@litepress/api-client` |
 | Monorepo | Turborepo + pnpm 10 |

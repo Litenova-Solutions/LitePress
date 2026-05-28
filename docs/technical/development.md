@@ -6,13 +6,13 @@ How to clone, run, test, and debug LitePress locally.
 
 ## Which path am I on?
 
-| Goal | Path | Postgres |
+| Goal | Path | PostgreSQL |
 |:---|:---|:---|
 | Full stack, daily work | **Aspire** (`pnpm dev:aspire`) | Aspire container (dynamic port) |
-| Debug API only | **Manual** (`scripts/dev-manual.*`) | docker compose port **5433** |
-| Debug one frontend | Manual API + `pnpm dev:web` or `dev:admin` | docker compose port **5433** |
-| Frontends only | `pnpm dev` | Requires API + Postgres already running |
-| Local E2E | `pwsh scripts/e2e-local.ps1` | docker compose port **5433** |
+| Debug API only | **Manual** (`scripts/dev-manual.*`) | docker compose port **8000** |
+| Debug one frontend | Manual API + `pnpm dev:web` or `dev:admin` | docker compose port **8000** |
+| Frontends only | `pnpm dev` | Requires API + PostgreSQL already running |
+| Local E2E | `pwsh scripts/e2e-local.ps1` | docker compose port **8000** |
 
 Do **not** run `docker compose up` and Aspire in the same session unless you know which connection string each command uses.
 
@@ -38,7 +38,7 @@ The `standards/` directory is a git submodule pointing at [Engineering-Standards
 
 ## Path A: Aspire (recommended)
 
-Starts Postgres, API, web, and admin with dynamic ports and injected env vars.
+Starts PostgreSQL, API, web, and admin with dynamic ports and injected env vars.
 
 ```bash
 pnpm dev:aspire
@@ -46,7 +46,7 @@ pnpm dev:aspire
 
 Open the Aspire dashboard (usually `https://localhost:15888`) for service URLs and logs.
 
-**Migrations:** Applied automatically when the API starts in Development. See [local-dev-migrations ADR](../decisions/local-dev-migrations.md).
+**Schema:** Applied automatically when the API starts in Development. See [local-dev-migrations ADR](../decisions/local-dev-migrations.md).
 
 **Dependencies:** Run `pwsh scripts/bootstrap.ps1` before the first `pnpm dev:aspire`. Bootstrap runs `pnpm install` at the repo root. The AppHost uses `WithPnpm(install: false)` so Aspire does not spawn a `*-installer` resource (broken on Windows when pnpm is a `.cmd` shim; see [dotnet/aspire#14880](https://github.com/microsoft/aspire/issues/14880)).
 
@@ -58,11 +58,11 @@ Open the Aspire dashboard (usually `https://localhost:15888`) for service URLs a
 
 ## Database reset
 
-If migrations were recreated and the API fails with errors like `relation "authors" already exists`, the Postgres volume still holds the old schema.
+If schema definitions change and the API fails with table errors, the PostgreSQL volume may still hold the old data model.
 
 | Path | Command | Then |
 |:---|:---|:---|
-| Aspire | `pnpm db:reset:aspire` (`pnpm dev:stop` first) | `pnpm dev:aspire` — API migrates on startup |
+| Aspire | `pnpm db:reset:aspire` (`pnpm dev:stop` first) | `pnpm dev:aspire` — API applies schema on startup |
 | Manual | `pnpm db:reset` | Start API with `dev-manual` or `pnpm dev:api` |
 
 Scripts: `scripts/db-reset.ps1` / `scripts/db-reset.sh` (pass `-Aspire` or `--aspire` for the Aspire volume).
@@ -73,7 +73,7 @@ Scripts: `scripts/db-reset.ps1` / `scripts/db-reset.sh` (pass `-Aspire` or `--as
 
 For layer-isolated debugging with fixed ports.
 
-### 1. Postgres + API
+### 1. PostgreSQL + API
 
 ```powershell
 pwsh scripts/dev-manual.ps1
@@ -83,10 +83,10 @@ pwsh scripts/dev-manual.ps1
 bash scripts/dev-manual.sh
 ```
 
-Uses docker compose Postgres on port **5433**:
+Uses docker compose PostgreSQL on port **8000**:
 
 ```
-Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress
+Host=127.0.0.1;Port=5432;Database=litepress;Username=litepress;Password=litepress
 ```
 
 ### 2. Frontends (separate terminals)
@@ -104,11 +104,11 @@ Admin requires `.env.local`; see [environment.md](environment.md).
 pnpm dev
 ```
 
-Requires Postgres and API already running.
+Requires PostgreSQL and API already running.
 
 ---
 
-## Database migrations
+## Database schema
 
 ### Apply (manual / CI path)
 
@@ -119,33 +119,21 @@ pnpm db:migrate
 Or:
 
 ```bash
-dotnet tool restore
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
+dotnet run --project apps/api/src/LitePress.WebApi -- --apply-schema-only
 ```
 
-### Add after schema changes
-
-```bash
-dotnet tool restore
-dotnet ef migrations add <Name> \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
-```
-
-Convert generated migration files to file-scoped namespaces (IDE0161).
+When document JSON shape changes, add or update an aggregate configuration under `apps/api/src/LitePress.Infrastructure/Marten/Serialization/Internal/Aggregates/` and register it in `Internal/JsonTypeConfigurationRegistry`.
 
 ### Reset (drop volume and re-apply)
 
-Use after squashing or resetting migrations when the local database still has old tables.
+Use when the local PostgreSQL volume still has an incompatible schema.
 
 ```bash
 # Aspire (pnpm dev:stop first)
 pnpm db:reset:aspire
 pnpm dev:aspire
 
-# Manual path (docker compose on port 5433)
+# Manual path (docker compose on port 5432)
 pnpm db:reset
 ```
 
@@ -253,7 +241,7 @@ Commits `packages/api-types/openapi.json` and `packages/api-types/src/api.d.ts`.
 | `api.yml` | `apps/api/**` | `dotnet build` + `dotnet test` |
 | `web.yml` | `apps/web/**`, `packages/**` | lint, type-check, test, build |
 | `admin.yml` | `apps/admin/**`, `packages/**` | lint, type-check, test, build |
-| `e2e.yml` | web + api + packages | Postgres, migrate, API, Playwright publish flow |
+| `e2e.yml` | web + api + packages | PostgreSQL, schema apply, API, Playwright publish flow |
 
 ---
 

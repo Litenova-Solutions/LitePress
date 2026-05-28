@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace LitePress.Integration.Tests;
 
-public sealed class ScalarEndpointTests : IClassFixture<ApiIntegrationFixture>
+[Collection(ApiIntegrationCollection.Name)]
+public sealed class ScalarEndpointTests
 {
     private readonly ApiIntegrationFixture _fixture;
 

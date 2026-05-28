@@ -70,9 +70,25 @@ Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ## Acceptance Criteria
 
-1. Given a Draft post, when published, then it appears in `GET /api/posts` for anonymous callers. (Integration)
-2. Given a Draft post, when published via admin, then the public home page lists it within cache revalidation window. (Playwright)
-3. Given a Published post, when publish is called again, then API returns 409. (Integration)
+| ID | Criterion | Test type |
+|:---|:---|:---|
+| AC-001 | Given a Draft post, when published, then it appears in `GET /api/posts` for anonymous callers. | BDD acceptance (`PublishPost.feature` @ac:AC-001) |
+| AC-002 | Given a Draft post, when published via admin, then the public home page lists it within cache revalidation window. | Playwright |
+| AC-003 | Given a Published post, when publish is called again, then API returns 409. | BDD acceptance (`PublishPost.feature` @ac:AC-003) |
+| AC-004 | Given a publish request without authentication, when publish is called, then API returns 401. | BDD acceptance (`PublishPost.feature` @ac:AC-004) |
+
+---
+
+## Acceptance Coverage
+
+| ID | Criterion summary | Risk | Required test type | BDD scenario | Plain API test | Domain/Application test | Manual only |
+|:---|:---|:---|:---|:---|:---|:---|:---:|
+| AC-001 | Draft publish visible on public feed | Critical | BDD acceptance | Author publishes a draft post | | `PostTests.Publish_WhenPostIsDraft_*` | |
+| AC-002 | Public home lists post after admin publish | High | Playwright | | | | |
+| AC-003 | Re-publish returns 409 | Critical | BDD acceptance | Publishing an already published post is rejected | | `PostTests.Publish_WhenPostIsAlreadyPublished_*` | |
+| AC-004 | Unauthenticated publish returns 401 | Critical | BDD acceptance | Unauthenticated publish request is rejected | | | |
+
+**BDD decision:** BDD acceptance for AC-001, AC-003, and AC-004 (business-visible publish rules and auth). Playwright covers AC-002. Domain tests cover aggregate transitions.
 
 ---
 

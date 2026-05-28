@@ -1,47 +1,35 @@
 using LitePress.Domain.Tags.Exceptions;
-using LitePress.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using LitePress.Infrastructure.Marten;
 
 namespace LitePress.Infrastructure.Persistence.Repositories;
 
-internal sealed class TagRepository : ITagRepository
+internal sealed class TagRepository(IMartenUnitOfWork unitOfWork) : ITagRepository
 {
-    private readonly LitePressDbContext _context;
-
-    public TagRepository(LitePressDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<Tag> GetByIdAsync(TagId id, CancellationToken cancellationToken = default)
     {
-        return await _context.Tags.FirstOrDefaultAsync(t => t.Id == id, cancellationToken)
-            ?? throw new TagNotFoundException(id);
+        var tag = await unitOfWork.Session.LoadAsync<Tag>(id, cancellationToken);
+        return tag ?? throw new TagNotFoundException(id);
     }
 
-    public async Task<bool> NameExistsAsync(TagName name, CancellationToken cancellationToken = default)
-    {
-        return await _context.Tags.AnyAsync(t => t.Name.Value == name.Value, cancellationToken);
-    }
+    public async Task<bool> NameExistsAsync(TagName name, CancellationToken cancellationToken = default) =>
+        await unitOfWork.Session.Query<Tag>()
+            .AnyAsync(tag => tag.Name.Value == name.Value, cancellationToken);
 
-    public async Task AddAsync(Tag tag, CancellationToken cancellationToken = default)
+    public Task AddAsync(Tag tag, CancellationToken cancellationToken = default)
     {
-        await _context.Tags.AddAsync(tag, cancellationToken);
+        unitOfWork.StoreAndTrack(tag);
+        return Task.CompletedTask;
     }
 
     public Task UpdateAsync(Tag tag, CancellationToken cancellationToken = default)
     {
-        if (_context.Entry(tag).State == EntityState.Detached)
-        {
-            _context.Tags.Update(tag);
-        }
-
+        unitOfWork.StoreAndTrack(tag);
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(Tag tag, CancellationToken cancellationToken = default)
     {
-        _context.Tags.Remove(tag);
+        unitOfWork.DeleteAndTrack(tag);
         return Task.CompletedTask;
     }
 }

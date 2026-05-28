@@ -65,8 +65,21 @@ Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ## Acceptance Criteria
 
-1. Given a unique name, when created, then tag appears in tag list with correct slug. (Integration)
-2. Given a duplicate name (case-insensitive), when created, then API returns 409. (Integration)
+| ID | Criterion | Test type |
+|:---|:---|:---|
+| AC-001 | Given a unique name, when created, then tag appears in tag list with correct slug. | BDD acceptance (`CreateTag.feature` @ac:AC-001) |
+| AC-002 | Given a duplicate name, when created, then API returns 409. | BDD acceptance (`CreateTag.feature` @ac:AC-002) |
+
+---
+
+## Acceptance Coverage
+
+| ID | Criterion summary | Risk | Required test type | BDD scenario | Plain API test | Domain/Application test | Manual only |
+|:---|:---|:---|:---|:---|:---|:---|:---:|
+| AC-001 | Unique tag visible in list | Critical | BDD acceptance | Author creates a unique tag | | | |
+| AC-002 | Duplicate name returns 409 | Critical | BDD acceptance | Duplicate tag name is rejected | | | |
+
+**BDD decision:** BDD acceptance for create rules visible to authors.
 
 ---
 

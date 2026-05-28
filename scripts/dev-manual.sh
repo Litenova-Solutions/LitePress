@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
-# Manual dev stack: docker-compose Postgres + API. Start frontends in separate terminals.
+# Manual dev stack: docker-compose PostgreSQL + API. Start frontends in separate terminals.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-echo "Starting docker-compose Postgres on port 5433..."
+echo "Starting docker-compose PostgreSQL on port 5432..."
 docker compose up -d
 
-echo "Applying migrations..."
-dotnet tool restore
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi
+echo "Applying Marten storage schema..."
+export ASPNETCORE_ENVIRONMENT=Development
+dotnet run --project apps/api/src/LitePress.WebApi -- --apply-schema-only
 
 echo "Starting API (Ctrl+C to stop)..."
 echo "In other terminals: pnpm dev:web and pnpm dev:admin"

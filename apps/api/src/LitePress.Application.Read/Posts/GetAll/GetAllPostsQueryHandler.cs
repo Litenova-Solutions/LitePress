@@ -4,71 +4,68 @@ namespace LitePress.Application.Read.Posts.GetAll;
 
 internal sealed class GetAllPostsQueryHandler : IQueryHandler<GetAllPostsQuery, PagedResult<PostSummaryResult>>
 {
-    private readonly IDatabaseContext _db;
-    public GetAllPostsQueryHandler(IDatabaseContext db) { _db = db; }
+    private readonly IReadDatabase _db;
+    public GetAllPostsQueryHandler(IReadDatabase db) { _db = db; }
 
-    public async Task<PagedResult<PostSummaryResult>> HandleAsync(GetAllPostsQuery query, CancellationToken cancellationToken)
-    {
-        var pageSize = Math.Min(query.Pagination.PageSize, PaginationParameters.MaxPageSize);
-        var pageNumber = query.Pagination.PageNumber;
+    public Task<PagedResult<PostSummaryResult>> HandleAsync(GetAllPostsQuery query, CancellationToken cancellationToken) =>
+        _db.QueryAsync(async (ctx, ct) =>
+        {
+            var pageSize = Math.Min(query.Pagination.PageSize, PaginationParameters.MaxPageSize);
+            var pageNumber = query.Pagination.PageNumber;
+            var start = (pageNumber - 1) * pageSize;
 
-        var baseQuery = _db.Posts.AsNoTracking();
-        var totalCount = query.Pagination.SkipTotalCount ? 0 : await baseQuery.CountAsync(cancellationToken);
-
-        var posts = await baseQuery
-            .OrderByDescending(p => p.CreatedAt)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(p => new
+            var totalCount = 0;
+            if (!query.Pagination.SkipTotalCount)
             {
-                p.Id,
-                Title = p.Title.Value,
-                Slug = p.Slug.Value,
-                Excerpt = p.Excerpt != null ? p.Excerpt.Value : null,
-                CoverImageUrl = p.CoverImageUrl != null ? p.CoverImageUrl.Value : null,
-                p.AuthorId,
-                StateType = EF.Property<string>(p, PostStateColumns.StateType),
-                PublishedAt = EF.Property<DateTimeOffset?>(p, PostStateColumns.PublishedAt),
-                ArchivedAt = EF.Property<DateTimeOffset?>(p, PostStateColumns.ArchivedAt),
-                p.CreatedAt,
-                Tags = p.Tags.Select(t => t.TagId).ToList()
-            })
-            .ToListAsync(cancellationToken);
+                totalCount = await ctx.CountAsync(ctx.Posts, ct);
+            }
 
-        var authorIds = posts.Select(p => p.AuthorId).Distinct().ToList();
-        var authors = await _db.Authors.AsNoTracking()
-            .Where(a => authorIds.Contains(a.Id))
-            .Select(a => new { a.Id, a.DisplayName })
-            .ToDictionaryAsync(a => a.Id, a => a.DisplayName, cancellationToken);
+            var posts = await ctx.ToListAsync(
+                ctx.Posts
+                    .OrderByDescending(post => post.CreatedAt)
+                    .Skip(start)
+                    .Take(pageSize),
+                ct);
 
-        var allTagIds = posts.SelectMany(p => p.Tags).Distinct().ToList();
-        var tagLookup = await _db.Tags.AsNoTracking()
-            .Where(t => allTagIds.Contains(t.Id))
-            .Select(t => new TagSummaryResult(t.Id.Value, t.Name.Value, t.Slug.Value))
-            .ToDictionaryAsync(t => new TagId(t.TagId), cancellationToken);
+            if (posts.Count == 0)
+            {
+                return new PagedResult<PostSummaryResult>
+                {
+                    Items = [],
+                    TotalCount = totalCount,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+            }
 
-        var items = posts.Select(p =>
-        {
-            var state = PostStateQuery.FromColumns(p.StateType, p.PublishedAt, p.ArchivedAt);
-            return new PostSummaryResult(
-                p.Id.Value,
-                p.Title,
-                p.Slug,
-                p.Excerpt,
-                p.CoverImageUrl,
-                authors.GetValueOrDefault(p.AuthorId, string.Empty),
-                PostReadState.ResolveLabel(state),
-                p.CreatedAt,
-                state is PublishedPostState published ? published.PublishedAt : null,
-                p.Tags.Select(id => tagLookup.GetValueOrDefault(id, new TagSummaryResult(id.Value, string.Empty, string.Empty))).ToList());
-        }).ToList();
+            var authorIds = posts.Select(post => post.AuthorId.Value).Distinct().ToList();
+            var authors = await PostReadSupport.LoadAuthorNamesAsync(ctx, authorIds, ct);
+            var tagLookup = await PostReadSupport.LoadTagSummariesAsync(
+                ctx,
+                posts.SelectMany(post => post.Tags.Select(tag => tag.TagId.Value)).Distinct().ToList(),
+                ct);
 
-        return new PagedResult<PostSummaryResult>
-        {
-            Items = items,
-            TotalCount = totalCount,
-            PageNumber = pageNumber,
-            PageSize = pageSize
-        };
-    }
+            var items = posts.Select(post => new PostSummaryResult(
+                post.Id.Value,
+                post.Title.Value,
+                post.Slug.Value,
+                post.Excerpt?.Value,
+                post.CoverImageUrl?.Value,
+                authors.GetValueOrDefault(post.AuthorId.Value, string.Empty),
+                PostReadState.ResolveLabel(post.State),
+                post.CreatedAt,
+                PostStateQuery.GetPublishedAt(post.State),
+                post.Tags.Select(tag => tagLookup.GetValueOrDefault(
+                    tag.TagId.Value,
+                    new TagSummaryResult(tag.TagId.Value, string.Empty, string.Empty))).ToList()
+            )).ToList();
+
+            return new PagedResult<PostSummaryResult>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }, cancellationToken);
 }

@@ -12,10 +12,12 @@
     <PackageReference Include="LiteBus.Messaging.Abstractions" />
     <PackageReference Include="LiteBus.Events.Abstractions" />
     <PackageReference Include="LiteBus.Extensions.Microsoft.DependencyInjection" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Marten" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LitePress.Integration.Tests" />
+    <InternalsVisibleTo Include="LitePress.AcceptanceTests" />
   </ItemGroup>
 </Project>

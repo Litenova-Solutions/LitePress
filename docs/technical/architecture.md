@@ -51,7 +51,7 @@ LitePress currently ships two Next.js frontends and one API. The monorepo MAY ad
 |:---|:---|:---|:---|
 | `apps/web` | 3000 | None (public reads) | Server-side `getApiClient()` → `API_URL` |
 | `apps/admin` | 3002 | Auth.js GitHub OAuth | Server: `getApiClient()` with minted JWT; client: `/api-proxy` |
-| `apps/api` | 5000 | JWT Bearer on mutating routes | PostgreSQL via EF Core |
+| `apps/api` | 5000 | JWT Bearer on mutating routes | PostgreSQL via `PostgreSQL.Net` |
 
 Each Next.js app is independent: own `features/{feature}/{use-case}/` tree, own `components/ui/` (shadcn), shared CSS tokens from `@litepress/config-tailwind`. No cross-app feature imports.
 
@@ -66,14 +66,14 @@ Application.Write / Application.Read / Application.Reactions
     ↓
 Domain (aggregates, events, invariants)
     ↓
-Infrastructure (EF Core, repositories, pipeline)
+Infrastructure (PostgreSQL, repositories, pipeline)
 ```
 
 | Project | Responsibility |
 |:---|:---|
 | `Domain` | `Post`, `Tag`, `Author` aggregates; domain events and exceptions |
 | `Application.Write` | Command handlers (create, publish, archive, …) |
-| `Application.Read` | Query handlers; projections via `IDatabaseContext` only |
+| `Application.Read` | Query handlers; projections via `IReadDatabase` (Marten storage schema) only |
 | `Application.Reactions` | Event handlers (v1: log-only side effects) |
 | `Infrastructure` | DbContext, repositories, naming conventions, DI |
 | `WebApi` | Minimal API endpoints, JWT, CORS, OpenAPI, Scalar (Development) |
@@ -82,7 +82,7 @@ Infrastructure (EF Core, repositories, pipeline)
 
 - Endpoints use `ICommandMediator` / `IQueryMediator`, not controllers.
 - `AuthorId` comes from JWT `sub` claim only — never from request body.
-- Query handlers never inject repositories; they project from `IDatabaseContext`.
+- Query handlers never inject repositories; they project via `IReadDatabase`.
 - No `SaveChangesAsync` in handlers; the command pipeline persists.
 
 Full rules: [Engineering Standards — clean architecture](https://github.com/Litenova-Solutions/Engineering-Standards/blob/main/docs/architecture/clean-architecture.md).

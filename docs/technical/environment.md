@@ -12,7 +12,7 @@ Set via environment variables or `appsettings.json`. Aspire injects these in loc
 
 | Variable | Default (local) | Description |
 |:---|:---|:---|
-| `ConnectionStrings__Database` | `Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress` | PostgreSQL (manual path). Aspire injects its own connection string. |
+| `ConnectionStrings__PostgreSQL` | `Host=127.0.0.1;Port=5432;Database=litepress;Username=litepress;Password=litepress` | PostgreSQL (manual path). Aspire injects its own connection string. |
 | `JwtSettings__Secret` | dev default in `appsettings.Development.json` | HS256 signing key for API JWT (min 32 chars). Aspire injects via AppHost parameter. |
 | `Cors__WebOrigin` | `http://localhost:3000` | CORS origin for public web |
 | `Cors__AdminOrigin` | `http://localhost:3002` | CORS origin for admin |
@@ -97,7 +97,7 @@ Local E2E: `pwsh scripts/e2e-local.ps1`.
 | API JWT (shared) | `JwtSettings__Secret`, `API_JWT_SECRET` |
 | GitHub OAuth | `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `GITHUB_OWNER_ID` |
 | Auth.js | `AUTH_SECRET` |
-| Database | `ConnectionStrings__Database` |
+| Database | `ConnectionStrings__PostgreSQL` |
 | Giscus (optional) | `NEXT_PUBLIC_GISCUS_*` |
 
 See also [v1 release notes — human input](../v1-release-notes.md#human-input-required-for-production).

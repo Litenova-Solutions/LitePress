@@ -6,57 +6,42 @@ namespace LitePress.Application.Read.Posts.GetBySlug;
 
 internal sealed class GetPostBySlugQueryHandler : IQueryHandler<GetPostBySlugQuery, PostDetailResult>
 {
-    private readonly IDatabaseContext _db;
-    public GetPostBySlugQueryHandler(IDatabaseContext db) { _db = db; }
+    private readonly IReadDatabase _db;
+    public GetPostBySlugQueryHandler(IReadDatabase db) { _db = db; }
 
-    public async Task<PostDetailResult> HandleAsync(GetPostBySlugQuery query, CancellationToken cancellationToken)
-    {
-        var post = await PostStateQuery.WherePublished(_db.Posts.AsNoTracking())
-            .Where(p => p.Slug.Value == query.Slug)
-            .Select(p => new
-            {
-                p.Id,
-                Title = p.Title.Value,
-                Slug = p.Slug.Value,
-                Content = p.Content.Value,
-                Excerpt = p.Excerpt != null ? p.Excerpt.Value : null,
-                CoverImageUrl = p.CoverImageUrl != null ? p.CoverImageUrl.Value : null,
-                p.AuthorId,
-                PublishedAt = EF.Property<DateTimeOffset>(p, PostStateColumns.PublishedAt),
-                p.CreatedAt,
-                Tags = p.Tags.Select(t => t.TagId).ToList()
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (post is null)
+    public Task<PostDetailResult> HandleAsync(GetPostBySlugQuery query, CancellationToken cancellationToken) =>
+        _db.QueryAsync(async (ctx, ct) =>
         {
-            throw new PostNotFoundException(new PostId(Guid.Empty));
-        }
+            var matches = await ctx.ToListAsync(
+                ctx.Posts.Where(candidate => candidate.Slug.Value == query.Slug),
+                ct);
 
-        var authorName = await _db.Authors
-            .AsNoTracking()
-            .Where(a => a.Id == post.AuthorId)
-            .Select(a => a.DisplayName)
-            .FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
+            var post = matches.FirstOrDefault(candidate => candidate.State is PublishedPostState);
 
-        var tagIds = post.Tags;
-        var tags = await _db.Tags
-            .AsNoTracking()
-            .Where(t => tagIds.Contains(t.Id))
-            .Select(t => new TagSummaryResult(t.Id.Value, t.Name.Value, t.Slug.Value))
-            .ToListAsync(cancellationToken);
+            if (post is null)
+            {
+                throw new PostNotFoundException(new PostId(Guid.Empty));
+            }
 
-        return new PostDetailResult(
-            post.Id.Value,
-            post.Title,
-            post.Slug,
-            post.Content,
-            post.Excerpt,
-            post.CoverImageUrl,
-            authorName,
-            "Published",
-            post.CreatedAt,
-            post.PublishedAt,
-            tags);
-    }
+            var authors = await PostReadSupport.LoadAuthorNamesAsync(ctx, [post.AuthorId.Value], ct);
+            var tags = await PostReadSupport.LoadTagSummariesAsync(
+                ctx,
+                post.Tags.Select(tag => tag.TagId.Value).ToList(),
+                ct);
+
+            return new PostDetailResult(
+                post.Id.Value,
+                post.Title.Value,
+                post.Slug.Value,
+                post.Content.Value,
+                post.Excerpt?.Value,
+                post.CoverImageUrl?.Value,
+                authors.GetValueOrDefault(post.AuthorId.Value, string.Empty),
+                "Published",
+                post.CreatedAt,
+                PostStateQuery.GetPublishedAt(post.State),
+                post.Tags.Select(tag => tags.GetValueOrDefault(
+                    tag.TagId.Value,
+                    new TagSummaryResult(tag.TagId.Value, string.Empty, string.Empty))).ToList());
+        }, cancellationToken);
 }

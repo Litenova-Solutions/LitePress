@@ -1,23 +1,50 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+
+
   <PropertyGroup>
+
     <IsPackable>false</IsPackable>
+
     <IsTestProject>true</IsTestProject>
+
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    <PackageReference Include="Testcontainers.PostgreSql" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
-  </ItemGroup>
+
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LitePress.WebApi\LitePress.WebApi.csproj" />
+
+    <PackageReference Include="AwesomeAssertions" />
+
+    <PackageReference Include="coverlet.collector" />
+
+    <PackageReference Include="Marten" />
+
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+
+    <PackageReference Include="Testcontainers.PostgreSql" />
+
+    <PackageReference Include="xunit" />
+
+    <PackageReference Include="xunit.runner.visualstudio" />
+
   </ItemGroup>
+
+
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\..\src\LitePress.Infrastructure\LitePress.Infrastructure.csproj" />
+
+    <ProjectReference Include="..\..\src\LitePress.WebApi\LitePress.WebApi.csproj" />
+
+  </ItemGroup>
+
+
 
 </Project>
+

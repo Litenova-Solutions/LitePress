@@ -5,22 +5,15 @@ namespace LitePress.Application.Read.Authors.GetById;
 
 internal sealed class GetAuthorByIdQueryHandler : IQueryHandler<GetAuthorByIdQuery, AuthorResult>
 {
-    private readonly IDatabaseContext _db;
-    public GetAuthorByIdQueryHandler(IDatabaseContext db) { _db = db; }
+    private readonly IReadDatabase _db;
+    public GetAuthorByIdQueryHandler(IReadDatabase db) { _db = db; }
 
-    public async Task<AuthorResult> HandleAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken)
-    {
-        var author = await _db.Authors
-            .AsNoTracking()
-            .Where(a => a.Id == query.AuthorId)
-            .Select(a => new AuthorResult(a.Id.Value, a.DisplayName))
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (author is null)
+    public Task<AuthorResult> HandleAsync(GetAuthorByIdQuery query, CancellationToken cancellationToken) =>
+        _db.QueryAsync(async (ctx, ct) =>
         {
-            throw new AuthorNotFoundException(query.AuthorId);
-        }
+            var author = await ctx.LoadAsync<Author>(query.AuthorId, ct)
+                ?? throw new AuthorNotFoundException(query.AuthorId);
 
-        return author;
-    }
+            return new AuthorResult(author.Id.Value, author.DisplayName);
+        }, cancellationToken);
 }

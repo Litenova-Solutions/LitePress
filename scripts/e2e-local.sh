@@ -5,7 +5,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-export ConnectionStrings__Database="Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress"
+export ConnectionStrings__PostgreSQL="Host=127.0.0.1;Port=5432;Database=litepress;Username=litepress;Password=litepress"
+export Database__ApplySchemaOnStartup="true"
 export JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 export E2E_API_URL="http://localhost:5000"
 export API_JWT_SECRET="dev-secret-key-must-be-at-least-32-characters-long!"
@@ -13,7 +14,7 @@ export PLAYWRIGHT_BASE_URL="http://localhost:3000"
 export API_URL="http://localhost:5000"
 export SITE_URL="http://localhost:3000"
 
-echo "Starting Postgres..."
+echo "Starting PostgreSQL..."
 docker compose up -d
 
 echo "Building API..."
@@ -21,13 +22,6 @@ cd apps/api
 dotnet restore LitePress.slnx
 dotnet build LitePress.slnx --configuration Release --no-restore
 cd "$ROOT"
-
-echo "Applying migrations..."
-dotnet tool restore
-dotnet ef database update \
-  --project apps/api/src/LitePress.Infrastructure \
-  --startup-project apps/api/src/LitePress.WebApi \
-  --configuration Release
 
 echo "Starting API in background..."
 dotnet run --project apps/api/src/LitePress.WebApi --configuration Release --no-build --urls http://localhost:5000 &

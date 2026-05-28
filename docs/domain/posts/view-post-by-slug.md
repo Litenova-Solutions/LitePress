@@ -76,9 +76,23 @@ Per [docs/decisions/seo-public-web.md](../../decisions/seo-public-web.md):
 
 ## Acceptance Criteria
 
-1. Given a published post, when visiting `/{slug}`, then full content renders with correct metadata in view-source. (Playwright + manual)
-2. Given a Draft post slug, when visited anonymously, then 404. (Integration)
-3. Given a published post, when view-source is checked, then JSON-LD `BlogPosting` is present. (Playwright)
+| ID | Criterion | Test type |
+|:---|:---|:---|
+| AC-001 | Given a published post, when `GET /api/posts/{slug}` is called anonymously, then the post detail is returned. | BDD acceptance (`ViewPostBySlug.feature` @ac:AC-001) |
+| AC-002 | Given a Draft post slug, when requested anonymously, then API returns 404. | BDD acceptance (`ViewPostBySlug.feature` @ac:AC-002) |
+| AC-003 | Given a published post, when view-source is checked, then JSON-LD `BlogPosting` is present. | Playwright |
+
+---
+
+## Acceptance Coverage
+
+| ID | Criterion summary | Risk | Required test type | BDD scenario | Plain API test | Domain/Application test | Manual only |
+|:---|:---|:---|:---|:---|:---|:---|:---:|
+| AC-001 | Published slug readable on API | Critical | BDD acceptance | Published post is readable by slug | | | |
+| AC-002 | Draft slug hidden from public API | Critical | BDD acceptance | Draft post slug is not publicly readable | | | |
+| AC-003 | JSON-LD on public page | High | Playwright | | | | |
+
+**BDD decision:** BDD acceptance for AC-001 and AC-002 (public read contract). Playwright covers page metadata (AC-003).
 
 ---
 

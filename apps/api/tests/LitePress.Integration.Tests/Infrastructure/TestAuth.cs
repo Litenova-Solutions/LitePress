@@ -5,10 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LitePress.Integration.Tests.Infrastructure;
 
+/// <summary>
+/// JWT helpers for integration tests. Must match <c>JwtSettings:Secret</c> set by
+/// <see cref="ApiIntegrationFixture.SetTestEnvironment"/> so protected endpoints accept test requests.
+/// </summary>
 internal static class TestAuth
 {
+    /// <summary>Shared secret configured on the test host (minimum 32 characters).</summary>
     internal const string DevJwtSecret = "dev-secret-key-must-be-at-least-32-characters-long!";
 
+    /// <summary>Mints a bearer token with claims expected by the API auth pipeline.</summary>
     internal static string CreateBearerToken(string subject = "integration-test-user", string? name = "Integration Test User")
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(DevJwtSecret));
@@ -29,6 +35,7 @@ internal static class TestAuth
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    /// <summary>Attaches a bearer token to an outgoing <see cref="HttpRequestMessage"/>.</summary>
     internal static HttpRequestMessage WithBearer(this HttpRequestMessage request, string? token = null)
     {
         request.Headers.Authorization =

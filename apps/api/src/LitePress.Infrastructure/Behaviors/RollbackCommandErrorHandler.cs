@@ -1,24 +1,17 @@
 using LiteBus.Commands.Abstractions;
-using LitePress.Infrastructure.Persistence;
+using LitePress.Infrastructure.Marten;
 
 namespace LitePress.Infrastructure.Behaviors;
 
-internal sealed class RollbackCommandErrorHandler : ICommandErrorHandler<ICommand>
+internal sealed class RollbackCommandErrorHandler(IMartenUnitOfWork unitOfWork) : ICommandErrorHandler<ICommand>
 {
-    private readonly LitePressDbContext _context;
-
-    public RollbackCommandErrorHandler(LitePressDbContext context)
+    public Task HandleErrorAsync(
+        ICommand command,
+        object? commandResult,
+        Exception exception,
+        CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-
-    public async Task HandleErrorAsync(ICommand command, object? commandResult, Exception exception, CancellationToken cancellationToken)
-    {
-        if (_context.Database.CurrentTransaction is not null)
-        {
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
-        }
-
+        unitOfWork.DiscardPending();
         throw exception;
     }
 }

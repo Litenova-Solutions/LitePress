@@ -25,7 +25,7 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `package.json` | Root pnpm scripts: `dev:aspire`, `dev:api`, `dev:web`, `dev:admin`, `db:migrate`, Turbo gates (`lint`, `build`, …) |
 | `pnpm-workspace.yaml` | Defines workspace packages (`apps/*`, `packages/*`) |
 | `turbo.json` | Turborepo task graph for build, dev, lint, test |
-| `docker-compose.yml` | **Manual / E2E path only.** Postgres on port **5433**. Not used with Aspire AppHost |
+| `docker-compose.yml` | **Manual / E2E path only.** PostgreSQL on port **8000**. Not used with Aspire AppHost |
 | `AGENTS.md` | Agent and contributor contract: read order, rules, commands |
 | `README.md` | Project overview and quick start |
 | `.gitignore` | Ignores build cache, secrets, test output (see [Ignored locally](#ignored-locally-not-in-git)) |
@@ -53,13 +53,13 @@ For how to run the stack, see [Development guide](development.md). For env vars,
 | `global.json` | Pinned .NET SDK version |
 | `Directory.Build.props` | Shared MSBuild settings (nullable, warnings as errors, IDE0161) |
 | `Directory.Packages.props` | Central NuGet package versions |
-| `src/LitePress.AppHost/` | **Aspire entry point.** Starts Postgres, API, web, admin; injects URLs and secrets |
+| `src/LitePress.AppHost/` | **Aspire entry point.** Starts PostgreSQL, API, web, admin; injects URLs and secrets |
 | `src/LitePress.AppHost/appsettings.Development.json` | Local AppHost parameter defaults (gitignored; copy from docs or use user secrets) |
 | `src/LitePress.ServiceDefaults/` | Shared OTel, health checks (`/health`, `/alive`), HTTP resilience |
 | `src/LitePress.WebApi/` | ASP.NET Core API: endpoints, middleware, OpenAPI, Scalar (dev) |
 | `src/LitePress.WebApi/appsettings.json` | Committed defaults (connection string for manual path, CORS, JWT placeholder) |
 | `src/LitePress.WebApi/appsettings.Development.json` | Local API overrides (gitignored) |
-| `src/LitePress.Infrastructure/` | EF Core, repositories, `DatabaseMigrationExtensions` (dev auto-migrate) |
+| `src/LitePress.Infrastructure/` | PostgreSQL client, repositories, `DatabaseSchemaExtensions` (dev auto-schema) |
 | `src/LitePress.Domain/` | Aggregates, value objects, domain events |
 | `src/LitePress.Application.*` | CQRS handlers (Write, Read, Reactions) |
 | `tests/` | Unit, architecture, integration tests |
@@ -141,14 +141,14 @@ After clone: `git submodule update --init --recursive` (or `scripts/bootstrap.*`
 
 ## Run modes (which files matter)
 
-| Mode | Postgres | Entry command | Key config |
+| Mode | PostgreSQL | Entry command | Key config |
 |:---|:---|:---|:---|
 | **Aspire (default)** | Aspire container | `pnpm dev:aspire` | AppHost `Program.cs`, Aspire dashboard |
-| **Manual** | `docker-compose.yml` :5433 | `scripts/dev-manual.*` + `pnpm dev:web/admin` | `appsettings.json`, `.env.local` |
-| **Frontends only** | Already running | `pnpm dev` | API + Postgres must be up |
-| **E2E local** | `docker-compose.yml` :5433 | `scripts/e2e-local.*` | Same env as `e2e.yml` |
+| **Manual** | `docker-compose.yml` :8000 | `scripts/dev-manual.*` + `pnpm dev:web/admin` | `appsettings.json`, `.env.local` |
+| **Frontends only** | Already running | `pnpm dev` | API + PostgreSQL must be up |
+| **E2E local** | `docker-compose.yml` :8000 | `scripts/e2e-local.*` | Same env as `e2e.yml` |
 
-Do not run Docker Compose Postgres and Aspire in the same session unless you know which connection string each tool uses.
+Do not run Docker Compose PostgreSQL and Aspire in the same session unless you know which connection string each tool uses.
 
 ---
 

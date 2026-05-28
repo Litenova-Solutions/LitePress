@@ -24,7 +24,7 @@ Explicitly defer the following to v2+ unless a new ADR promotes them:
 | Umami analytics | Env vars may exist | Not wired |
 | Outbox / worker | Reactions log-only OK | No outbox table |
 | Multi-author permissions | Single `GITHUB_OWNER_ID` | Owner only |
-| VPS production deploy | Aspire for local dev; docker-compose Postgres for CI/E2E/manual API debug | Local dev sufficient |
+| VPS production deploy | Aspire for local dev; docker-compose PostgreSQL for CI/E2E/manual API debug | Local dev sufficient |
 
 ---
 

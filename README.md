@@ -39,7 +39,7 @@ Details: [docs/decisions/licensing.md](docs/decisions/licensing.md).
 | Public web | Next.js 16 · React 19.2 · shadcn/ui · Tailwind 4 |
 | Admin | Next.js 16 · Auth.js v5 · TipTap · shadcn/ui |
 | API | ASP.NET Core 10 Minimal API · LiteBus CQRS · OpenAPI + Scalar (dev) |
-| Database | PostgreSQL 17 · EF Core 10 (snake_case) |
+| Database | PostgreSQL v2 · `PostgreSQL.Net` SDK |
 | API types | OpenAPI → `@litepress/api-types` + `openapi-fetch` client |
 | API docs (local) | Scalar at `/scalar/v1` (Development) · JSON at `/openapi/v1.json` |
 | Local orchestration | .NET Aspire AppHost |
@@ -76,7 +76,7 @@ LitePress/
 | [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | API and Aspire |
 | [Node.js](https://nodejs.org/) | 22+ | Frontends |
 | [pnpm](https://pnpm.io/installation) | 10+ | Workspace package manager |
-| [Docker](https://www.docker.com/products/docker-desktop/) | any | Manual/E2E Postgres only; Aspire also uses Docker for its Postgres container |
+| [Docker](https://www.docker.com/products/docker-desktop/) | any | Manual/E2E PostgreSQL; Aspire also runs PostgreSQL in a container |
 | Aspire workload | — | `dotnet workload install aspire` (one-time) |
 
 ---
@@ -137,11 +137,11 @@ Set `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, and your numeric `GITHUB_OWNER_ID` i
 pnpm dev:aspire
 ```
 
-Open the Aspire dashboard (typically `https://localhost:15888`) for service URLs and logs. Postgres, API, web, and admin start together. The API applies EF Core migrations automatically on startup in Development.
+Open the Aspire dashboard (typically `https://localhost:15888`) for service URLs and logs. PostgreSQL, API, web, and admin start together. The API applies Marten storage schema schema automatically on startup in Development.
 
 **API reference (Development):** open `{api-base-url}/scalar/v1` from the dashboard, or `http://localhost:5000/scalar/v1` on the manual path. OpenAPI JSON: `/openapi/v1.json`. See [scalar-api-docs ADR](docs/decisions/scalar-api-docs.md).
 
-Do **not** run `docker compose up` in the same session; Aspire manages its own Postgres instance on a separate Docker volume.
+Do **not** run `docker compose up` in the same session; Aspire manages its own PostgreSQL instance on a separate Docker volume.
 
 ---
 
@@ -155,8 +155,8 @@ pnpm dev:aspire
 
 | What happens | Detail |
 |:---|:---|
-| Postgres | Aspire starts a container with volume `litepress-postgres-data` (data persists across restarts) |
-| API | Starts after Postgres is healthy; runs pending migrations in Development |
+| PostgreSQL | Aspire starts a container with volume `litepress-postgres-data` (data persists across restarts) |
+| API | Starts after PostgreSQL is ready; applies schema in Development |
 | Web + Admin | Start after dependencies are ready; ports are assigned dynamically (see dashboard) |
 | Frontends | Dependencies are installed by `bootstrap` (`pnpm install` at repo root). Aspire does not re-run `pnpm install` on each start (avoids a known Windows issue with `.cmd` shims) |
 
@@ -180,11 +180,11 @@ Use when you want fixed ports or to debug without Aspire.
 
 | Step | Command |
 |:---|:---|
-| Postgres + API | `pwsh scripts/dev-manual.ps1` (or `bash scripts/dev-manual.sh`) |
+| PostgreSQL + API | `pwsh scripts/dev-manual.ps1` (or `bash scripts/dev-manual.sh`) |
 | Web (new terminal) | `pnpm dev:web` |
 | Admin (new terminal) | `pnpm dev:admin` |
 
-This path uses `docker compose` Postgres on port **5433**. See [Development guide](docs/technical/development.md).
+This path uses `docker compose` PostgreSQL on port **8000**. See [Development guide](docs/technical/development.md).
 
 ---
 
@@ -193,14 +193,14 @@ This path uses `docker compose` Postgres on port **5433**. See [Development guid
 | Script / command | When to use | What it does |
 |:---|:---|:---|
 | `pwsh scripts/bootstrap.ps1` | First clone; after lockfile/tool changes | Submodule init, `dotnet tool restore`, `pnpm install`, copy example configs |
-| `pnpm dev:aspire` | Daily full-stack work | Runs Aspire AppHost: Postgres + API + web + admin |
-| `pnpm dev:stop` | After Ctrl+C if stack still running | Stops AppHost/API/frontends and Aspire Postgres containers |
-| `pwsh scripts/dev-manual.ps1` | Debug API or use fixed ports | `docker compose up` Postgres on 5433, apply migrations, start API |
+| `pnpm dev:aspire` | Daily full-stack work | Runs Aspire AppHost: PostgreSQL + API + web + admin |
+| `pnpm dev:stop` | After Ctrl+C if stack still running | Stops AppHost/API/frontends and Aspire PostgreSQL containers |
+| `pwsh scripts/dev-manual.ps1` | Debug API or use fixed ports | `docker compose up` PostgreSQL on 8000, apply schema, start API |
 | `pnpm dev:web` / `pnpm dev:admin` | Manual path frontends | Start one Next.js app (API must already run) |
-| `pnpm dev` | Frontends only via Turbo | Both Next.js apps; requires API + Postgres already running |
-| `pnpm db:migrate` | Manual path or CI | Apply pending EF Core migrations to the manual Postgres (port 5433) |
-| `pnpm db:reset` | Stale schema on manual Postgres | Drop docker compose volume, recreate Postgres, apply migrations |
-| `pnpm db:reset:aspire` | Stale schema on Aspire Postgres | Drop `litepress-postgres-data` volume; restart `pnpm dev:aspire` to migrate |
+| `pnpm dev` | Frontends only via Turbo | Both Next.js apps; requires API + PostgreSQL already running |
+| `pnpm db:migrate` | Manual path or CI | Apply Marten storage schema schema to manual PostgreSQL (port 5432) |
+| `pnpm db:reset` | Stale schema on manual PostgreSQL | Drop docker compose volume, recreate PostgreSQL, apply schema |
+| `pnpm db:reset:aspire` | Stale schema on Aspire PostgreSQL | Drop `litepress-postgres-data` volume; restart `pnpm dev:aspire` |
 | `pwsh scripts/e2e-local.ps1` | Before PR / local E2E | Full E2E stack mirroring CI (docker compose + API + Playwright) |
 
 Shell equivalents: `scripts/bootstrap.sh`, `scripts/dev-manual.sh`, `scripts/db-reset.sh`, `scripts/e2e-local.sh`.
@@ -209,7 +209,7 @@ Shell equivalents: `scripts/bootstrap.sh`, `scripts/dev-manual.sh`, `scripts/db-
 
 ## Database reset (after migration changes)
 
-If EF migrations were recreated or squashed, an existing Postgres volume may still contain old tables. Symptoms include `relation "authors" already exists` on API startup.
+If Marten storage schema schema changed, an existing data volume may still contain incompatible records. Reset the volume when the API fails on startup with schema errors.
 
 **Aspire path** (your case):
 
@@ -230,7 +230,7 @@ If EF migrations were recreated or squashed, an existing Postgres volume may sti
 pnpm db:reset
 ```
 
-This runs `docker compose down -v`, starts Postgres, and applies migrations.
+This runs `docker compose down -v`, starts PostgreSQL, and applies schema.
 
 ---
 
@@ -249,7 +249,7 @@ Upstream: [dotnet/aspire#14880](https://github.com/dotnet/aspire/issues/14880).
 
 ### API fails: `relation "authors" already exists`
 
-The Postgres volume has an old schema. See [Database reset](#database-reset-after-migration-changes) above.
+The PostgreSQL volume has an old schema. See [Database reset](#database-reset-after-migration-changes) above.
 
 ### Dashboard warnings: unsecured endpoint / no trusted dev certificate
 

@@ -1,19 +1,19 @@
 # Used for: manual API-only dev, local E2E, CI-style reproduction.
-# NOT used when running LitePress.AppHost (Aspire manages its own Postgres).
+# NOT used when running LitePress.AppHost (Aspire manages its own PostgreSQL container).
 
 services:
   postgres:
-    image: postgres:17
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: litepress
       POSTGRES_PASSWORD: litepress
       POSTGRES_DB: litepress
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U litepress"]
+      test: ["CMD-SHELL", "pg_isready -U litepress -d litepress"]
       interval: 5s
       timeout: 5s
       retries: 5

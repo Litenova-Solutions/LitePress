@@ -7,7 +7,7 @@ using LitePress.Application.Reactions;
 using LitePress.Application.Write;
 using LitePress.Infrastructure;
 using LitePress.Infrastructure.DependencyInjection;
-using LitePress.Infrastructure.Persistence;
+using LitePress.Infrastructure.Marten;
 using LitePress.ServiceDefaults;
 using LitePress.WebApi.Extensions;
 using LitePress.WebApi.Middleware;
@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Infrastructure (DbContext, Repositories)
+// Infrastructure (Marten, Repositories)
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // LiteBus
@@ -91,10 +91,18 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+if (args.Contains("--apply-schema-only", StringComparer.OrdinalIgnoreCase))
+{
+    await app.Services.ApplyDevelopmentSchemaAsync(
+        app.Environment,
+        app.Configuration);
+    return;
+}
+
 app.MapDefaultEndpoints();
 
-// Development-only: apply pending EF migrations (never in Production).
-await app.Services.ApplyDevelopmentMigrationsAsync(
+// Development-only: apply Marten storage schema (never in Production).
+await app.Services.ApplyDevelopmentSchemaAsync(
     app.Environment,
     app.Configuration);
 

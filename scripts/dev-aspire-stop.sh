@@ -27,7 +27,7 @@ stop_matching "LitePress.WebApi"
 stop_matching "$ROOT/apps/web"
 stop_matching "$ROOT/apps/admin"
 
-echo "Stopping Aspire Postgres containers (litepress-postgres-data)..."
+echo "Stopping Aspire PostgreSQL containers (litepress-postgres-data)..."
 mapfile -t container_ids < <(docker ps -aq --filter "volume=litepress-postgres-data" 2>/dev/null || true)
 if [[ ${#container_ids[@]} -eq 0 ]]; then
   echo "  No running containers using litepress-postgres-data."

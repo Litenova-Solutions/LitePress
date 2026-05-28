@@ -6,26 +6,26 @@ namespace LitePress.Application.Read.Tags.GetBySlug;
 
 internal sealed class GetTagBySlugQueryHandler : IQueryHandler<GetTagBySlugQuery, TagResult>
 {
-    private readonly IDatabaseContext _db;
-    public GetTagBySlugQueryHandler(IDatabaseContext db) { _db = db; }
+    private readonly IReadDatabase _db;
+    public GetTagBySlugQueryHandler(IReadDatabase db) { _db = db; }
 
-    public async Task<TagResult> HandleAsync(GetTagBySlugQuery query, CancellationToken cancellationToken)
-    {
-        var tag = await _db.Tags
-            .AsNoTracking()
-            .Where(t => t.Slug.Value == query.Slug)
-            .Select(t => new TagResult(
-                t.Id.Value, t.Name.Value, t.Slug.Value,
-                _db.Posts.Count(p => p.Tags.Any(pt => pt.TagId == t.Id)
-                    && EF.Property<string>(p, PostStateColumns.StateType) == PostStateColumns.Published)
-            ))
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (tag is null)
+    public Task<TagResult> HandleAsync(GetTagBySlugQuery query, CancellationToken cancellationToken) =>
+        _db.QueryAsync(async (ctx, ct) =>
         {
-            throw new TagNotFoundException(new TagId(Guid.Empty));
-        }
+            var tag = await ctx.FirstOrDefaultAsync(
+                ctx.Tags.Where(candidate => candidate.Slug.Value == query.Slug),
+                ct);
 
-        return tag;
-    }
+            if (tag is null)
+            {
+                throw new TagNotFoundException(new TagId(Guid.Empty));
+            }
+
+            var count = (await ctx.ToListAsync(ctx.Posts, ct))
+                .Count(post =>
+                    post.State is PublishedPostState
+                    && post.Tags.Any(postTag => postTag.TagId.Value == tag.Id.Value));
+
+            return new TagResult(tag.Id.Value, tag.Name.Value, tag.Slug.Value, count);
+        }, cancellationToken);
 }

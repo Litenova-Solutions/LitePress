@@ -1,32 +1,23 @@
-using LitePress.Domain.Authors;
 using LitePress.Domain.Authors.Exceptions;
-using LitePress.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using LitePress.Infrastructure.Marten;
 
 namespace LitePress.Infrastructure.Persistence.Repositories;
 
-internal sealed class AuthorRepository : IAuthorRepository
+internal sealed class AuthorRepository(IMartenUnitOfWork unitOfWork) : IAuthorRepository
 {
-    private readonly LitePressDbContext _context;
-
-    public AuthorRepository(LitePressDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<Author> GetByIdAsync(AuthorId id, CancellationToken cancellationToken = default)
     {
-        return await _context.Authors.FirstOrDefaultAsync(a => a.Id == id, cancellationToken)
-            ?? throw new AuthorNotFoundException(id);
+        var author = await unitOfWork.Session.LoadAsync<Author>(id, cancellationToken);
+        return author ?? throw new AuthorNotFoundException(id);
     }
 
-    public async Task<Author?> FindByExternalIdAsync(string externalId, CancellationToken cancellationToken = default)
-    {
-        return await _context.Authors.FirstOrDefaultAsync(a => a.ExternalId == externalId, cancellationToken);
-    }
+    public async Task<Author?> FindByExternalIdAsync(string externalId, CancellationToken cancellationToken = default) =>
+        await unitOfWork.Session.Query<Author>()
+            .FirstOrDefaultAsync(author => author.ExternalId == externalId, cancellationToken);
 
-    public async Task AddAsync(Author author, CancellationToken cancellationToken = default)
+    public Task AddAsync(Author author, CancellationToken cancellationToken = default)
     {
-        await _context.Authors.AddAsync(author, cancellationToken);
+        unitOfWork.StoreAndTrack(author);
+        return Task.CompletedTask;
     }
 }

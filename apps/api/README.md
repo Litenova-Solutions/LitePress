@@ -19,13 +19,14 @@ apps/api/
 │   ├── LitePress.Application.Read.Contracts/
 │   ├── LitePress.Application.Read/
 │   ├── LitePress.Application.Reactions/
-│   ├── LitePress.Infrastructure/       # EF Core, repositories
+│   ├── LitePress.Infrastructure/       # Marten, repositories
 │   └── LitePress.WebApi/               # IEndpoint classes, middleware
 ├── tests/
 │   ├── LitePress.Domain.Tests/
 │   ├── LitePress.Application.Tests/
 │   ├── LitePress.Architecture.Tests/
-│   └── LitePress.Integration.Tests/
+│   ├── LitePress.Integration.Tests/
+│   └── LitePress.AcceptanceTests/      # Reqnroll BDD; maps to docs/domain use cases
 ├── LitePress.slnx
 ├── Directory.Build.props
 └── Directory.Packages.props
@@ -49,11 +50,11 @@ Or from `apps/api`:
 dotnet run --project src/LitePress.AppHost
 ```
 
-Migrations apply automatically in Development on API startup.
+Marten storage schema applies automatically in Development on API startup.
 
 ### Standalone (manual path)
 
-Requires docker-compose Postgres (port 5433):
+Requires docker-compose PostgreSQL (port 5432):
 
 ```bash
 docker compose up -d
@@ -65,27 +66,25 @@ dotnet run --project src/LitePress.WebApi
 Environment:
 
 ```bash
-ConnectionStrings__Database="Host=localhost;Port=5433;Database=litepress;Username=litepress;Password=litepress"
+ConnectionStrings__DefaultConnection="Host=127.0.0.1;Port=5432;Database=litepress;Username=litepress;Password=litepress"
 JwtSettings__Secret="dev-secret-key-must-be-at-least-32-characters-long!"
 ```
 
 ---
 
-## Migrations
+## Database schema
+
+Serialization wiring lives in `src/LitePress.Infrastructure/Marten/Serialization/` (`Abstractions/` for contracts and bases, `Internal/Aggregates/` for per-aggregate configuration).
 
 ```bash
-dotnet tool restore
-
 # Apply (manual / CI path)
 pnpm db:migrate
 
-# Add
-dotnet ef migrations add <Name> \
-  --project src/LitePress.Infrastructure \
-  --startup-project src/LitePress.WebApi
+# Apply only (no HTTP server)
+dotnet run --project src/LitePress.WebApi -- --apply-schema-only
 ```
 
-Aspire path: migrations run automatically in Development. See [local-dev-migrations ADR](../../docs/decisions/local-dev-migrations.md).
+Aspire path: schema runs automatically in Development. See [local-dev-migrations ADR](../../docs/decisions/local-dev-migrations.md) and [martendb-persistence ADR](../../docs/decisions/martendb-persistence.md).
 
 ---
 
@@ -96,6 +95,19 @@ dotnet build LitePress.slnx --configuration Release
 dotnet test LitePress.slnx --configuration Release --no-build
 ```
 
+Integration and acceptance tests require Docker (PostgreSQL Testcontainers).
+
+```bash
+# Critical acceptance scenarios only
+dotnet test tests/LitePress.AcceptanceTests --filter "Category=critical"
+```
+
+Feature file validation:
+
+```bash
+pwsh ../../scripts/validate-feature-files.ps1
+```
+
 ---
 
 ## Conventions
@@ -104,14 +116,14 @@ dotnet test LitePress.slnx --configuration Release --no-build
 |:---|:---|
 | Endpoints | `IEndpoint` only — no MVC controllers |
 | Auth | JWT Bearer; `AuthorId` from JWT, never request body |
-| Queries | `IDatabaseContext` projections; no repository injection |
-| DB naming | `UseSnakeCaseNamingConvention()` via EFCore.NamingConventions |
+| Queries | `IReadDatabase` LINQ over Marten documents; no repository injection |
+| Persistence | Marten 9 on PostgreSQL; domain aggregate roots stored as JSON |
 | OpenAPI | `/openapi/v1.json` (machine-readable spec) |
 | API docs (dev) | `/scalar/v1` (Scalar UI, Development only) |
 | Health (dev) | `/health`, `/alive` via ServiceDefaults |
 | Domain docs | `docs/domain/` — update with code changes |
 
-Engineering standards: [standards/AGENTS.md](../../standards/AGENTS.md) (submodule).
+Engineering standards: [standards/AGENTS.md](../../standards/AGENTS.md) (submodule). LitePress overrides the default EF Core stack; see [martendb-persistence ADR](../../docs/decisions/martendb-persistence.md).
 
 ---
 
@@ -119,12 +131,8 @@ Engineering standards: [standards/AGENTS.md](../../standards/AGENTS.md) (submodu
 
 When running locally:
 
-| Resource | URL |
-|:---|:---|
-| OpenAPI JSON | http://localhost:5000/openapi/v1.json |
-| Scalar UI (Development only) | http://localhost:5000/scalar/v1 |
-
-The API uses `Microsoft.AspNetCore.OpenApi` for spec generation and `Scalar.AspNetCore` for the browsable reference UI. Scalar is mapped only when `ASPNETCORE_ENVIRONMENT=Development`. Production exposes the JSON endpoint only if you choose to map it; Scalar is not enabled in Production.
+- Spec: `http://localhost:5000/openapi/v1.json`
+- Scalar UI (Development): `http://localhost:5000/scalar/v1`
 
 Regenerate TypeScript types from repo root:
 

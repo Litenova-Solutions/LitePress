@@ -4,6 +4,5 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LiteBus.Queries.Abstractions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 </Project>

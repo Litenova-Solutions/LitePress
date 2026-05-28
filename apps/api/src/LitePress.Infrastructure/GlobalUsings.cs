@@ -6,4 +6,5 @@ global using System.Threading.Tasks;
 global using LitePress.Domain.Authors;
 global using LitePress.Domain.Posts;
 global using LitePress.Domain.Tags;
-global using Microsoft.EntityFrameworkCore;
+global using Marten;
+global using Marten.Linq;

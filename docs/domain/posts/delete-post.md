@@ -60,8 +60,21 @@ Shell: [admin shell.md](../../ui/admin/shell.md)
 
 ## Acceptance Criteria
 
-1. Given a Draft post, when deleted, then `GET /api/posts/{id}` returns 404. (Integration)
-2. Given a Published post, when delete is attempted, then API returns 409. (Integration)
+| ID | Criterion | Test type |
+|:---|:---|:---|
+| AC-001 | Given a Draft post, when deleted, then `GET /api/posts/{id}` returns 404. | BDD acceptance (`DeletePost.feature` @ac:AC-001) |
+| AC-002 | Given a Published post, when delete is attempted, then API returns 409. | BDD acceptance (`DeletePost.feature` @ac:AC-002) |
+
+---
+
+## Acceptance Coverage
+
+| ID | Criterion summary | Risk | Required test type | BDD scenario | Plain API test | Domain/Application test | Manual only |
+|:---|:---|:---|:---|:---|:---|:---|:---:|
+| AC-001 | Draft delete returns 404 on read | Critical | BDD acceptance | Author deletes a draft post | | | |
+| AC-002 | Published delete returns 409 | Critical | BDD acceptance | Deleting a published post is rejected | | `PostExceptionHandlingTests` | |
+
+**BDD decision:** BDD acceptance for both criteria (author-facing delete rules).
 
 ---
 

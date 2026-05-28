@@ -1,14 +1,13 @@
 namespace LitePress.Application.Read.Contracts.Posts;
 
 /// <summary>
-/// Shadow property and discriminator names for Post.State TPH column mapping.
-/// Must stay aligned with <c>PostConfiguration</c> in Infrastructure.
+/// Post lifecycle discriminator values used when projecting post state in read models.
 /// </summary>
 public static class PostStateColumns
 {
-    public const string StateType = "StateType";
-    public const string PublishedAt = "PublishedAt";
-    public const string ArchivedAt = "ArchivedAt";
+    public const string StateType = "state_type";
+    public const string PublishedAt = "published_at";
+    public const string ArchivedAt = "archived_at";
 
     public const string Draft = "Draft";
     public const string Published = "Published";
