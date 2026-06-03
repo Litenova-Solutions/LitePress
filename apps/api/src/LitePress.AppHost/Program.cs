@@ -22,7 +22,7 @@ var githubOwnerId = builder.AddParameter("github-owner-id");
 
 
 
-var postgresPassword = builder.AddParameter("postgres-password", secret: true);
+var postgresPassword = builder.AddParameter("postgres-password", "litepress", secret: true);
 
 var postgres = builder.AddPostgres("postgres", password: postgresPassword)
 

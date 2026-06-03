@@ -46,6 +46,8 @@ Dev defaults exist in `env.ts` and AppHost `appsettings.Development.json` but OA
 ### AppHost user secrets (alternative to `.env.local`)
 
 ```bash
+dotnet user-secrets set "Parameters:postgres-password" "litepress" \
+  --project apps/api/src/LitePress.AppHost
 dotnet user-secrets set "Parameters:auth-github-id" "<client-id>" \
   --project apps/api/src/LitePress.AppHost
 dotnet user-secrets set "Parameters:auth-github-secret" "<client-secret>" \
